@@ -38,10 +38,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * compares the 'Authorization' header and allows authorization to a page if it is valid
      *
      * @param request incoming http request
-     * @param response
-     * @param chain
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
