@@ -1,11 +1,11 @@
 package com.zackmurry.nottteme.filters;
 
+import com.zackmurry.nottteme.entities.NottteUserPrincipal;
 import com.zackmurry.nottteme.jwt.JwtUtil;
 import com.zackmurry.nottteme.services.NottteUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -53,10 +53,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
+            NottteUserPrincipal userDetails = (NottteUserPrincipal) this.userDetailsService.loadUserByUsername(username);
             if(jwtUtil.validateToken(jwt, userDetails)) {
-
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken

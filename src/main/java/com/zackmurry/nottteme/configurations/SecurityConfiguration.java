@@ -32,7 +32,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * configures authentication service with Spring Security
      *
      * @param auth configurable object to base AuthenticationManager off of
-     * @throws Exception
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -48,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/api/v1/jwt/authenticate", "/", "/free").permitAll()
+                .authorizeRequests().antMatchers("/api/v1/jwt/authenticate", "/api/v1/jwt/test", "/", "/free").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

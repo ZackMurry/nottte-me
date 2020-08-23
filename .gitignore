@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 !**/src/main/java/com/zackmurry/jwt/JwtSecretKey
+!**/src/main/resources/application.yml
 
 ### STS ###
 .apt_generated
