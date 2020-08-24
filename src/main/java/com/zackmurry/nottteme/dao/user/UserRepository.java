@@ -1,4 +1,4 @@
-package com.zackmurry.nottteme.repository;
+package com.zackmurry.nottteme.dao.user;
 
 import com.zackmurry.nottteme.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;

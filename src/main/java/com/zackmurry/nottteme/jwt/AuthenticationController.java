@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,6 +30,8 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtTokenUtil;
 
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     @CrossOrigin
     @PostMapping("/test")
     public String testResponse(@RequestBody AuthenticationRequest authenticationRequest) {
@@ -38,25 +41,27 @@ public class AuthenticationController {
     @CrossOrigin
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        System.out.println(authenticationRequest.getUsername());
         try {
-            System.out.println("one");
+            //encoding password because it's already encoded in the database
+            String encodedPassword = encoder.encode(authenticationRequest.getPassword());
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
-            System.out.println("try");
         } catch (BadCredentialsException e) {
             System.out.println("bad credentials");
             throw new Exception("Incorrect username or password", e);
         } catch (AuthenticationException e) {
             System.out.println("authentication exception");
             throw new Exception("Bad authentication attempt", e);
+        } catch (IllegalArgumentException e) {
+            System.out.println("password cannot be null");
+            throw new Exception("password cannot be null", e);
         }
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
 
         final String jwt = jwtTokenUtil.generateToken(userDetails);
-        System.out.println(jwt);
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 

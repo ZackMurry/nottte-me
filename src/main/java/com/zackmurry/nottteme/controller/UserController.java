@@ -1,0 +1,44 @@
+package com.zackmurry.nottteme.controller;
+
+import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createUserAccount(@RequestBody User user) {
+        if(user.getPassword() == null) return new ResponseEntity<HttpStatus>(HttpStatus.LENGTH_REQUIRED);
+
+        //encoding password so that it's never stored in plain text
+        String encodedPassword = encoder.encode(user.getPassword());
+
+        boolean create = userService.createUserAccount(user.getUsername(), encodedPassword);
+        if(create) return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+        else return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/exists/{username}")
+    public boolean usernameExists(@PathVariable String username) {
+        return userService.usernameExists(username);
+    }
+
+    @GetMapping("/user/{username}")
+    public Optional<User> getUserByName(@PathVariable String username) {
+        return userService.getUserByUsername(username);
+    }
+
+}
