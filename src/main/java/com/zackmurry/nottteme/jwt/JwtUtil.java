@@ -1,5 +1,6 @@
 package com.zackmurry.nottteme.jwt;
 
+import com.zackmurry.nottteme.secrets.JwtSecretKey;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

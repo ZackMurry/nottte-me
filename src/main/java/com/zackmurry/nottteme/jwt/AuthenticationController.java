@@ -4,6 +4,7 @@ import com.zackmurry.nottteme.models.AuthenticationRequest;
 import com.zackmurry.nottteme.models.AuthenticationResponse;
 import com.zackmurry.nottteme.services.NottteUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,10 +42,11 @@ public class AuthenticationController {
     @CrossOrigin
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        try {
-            //encoding password because it's already encoded in the database
-            String encodedPassword = encoder.encode(authenticationRequest.getPassword());
 
+        if(authenticationRequest.getPassword() == null || authenticationRequest.getPassword().length() > 40) return new ResponseEntity<HttpStatus>(HttpStatus.LENGTH_REQUIRED);
+
+        try {
+            //password gets encoded in the authenticate method
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );

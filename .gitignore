@@ -3,7 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-!**/src/main/java/com/zackmurry/jwt/JwtSecretKey
+!**/src/main/java/com/zackmurry/secrets/
 !**/src/main/resources/application.yml
 
 ### STS ###
@@ -34,3 +34,4 @@ build/
 ### VS Code ###
 .vscode/
 /src/main/java/com/zackmurry/nottteme/jwt/JwtSecretKey.java
+/src/main/java/com/zackmurry/nottteme/secrets/JwtSecretKey.java

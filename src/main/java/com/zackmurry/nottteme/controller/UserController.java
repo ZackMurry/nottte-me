@@ -22,8 +22,9 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<?> createUserAccount(@RequestBody User user) {
         if(user.getPassword() == null) return new ResponseEntity<HttpStatus>(HttpStatus.LENGTH_REQUIRED);
-
+        if(user.getPassword().length() > 40) return new ResponseEntity<HttpStatus>(HttpStatus.LENGTH_REQUIRED); //bcrypt has a length limit
         //encoding password so that it's never stored in plain text
+        //encoder automatically salts it
         String encodedPassword = encoder.encode(user.getPassword());
 
         boolean create = userService.createUserAccount(user.getUsername(), encodedPassword);
