@@ -11,4 +11,10 @@ public interface NoteDao {
 
     ResponseEntity<HttpStatus> createNote(String title, String body, String author);
 
+    boolean noteWithNameExists(String title);
+
+    boolean userHasNote(String title, String username);
+
+    String getRawNote(String title, String author);
+
 }

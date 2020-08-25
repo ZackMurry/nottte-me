@@ -33,5 +33,4 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/java/com/zackmurry/nottteme/jwt/JwtSecretKey.java
 /src/main/java/com/zackmurry/nottteme/secrets/JwtSecretKey.java

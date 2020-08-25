@@ -20,4 +20,17 @@ public class NoteService {
     public ResponseEntity<HttpStatus> saveNote(String title, String author, String body) {
         return noteDao.updateNote(title, author, body);
     }
+
+    public boolean noteWithNameExists(String title) {
+        return noteDao.noteWithNameExists(title);
+    }
+
+    public boolean userHasNote(String title, String username) {
+        return noteDao.userHasNote(title, username);
+    }
+
+
+    public String getRawNote(String title, String author) {
+        return noteDao.getRawNote(title, author);
+    }
 }

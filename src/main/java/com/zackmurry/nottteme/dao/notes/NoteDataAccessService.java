@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -25,8 +26,9 @@ public class NoteDataAccessService implements NoteDao {
     @Override
     public ResponseEntity<HttpStatus> updateNote(String title, String author, String content) {
         String sql = "UPDATE notes SET body = ? WHERE title=? AND author=?";
-        author = "test"; //todo temp
-
+        System.out.println("title = " + title);
+        System.out.println("author = " + author);
+        System.out.println("content = " + content);
         try {
             jdbcTemplate.execute(
                     sql,
@@ -82,18 +84,84 @@ public class NoteDataAccessService implements NoteDao {
     @Override
     public ResponseEntity<HttpStatus> createNote(String title, String body, String author) {
         String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
-
+        System.out.println("title: " + title + ", body: " + body + ", author: " + author);
         try {
             jdbcTemplate.execute(
                     sql,
                     author,
-                    body,
-                    author
+                    title,
+                    body
             );
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @Override
+    public boolean noteWithNameExists(String title) {
+        String sql = "SELECT EXISTS (SELECT title FROM notes WHERE title=?)";
+
+        try {
+            List<?> l = jdbcTemplate.queryForList(
+                    sql,
+                    title
+            );
+            //l.get(0) returns "{exists=[t/f]}", so getting the char at index 8 gets either t or f (for true r false)
+            //if it's equal to 't', return true, else return false
+            return l.get(0).toString().charAt(8) == 't';
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean userHasNote(String title, String username) {
+        String sql = "SELECT EXISTS (SELECT title FROM notes WHERE title=? AND author=?)";
+
+        try {
+            List<?> l = jdbcTemplate.queryForList(
+                    sql,
+                    title,
+                    username
+            );
+            //l.get(0) returns "{exists=[t/f]}", so getting the char at index 8 gets either t or f (for true r false)
+            //if it's equal to 't', return true, else return false
+            return l.get(0).toString().charAt(8) == 't';
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * gets body from a note
+     *
+     * @param title title of note
+     * @param author author of note
+     * @return body of note
+     */
+    @Override
+    public String getRawNote(String title, String author) {
+        String sql = "SELECT body FROM notes WHERE title=? AND author=? LIMIT 1";
+
+        try {
+            List<String> rawList = jdbcTemplate.query(
+                    sql,
+                    resultSet -> resultSet.getString(1),
+                    title,
+                    author
+            );
+            if(rawList.size() != 1) throw new IllegalStateException("Raw note list should only have one element. Instead, it has " + rawList.size());
+            return rawList.get(0);
+        } catch (SQLException | IllegalStateException e) {
+            e.printStackTrace();
+            return "";
         }
 
     }
