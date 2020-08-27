@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react'
+import React, { Component } from 'react'
 import { Editor, EditorState, convertFromRaw, RichUtils, convertToRaw } from 'draft-js'
 import Cookie from 'js-cookie'
 

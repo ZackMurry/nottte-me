@@ -3,7 +3,9 @@ package com.zackmurry.nottteme.filters;
 import com.zackmurry.nottteme.entities.NottteUserPrincipal;
 import com.zackmurry.nottteme.jwt.JwtUtil;
 import com.zackmurry.nottteme.services.NottteUserDetailsService;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -49,7 +51,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         //if authorization header is valid
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7); //substring(7) skips "Bearer "
-            username = jwtUtil.extractUsername(jwt);
+            try {
+                username = jwtUtil.extractUsername(jwt);
+            } catch (MalformedJwtException e) {
+                //MalformedJwtException is thrown when the JWT is invalid.
+                response.sendError(HttpStatus.UNAUTHORIZED.value()); //throws IOException
+            }
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

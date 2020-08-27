@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Cookie, { set } from 'js-cookie'
+import Cookie from 'js-cookie'
 
 export default function index() {
     

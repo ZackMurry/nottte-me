@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import io.jsonwebtoken.MalformedJwtException;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,6 +62,17 @@ public class WebRestControllerAdvice {
     public String handleUnsupportedEncodingException(UnsupportedEncodingException exception, HttpServletResponse response) {
         try {
             response.sendError(HttpStatus.NOT_ACCEPTABLE.value());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return exception.getMessage();
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public String handleMalformedJwtException(MalformedJwtException exception, HttpServletResponse response) {
+        try {
+            response.sendError(HttpStatus.UNAUTHORIZED.value());
         } catch (IOException e) {
             e.printStackTrace();
         }

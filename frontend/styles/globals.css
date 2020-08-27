@@ -16,3 +16,23 @@ a {
   box-sizing: border-box;
 }
 
+.editor {
+    background-color: white;
+}
+
+.public-DraftEditorPlaceholder-root {
+    position: absolute;
+    color: #bdbdbd;
+    font-family: 'Roboto'
+}
+  
+div.DraftEditor-root {
+    margin: 30px auto;
+    background-color: white;
+    width: 55%;
+    min-height: 75vh;
+    overflow: visible;
+    padding: 1.5vh 1.5vw;
+    font-size: 24px;
+    color: black;
+}

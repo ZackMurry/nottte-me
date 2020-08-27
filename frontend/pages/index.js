@@ -7,6 +7,11 @@ export default function Home() {
   return (
     <div style={{margin: 0, padding: 0, overflowX: 'hidden', width: '100%'}}>
 
+        {/* head */}
+        <Head>
+            <title>Nottte.me</title>
+        </Head>
+
         {/* slope at top of white section */}
         <div style={{top: '50vh', left:0, backgroundColor: 'white', position: 'absolute', width: '100vw', height: '25vh', clipPath: 'polygon(100% 0, 100% 100%, 0% 100%)', zIndex: -1, overflowX: 'hidden'}} ></div>
         {/* white section */}
@@ -14,10 +19,6 @@ export default function Home() {
         {/* slope at bottom of white section */}
         <div style={{top: '174.95vh', left:0, backgroundColor: 'white', position: 'absolute', width: '100vw', height: '25.05vh', clipPath: 'polygon(0% 0, 100% 0%, 0% 100%)', zIndex: -1, overflowX: 'hidden'}} ></div>
         
-        {/* head */}
-        <Head>
-            <title>Nottte.me</title>
-        </Head>
         {/* navbar */}
         <div style={{backgroundColor: '#2D323E', width: '100%', display: 'flex', position: 'fixed'}}>
             <div>

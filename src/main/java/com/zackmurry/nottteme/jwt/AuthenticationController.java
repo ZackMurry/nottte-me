@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.jwt;
 import com.zackmurry.nottteme.models.AuthenticationRequest;
 import com.zackmurry.nottteme.models.AuthenticationResponse;
 import com.zackmurry.nottteme.services.NottteUserDetailsService;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,9 @@ public class AuthenticationController {
         } catch (IllegalArgumentException e) {
             System.out.println("password cannot be null");
             throw new Exception("password cannot be null", e);
+        } catch (MalformedJwtException e) {
+            System.out.println("malformed jwt");
+            throw new Exception("jwt malformed", e);
         }
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
