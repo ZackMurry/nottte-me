@@ -1,9 +1,13 @@
 package com.zackmurry.nottteme.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.zackmurry.nottteme.models.KeyboardShortcut;
+
+import javax.persistence.*;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -16,13 +20,22 @@ public class User {
     @Column
     private String password;
 
+    @Column
+    private String shortcuts;
+
+    @Transient
+    private List<KeyboardShortcut> keyboardShortcuts;
+    private static final Gson gson = new Gson();
+    private static final Type keyboardShortcutListType = new TypeToken<ArrayList<KeyboardShortcut>>(){}.getType();
+
     public User() {
 
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, String keyboardShortcuts) {
         this.username = username;
         this.password = password;
+        this.keyboardShortcuts = convertKeyboardShortcutStringToObjects(keyboardShortcuts);
     }
 
     public String getUsername() {
@@ -40,4 +53,22 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public List<KeyboardShortcut> getKeyboardShortcuts() {
+        return keyboardShortcuts;
+    }
+
+    public void setKeyboardShortcuts(String keyboardShortcuts) {
+        this.keyboardShortcuts = convertKeyboardShortcutStringToObjects(keyboardShortcuts);
+    }
+
+    /**
+     * tool used for converting from JSON string to list of KeyboardShortcuts
+     * @param keyboardShortcuts JSON string to parse
+     * @return the list version of the JSON
+     */
+    public static List<KeyboardShortcut> convertKeyboardShortcutStringToObjects(String keyboardShortcuts) {
+        return gson.fromJson(keyboardShortcuts, keyboardShortcutListType);
+    }
+
 }

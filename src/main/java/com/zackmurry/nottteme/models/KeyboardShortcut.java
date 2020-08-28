@@ -1,7 +1,7 @@
 package com.zackmurry.nottteme.models;
 
 /**
- * todo implement
+ * todo deleting and editing shortcuts
  */
 public class KeyboardShortcut {
 
@@ -13,7 +13,7 @@ public class KeyboardShortcut {
 
     }
 
-    public KeyboardShortcut(String name, int keyCode, String text) {
+    public KeyboardShortcut(String name, String text, int keyCode) {
         this.name = name;
         this.keyCode = keyCode;
         this.text = text;

@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 public class KeyboardShortcutController {
 
-    @PostMapping("/{username}/preferences/shortcuts")
-    public ResponseEntity<HttpStatus> addKeyboardShortcut() {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+
+
+
 
 }

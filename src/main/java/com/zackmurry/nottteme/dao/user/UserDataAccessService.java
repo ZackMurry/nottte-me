@@ -1,17 +1,25 @@
 package com.zackmurry.nottteme.dao.user;
 
+import com.google.gson.Gson;
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.models.KeyboardShortcut;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserDataAccessService implements UserDao {
+
+
+    private final Gson gson = new Gson();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,7 +27,6 @@ public class UserDataAccessService implements UserDao {
     public UserDataAccessService(DataSource dataSource) throws SQLException {
         this.jdbcTemplate = new JdbcTemplate(dataSource.getConnection());
     }
-
 
 
     @Override
@@ -67,8 +74,9 @@ public class UserDataAccessService implements UserDao {
                     sql,
                     resultSet -> new User(
                             resultSet.getString(1), //username
-                            resultSet.getString(2) //password
-                    ),
+                            resultSet.getString(2), //password
+                            resultSet.getString(3) //shortcuts
+                            ),
                     username
             );
             return Optional.of(list.get(0));
@@ -76,7 +84,45 @@ public class UserDataAccessService implements UserDao {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<KeyboardShortcut> getKeyboardShortcutsByUsername(String username) {
+        String sql = "SELECT shortcuts FROM users WHERE username=?";
+
+        try {
+            String shortcutString = jdbcTemplate.queryForString(
+                    sql,
+                    username
+            );
+            return User.convertKeyboardShortcutStringToObjects(shortcutString);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, int keyCode) {
+        List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
+        shortcuts.add(new KeyboardShortcut(name, text, keyCode));
+        String shortcutString = gson.toJson(shortcuts);
+
+        String sql = "UPDATE users SET shortcuts = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    shortcutString,
+                    username
+            );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
     }
+
 
 }
