@@ -26,9 +26,6 @@ public class NoteDataAccessService implements NoteDao {
     @Override
     public ResponseEntity<HttpStatus> updateNote(String title, String author, String content) {
         String sql = "UPDATE notes SET body = ? WHERE title=? AND author=?";
-        System.out.println("title = " + title);
-        System.out.println("author = " + author);
-        System.out.println("content = " + content);
         try {
             jdbcTemplate.execute(
                     sql,

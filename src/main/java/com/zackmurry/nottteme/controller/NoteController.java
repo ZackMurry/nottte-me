@@ -90,6 +90,7 @@ public class NoteController {
         //this returns "anonymousUser" if unauthenticated
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        //todo can probably remove this check once i implement spring security for blocking requests
         if(username.equals("anonymousUser")) {
             throw new UnauthorizedException("Note found with name " + title + ", but user is unauthenticated");
         }

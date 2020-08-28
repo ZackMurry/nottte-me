@@ -8,6 +8,7 @@ import '../styles/globals.css'
 
 //from https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js
 //adds mui theme
+//todo add error page (404)
 export default function MyApp(props) {
   const { Component, pageProps } = props;
 
