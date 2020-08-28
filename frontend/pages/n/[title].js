@@ -19,20 +19,6 @@ const emptyContentState = convertFromRaw({
     ],
   });
 
-const testShortcuts = [
-    {
-        title: 'myShortcut',
-        keyCode: 77,
-        text: 'this is a shortcut'
-    },
-    {
-        title: 'myOtherShortcut',
-        keyCode: 80,
-        text: '\t'
-    }
-]
-
-
 //used for writing notes
 //todo visual saving indicator
 export default function Note() {
@@ -43,6 +29,7 @@ export default function Note() {
     const { title } = router.query
     const jwt = Cookie.get('jwt')
     const [ editorState, setEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
+    const [ shortcuts, setShortcuts] = useState([])
 
     if(!jwt) {
         console.log('Unauthenticated')
@@ -93,9 +80,9 @@ export default function Note() {
             save()
         }
 
-        for(var i = 0; i < testShortcuts.length; i++) {
-            let shortcut = testShortcuts[i]
-            if(shortcut.title == command) {
+        for(var i = 0; i < shortcuts.length; i++) {
+            let shortcut = shortcuts[i]
+            if(shortcut.name == command) {
                 let contentState = editorState.getCurrentContent()
                 let targetRange = editorState.getSelection()
                 let newContentState = Modifier.insertText(
@@ -137,25 +124,40 @@ export default function Note() {
     
     const getFromServer = async () => {
         if(!jwt) return; //todo prompt sign in or un-auth'd note
+
         const requestOptions = {
             method: 'GET',
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
         }
-        const response = await fetch('http://localhost:8080/api/v1/notes/note/' + title + '/raw', requestOptions)
-        const text = await response.text()
+
+        //getting editor state
+
+        const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + title + '/raw', requestOptions)
+        const editorText = await editorResponse.text()
 
         //todo show error for 404s and 401s
-        if(response.status === 401) return;
-        if(response.status === 404) return;
+        if(editorResponse.status === 401) return;
+        if(editorResponse.status === 404) return;
 
-        if(response === '') {
+        if(editorResponse === '') {
             setEditorState(EditorState.createEmpty())
         } else {
-            const parsedText = JSON.parse(text)
+            const parsedText = JSON.parse(editorText)
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
         }
+
+        //getting shortcuts
+
+        const shortcutResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts', requestOptions)
+        const shortcutText = await shortcutResponse.text()
+
+        if(shortcutResponse.status === 401) return;
+        if(shortcutResponse.status === 404) return;
+
+        setShortcuts(JSON.parse(shortcutText))
+
     }
     
     //e is a SyntheticKeyboardEvent. imagine being weakly typed
@@ -170,12 +172,12 @@ export default function Note() {
             e.preventDefault()
             return 'nottte-save'
         }
-        
-        for(var i = 0; i < testShortcuts.length; i++) {
-            let shortcut = testShortcuts[i]
+
+        for(var i = 0; i < shortcuts.length; i++) {
+            let shortcut = shortcuts[i]
             if(e.keyCode == shortcut.keyCode) {
-                console.log('ran: ' + shortcut.title)
-                return shortcut.title
+                console.log('ran: ' + shortcut.name)
+                return shortcut.name
             }
         }
 

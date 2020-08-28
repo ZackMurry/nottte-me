@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDataAccessService implements UserDao {
@@ -105,7 +106,44 @@ public class UserDataAccessService implements UserDao {
     @Override
     public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, int keyCode) {
         List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
+
+        //todo also check for the same keybinding
+        if(shortcuts.stream().anyMatch(keyboardShortcut -> keyboardShortcut.getName().equals(name))) {
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+        }
+
         shortcuts.add(new KeyboardShortcut(name, text, keyCode));
+        String shortcutString = gson.toJson(shortcuts);
+
+        String sql = "UPDATE users SET shortcuts = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    shortcutString,
+                    username
+            );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+    /**
+     * todo test and catch failures
+     *
+     * @param username user to delete shortcut from
+     * @param shortcutName shortcut to delete
+     * @return an http response of whether it worked out not and where it failed
+     */
+    @Override
+    public ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName) {
+        List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
+
+        shortcuts = shortcuts.stream().filter(keyboardShortcut -> !keyboardShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
         String shortcutString = gson.toJson(shortcuts);
 
         String sql = "UPDATE users SET shortcuts = ? WHERE username=?";

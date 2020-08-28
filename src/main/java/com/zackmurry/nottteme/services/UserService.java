@@ -37,4 +37,7 @@ public class UserService {
         return userDao.getKeyboardShortcutsByUsername(username);
     }
 
+    public ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName) {
+        return userDao.deleteKeyboardShortcutByName(username, shortcutName);
+    }
 }

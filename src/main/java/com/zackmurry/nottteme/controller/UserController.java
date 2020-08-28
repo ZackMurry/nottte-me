@@ -6,6 +6,7 @@ import com.zackmurry.nottteme.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,14 +48,33 @@ public class UserController {
     //preferences
 
     @PostMapping("/user/{username}/preferences/shortcuts")
-    public ResponseEntity<HttpStatus> addKeyboardShortcut(@RequestBody KeyboardShortcut keyboardShortcut) {
-        userService.addKeyboardShortcut("foo", keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKeyCode());
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<HttpStatus> addKeyboardShortcut(@PathVariable String username, @RequestBody KeyboardShortcut keyboardShortcut) {
+        return userService.addKeyboardShortcut(username, keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKeyCode());
+    }
+
+    @PostMapping("/principal/preferences/shortcuts")
+    public ResponseEntity<HttpStatus> addKeyboardShortcutToPrincipal(@RequestBody KeyboardShortcut keyboardShortcut) {
+        return userService.addKeyboardShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKeyCode());
     }
 
     @GetMapping("/user/{username}/preferences/shortcuts")
     public List<KeyboardShortcut> getKeyboardShortcutsByUsername(@PathVariable String username) {
         return userService.getKeyboardShortcutsByUsername(username);
+    }
+
+    @GetMapping("/principal/preferences/shortcuts")
+    public List<KeyboardShortcut> getKeyboardShortcutsOfPrincipal() {
+        return userService.getKeyboardShortcutsByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @DeleteMapping("/user/{username}/preferences/shortcuts/{shortcutName}")
+    public ResponseEntity<HttpStatus> deleteUserKeyboardShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) {
+        return userService.deleteKeyboardShortcutByName(username, shortcutName);
+    }
+
+    @DeleteMapping("/principal/preferences/shortcuts/{shortcutName}")
+    public ResponseEntity<HttpStatus> deletePrincipalKeyboardShortcutByName(@PathVariable("shortcutName") String shortcutName) {
+        return userService.deleteKeyboardShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName);
     }
 
 }
