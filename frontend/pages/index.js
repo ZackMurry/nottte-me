@@ -31,6 +31,23 @@ export default function Home() {
                 the place for minimal note taking
             </Typography>
         </div>
+
+        {/* white part */}
+        <div style={{marginTop: 400}}>
+            {/* header */}
+            <div>
+                <Typography variant='h2' style={{textAlign: 'center'}} >
+                    shortcut centered typing
+                </Typography>
+            </div>
+            {/* body */}
+            <div style={{width: '100%', textAlign: 'center', marginTop: '2.5%'}}>
+                <Typography variant='h5' style={{fontWeight: 100}}>
+                    Users can create custom keyboard shortcuts to improve productivity.<br />
+                    We've eliminated all buttons on the screen in favor of an elegant and personalized command system
+                </Typography>
+            </div>
+        </div>
         
     </div>
   )

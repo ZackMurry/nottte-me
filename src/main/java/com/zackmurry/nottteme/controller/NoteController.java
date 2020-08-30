@@ -28,9 +28,6 @@ public class NoteController {
     private NoteService noteService;
 
     /**
-     * placeholder for tests
-     * todo saving and loading
-     * todo this seems to always be one step behind of the actual saves
      * todo authorization
      *
      * @param request object in JSON format (for ease of keeping in database). contains the post title and the editor state

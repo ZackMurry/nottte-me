@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Cookie from 'js-cookie'
-import { EditorState, Editor, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
+import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
+import { debounce } from 'lodash'
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
@@ -41,23 +42,8 @@ export default function Note() {
         }
     }, [ title ])
 
-    //think i'll need to use this to use the auto-save plugin
-    const save = async () => {
-        console.log('saving...')
-        if(!jwt) return;
-        const requestOptions = {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
-            body: JSON.stringify({
-                title: title,
-                body: convertToRaw(editorState.getCurrentContent())
-            })
-        }
-
-        const response = await fetch('http://localhost:8080/api/v1/notes/save', requestOptions)
-    }
-
-    const saveWithNew = async (newEditorState) => {
+    //saves once user stops typing for one second. todo probly need to save less often
+    const debounceSave = useCallback(debounce(async (newEditorState) => {
         console.log('saving...')
         if(!jwt) return;
         const requestOptions = {
@@ -70,6 +56,28 @@ export default function Note() {
         }
 
         const response = await fetch('http://localhost:8080/api/v1/notes/save', requestOptions)
+    }, 1000), [])
+
+    const insertTextAtCursor = (text) => {
+        let contentState = editorState.getCurrentContent()
+        let targetRange = editorState.getSelection()
+        let newContentState = Modifier.insertText(
+            contentState,
+            targetRange,
+            text
+        )
+        let newEditorState = EditorState.push(
+            editorState,
+            newContentState
+        )
+                
+        //changing the position of the cursor to be at the end of the shortcutted text
+        const nextOffSet = newEditorState.getSelection().getFocusOffset()
+        const newSelection = newEditorState.getSelection().merge({
+            focusOffset: nextOffSet,
+            anchorOffset: nextOffSet
+        })
+        onChange(EditorState.acceptSelection(newEditorState, newSelection))
     }
 
     // used for keyboard shortcuts
@@ -77,9 +85,13 @@ export default function Note() {
         //special key binds that are assigned from the start
         //todo make it so that users cannot make keybinds that start with nottte-
         if(command === 'nottte-save') {
-            save()
+            debounceSave(editorState)
+            return 'handled'
         }
-        console.log(command)
+        else if(command === 'nottte-tab') {
+            insertTextAtCursor('\t')
+            return 'handled'
+        }
         for(var i = 0; i < shortcuts.length; i++) {
             let shortcut = shortcuts[i]
             if(shortcut.name == command) {
@@ -118,7 +130,7 @@ export default function Note() {
         const newContent = newEditorState.getCurrentContent()
         await setEditorState(newEditorState)
         if(oldContent != newContent) {
-            saveWithNew(newEditorState)
+            debounceSave(newEditorState)
         }
     }
     
@@ -167,12 +179,17 @@ export default function Note() {
     //e is a SyntheticKeyboardEvent. imagine being weakly typed
     const keyBindingFn = (e) => {
 
+        if(e.key === 'Tab') {
+            return 'nottte-tab'
+        }
+
         //used for clarity and non-shortcut efficiency
         if(!hasCommandModifier(e)) {
             return getDefaultKeyBinding(e);
         }
-        
+
         //todo prevent users from making CTRL + S shortcuts
+        //saving note with shortcut
         if(e.key == 's') {
             e.preventDefault()
             return 'nottte-save'

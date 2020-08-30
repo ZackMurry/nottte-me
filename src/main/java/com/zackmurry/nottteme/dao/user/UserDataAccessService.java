@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;

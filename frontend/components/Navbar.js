@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function Navbar() {
 
     return (
-        <div style={{backgroundColor: 'secondary', width: '100%', display: 'flex', position: 'fixed', top: 0, left: 0}}>
+        <div style={{backgroundColor: '#2d323e', width: '100%', display: 'flex', position: 'fixed', top: 0, left: 0}}>
             <div>
                 <Link href="/">
                     <Typography color='primary' style={{fontWeight: 100, paddingLeft: '7.5vw', paddingTop: 10, fontSize: 48, alignSelf: 'flex-end', cursor: 'pointer'}}>
