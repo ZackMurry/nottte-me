@@ -20,7 +20,7 @@ public interface UserDao {
 
     List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(String username);
 
-    ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, int keyCode);
+    ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, String keyCode);
 
     ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName);
 

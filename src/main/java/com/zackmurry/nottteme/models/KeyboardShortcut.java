@@ -1,21 +1,21 @@
 package com.zackmurry.nottteme.models;
 
 /**
- * todo maybe convert to "key" instead of "keycode" because react can handle key and that'd be less converting
+ * used for user-defined keyboard shortcuts
  */
 public class KeyboardShortcut {
 
     private String name;
-    private int keyCode;
+    private String key;
     private String text;
 
     public KeyboardShortcut() {
 
     }
 
-    public KeyboardShortcut(String name, String text, int keyCode) {
+    public KeyboardShortcut(String name, String text, String key) {
         this.name = name;
-        this.keyCode = keyCode;
+        this.key = key;
         this.text = text;
     }
 
@@ -27,12 +27,12 @@ public class KeyboardShortcut {
         this.name = name;
     }
 
-    public int getKeyCode() {
-        return keyCode;
+    public String getKey() {
+        return key;
     }
 
-    public void setKeyCode(int keyCode) {
-        this.keyCode = keyCode;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getText() {

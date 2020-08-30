@@ -50,12 +50,12 @@ public class UserController {
 
     @PostMapping("/user/{username}/preferences/shortcuts")
     public ResponseEntity<HttpStatus> addKeyboardShortcut(@PathVariable String username, @RequestBody KeyboardShortcut keyboardShortcut) {
-        return userService.addKeyboardShortcut(username, keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKeyCode());
+        return userService.addKeyboardShortcut(username, keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKey());
     }
 
     @PostMapping("/principal/preferences/shortcuts")
     public ResponseEntity<HttpStatus> addKeyboardShortcutToPrincipal(@RequestBody KeyboardShortcut keyboardShortcut) {
-        return userService.addKeyboardShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKeyCode());
+        return userService.addKeyboardShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), keyboardShortcut.getName(), keyboardShortcut.getText(), keyboardShortcut.getKey());
     }
 
     @GetMapping("/user/{username}/preferences/shortcuts")

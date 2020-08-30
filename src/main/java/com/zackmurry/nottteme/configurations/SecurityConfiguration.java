@@ -48,7 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/api/v1/jwt/authenticate", "/api/v1/jwt/test", "/", "/free", "/api/v1/users/create", "/api/v1/users/exists/*").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().permitAll() //todo defo don't do this in production lol. just for testing. have to configure request authorization some day, though
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

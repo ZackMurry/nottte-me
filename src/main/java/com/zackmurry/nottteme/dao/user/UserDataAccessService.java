@@ -127,18 +127,18 @@ public class UserDataAccessService implements UserDao {
      * @param username name of user to add shortcut to
      * @param name name of shortcut
      * @param text text to insert when shortcut is called
-     * @param keyCode keycode to type with enter (todo multiple keys at the same time0
+     * @param key key to type with control (todo multiple keys at the same time)
      * @return http response describing success/fail
      */
     @Override
-    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, int keyCode) {
+    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, String key) {
         List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
 
         //todo also check for the same keybinding
         if(shortcuts.stream().anyMatch(keyboardShortcut -> keyboardShortcut.getName().equals(name))) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         }
-        shortcuts.add(new KeyboardShortcut(name, text, keyCode));
+        shortcuts.add(new KeyboardShortcut(name, text, key));
         return setKeyboardShortcutsByName(username, shortcuts);
     }
 

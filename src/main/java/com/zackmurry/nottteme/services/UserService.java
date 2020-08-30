@@ -29,8 +29,8 @@ public class UserService {
         return userDao.getUserByUsername(username);
     }
 
-    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, int keyCode) {
-        return userDao.addKeyboardShortcut(username, name, text, keyCode);
+    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, String key) {
+        return userDao.addKeyboardShortcut(username, name, text, key);
     }
 
     public List<KeyboardShortcut> getKeyboardShortcutsByUsername(String username) {

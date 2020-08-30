@@ -79,7 +79,7 @@ export default function Note() {
         if(command === 'nottte-save') {
             save()
         }
-
+        console.log(command)
         for(var i = 0; i < shortcuts.length; i++) {
             let shortcut = shortcuts[i]
             if(shortcut.name == command) {
@@ -160,27 +160,27 @@ export default function Note() {
         if(shortcutResponse.status === 401) return;
         if(shortcutResponse.status === 404) return;
         if(shortcutResponse.stats === 403) return;
-
         setShortcuts(JSON.parse(shortcutText))
 
     }
     
     //e is a SyntheticKeyboardEvent. imagine being weakly typed
     const keyBindingFn = (e) => {
+
         //used for clarity and non-shortcut efficiency
         if(!hasCommandModifier(e)) {
             return getDefaultKeyBinding(e);
         }
-
+        
         //todo prevent users from making CTRL + S shortcuts
-        if(e.keyCode == '83') {
+        if(e.key == 's') {
             e.preventDefault()
             return 'nottte-save'
         }
 
         for(var i = 0; i < shortcuts.length; i++) {
             let shortcut = shortcuts[i]
-            if(e.keyCode == shortcut.keyCode) {
+            if(e.key == shortcut.key) {
                 console.log('ran: ' + shortcut.name)
                 e.preventDefault()
                 return shortcut.name
