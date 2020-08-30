@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Cookie from 'js-cookie'
+import Navbar from '../../components/Navbar'
+import { Paper, Typography, Button } from '@material-ui/core'
 
 export default function index() {
     
@@ -22,24 +24,60 @@ export default function index() {
         Cookie.set('jwt', JSON.parse(text).jwt)
     }
 
+    //after the username field, you can press enter to go to the password field
+    const handleEnter = (event) => {
+        if(event.key === 'Enter') {
+            const form = event.target.form
+            const index = Array.prototype.indexOf.call(form, event.target)
+            form.elements[index+1].focus()
+            event.preventDefault()
+        }
+    }
+
     return (
         <div>
-            <form onSubmit={e => handleSubmit(e)}>
-                <input 
-                    type='text'
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                />
-                <input 
-                    type='text'
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                />
-                <input 
-                    type='submit'
-                />
+            <div style={{marginTop: 0}} >
+                <Navbar />
+            </div>
 
-            </form>
+            {/* main login */}
+            <Paper style={{margin: '0 auto', marginTop: '20vh', width: '50%', height: '80vh', borderRadius: '40px 40px 0 0', boxShadow: '5px 5px 10px black'}} >
+                
+                <Typography variant='h1' style={{color: 'black', padding: '50px 0 25px 0', textAlign: 'center'}} >
+                    Login
+                </Typography>
+                
+                <form onSubmit={e => handleSubmit(e)} style={{textAlign: 'center'}}>
+                    {/* username */}
+                    <div>
+                        <input 
+                            aria-label='username'
+                            type='text'
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            style={{border: 'none', fontSize: 24, textAlign: 'center', fontColor: 'black', padding: 10}}
+                            placeholder='username'
+                            onKeyPress={(event) => handleEnter(event)}
+                        />
+                    </div>
+                    <div>
+                        <input 
+                            type='password'
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            style={{border: 'none', fontSize: 24, textAlign: 'center', fontColor: 'black', padding: 10}}
+                            placeholder='password'
+                        />
+                    </div>
+                    <div>
+                        <Button type='submit' style={{backgroundColor: '#2d323e', color: '#fff', padding: '7.5px 15px', margin: 10}}>
+                            Sign in
+                        </Button>
+                    </div>
+                </form>
+            </Paper>
+            
+            
         </div>
 
         

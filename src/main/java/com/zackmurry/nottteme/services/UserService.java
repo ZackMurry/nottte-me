@@ -37,7 +37,16 @@ public class UserService {
         return userDao.getKeyboardShortcutsByUsername(username);
     }
 
+    public List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(String username) {
+        return userDao.getKeyboardShortcutsByUsernameOrderedByName(username);
+    }
+
     public ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName) {
         return userDao.deleteKeyboardShortcutByName(username, shortcutName);
     }
+
+    public ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut updatedKeyboardShortcut) {
+        return userDao.updateKeyboardShortcutByName(username, shortcutName, updatedKeyboardShortcut);
+    }
+
 }

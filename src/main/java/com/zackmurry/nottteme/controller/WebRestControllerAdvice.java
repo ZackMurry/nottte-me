@@ -1,11 +1,15 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,31 +26,21 @@ public class WebRestControllerAdvice {
      * @return message to return
      */
     @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFoundException(NotFoundException exception, HttpServletResponse response) {
-        try {
-            response.sendError(HttpStatus.NOT_FOUND.value());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return exception.getMessage();
     }
 
     /**
-     * catches UnauthorizedExceptions and returns a 4014 instead of a 500 (server error)
+     * catches UnauthorizedExceptions and returns a 401 instead of a 500 (server error)
      *
      * @param exception exception provided
      * @param response http response to give to client
      * @return exception message
      */
     @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String handleUnauthorizedException(UnauthorizedException exception, HttpServletResponse response) {
-        try {
-            response.sendError(HttpStatus.UNAUTHORIZED.value());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return exception.getMessage();
     }
 
@@ -59,25 +53,47 @@ public class WebRestControllerAdvice {
      * @return exception message
      */
     @ExceptionHandler(UnsupportedEncodingException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public String handleUnsupportedEncodingException(UnsupportedEncodingException exception, HttpServletResponse response) {
-        try {
-            response.sendError(HttpStatus.NOT_ACCEPTABLE.value());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return exception.getMessage();
     }
 
     @ExceptionHandler(MalformedJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String handleMalformedJwtException(MalformedJwtException exception, HttpServletResponse response) {
-        try {
-            response.sendError(HttpStatus.UNAUTHORIZED.value());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return exception.getMessage();
+    }
+
+    /**
+     * returns a 403 for expired JWTs
+     *
+     * @param exception exception thrown
+     * @param response response to return to client
+     * @return error message
+     */
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleExpiredJwtException(ExpiredJwtException exception, HttpServletResponse response) {
+        return exception.getMessage();
+    }
+
+    /**
+     * imagine not catching your exceptions that occur whole catching your exceptions
+     *
+     * usually occurs when the port closes before the server can send a response. in the else case, it's just a normal IOException
+     *
+     * @param exception exception thrown
+     * @return exception's message
+     */
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public String handleIOException(IOException exception) {
+        if (ExceptionUtils.getRootCauseMessage(exception).toUpperCase().contains("BROKEN PIPE")) {
+            //this means that the socket is closed, so we can't return a response
+            return null;
+        } else {
+            return exception.getMessage();
+        }
     }
 
 }

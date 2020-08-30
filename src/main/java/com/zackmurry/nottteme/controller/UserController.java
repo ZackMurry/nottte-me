@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+//todo might want to only show a preview of the notes on the notes page for performance reasons (don't load full text)
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -67,6 +68,16 @@ public class UserController {
         return userService.getKeyboardShortcutsByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    @GetMapping("/user/{username}/preferences/shortcuts-sorted")
+    public List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(@PathVariable String username) {
+        return userService.getKeyboardShortcutsByUsernameOrderedByName(username);
+    }
+
+    @GetMapping("/principal/preferences/shortcuts-sorted")
+    public List<KeyboardShortcut> getKeyboardShortcutsOfPrincipalOrderedByName() {
+        return userService.getKeyboardShortcutsByUsernameOrderedByName(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
     @DeleteMapping("/user/{username}/preferences/shortcuts/{shortcutName}")
     public ResponseEntity<HttpStatus> deleteUserKeyboardShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) {
         return userService.deleteKeyboardShortcutByName(username, shortcutName);
@@ -75,6 +86,16 @@ public class UserController {
     @DeleteMapping("/principal/preferences/shortcuts/{shortcutName}")
     public ResponseEntity<HttpStatus> deletePrincipalKeyboardShortcutByName(@PathVariable("shortcutName") String shortcutName) {
         return userService.deleteKeyboardShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName);
+    }
+
+    @PatchMapping("/user/{username}/preferences/shortcuts/{shortcutName}")
+    public ResponseEntity<HttpStatus> updateUserKeyboardShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName, @RequestBody KeyboardShortcut updatedKeyboardShortcut) {
+        return userService.updateKeyboardShortcutByName(username, shortcutName, updatedKeyboardShortcut);
+    }
+
+    @PatchMapping("/principal/preferences/shortcuts/{shortcutName}")
+    public ResponseEntity<HttpStatus> updatePrincipalKeyboardShortcutByName(@PathVariable("shortcutName") String shortcutName, @RequestBody KeyboardShortcut updatedKeyboardShortcut) {
+        return userService.updateKeyboardShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName, updatedKeyboardShortcut);
     }
 
 }

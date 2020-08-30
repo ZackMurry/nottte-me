@@ -18,8 +18,14 @@ public interface UserDao {
 
     List<KeyboardShortcut> getKeyboardShortcutsByUsername(String username);
 
+    List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(String username);
+
     ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, int keyCode);
 
     ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName);
+
+    ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut newKeyboardShortcut);
+
+    ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcut);
 
 }

@@ -1,7 +1,7 @@
 package com.zackmurry.nottteme.models;
 
 /**
- * todo deleting and editing shortcuts
+ * todo maybe convert to "key" instead of "keycode" because react can handle key and that'd be less converting
  */
 public class KeyboardShortcut {
 

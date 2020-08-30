@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.notes.NoteDao;
+import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,6 @@ public class NoteService {
     public boolean userHasNote(String title, String username) {
         return noteDao.userHasNote(title, username);
     }
-
 
     public String getRawNote(String title, String author) {
         return noteDao.getRawNote(title, author);

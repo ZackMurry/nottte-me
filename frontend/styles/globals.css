@@ -36,3 +36,26 @@ div.DraftEditor-root {
     font-size: 24px;
     color: black;
 }
+
+textarea:focus, input:focus {
+    outline: none;
+}
+
+/* changing placeholder color on inputs */
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: black;
+    opacity: 1; /* Firefox */
+}
+  
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: black;
+}
+  
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: black;
+}
+
+input:focus::placeholder {
+    color: transparent;
+}

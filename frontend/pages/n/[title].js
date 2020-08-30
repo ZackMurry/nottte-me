@@ -132,12 +132,15 @@ export default function Note() {
 
         //getting editor state
 
-        const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + title + '/raw', requestOptions)
+        const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + encodeURI(title) + '/raw', requestOptions)
         const editorText = await editorResponse.text()
+        console.log(editorResponse.status)
 
         //todo show error for 404s and 401s
-        if(editorResponse.status === 401) return;
-        if(editorResponse.status === 404) return;
+        if(editorResponse.status === 401) return
+        if(editorResponse.status === 404) return
+        if(editorResponse.status === 403) return
+        if(editorResponse.status === 500) return
 
         if(editorResponse === '') {
             setEditorState(EditorState.createEmpty())
@@ -153,8 +156,10 @@ export default function Note() {
         const shortcutResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts', requestOptions)
         const shortcutText = await shortcutResponse.text()
 
+        //todo
         if(shortcutResponse.status === 401) return;
         if(shortcutResponse.status === 404) return;
+        if(shortcutResponse.stats === 403) return;
 
         setShortcuts(JSON.parse(shortcutText))
 
@@ -177,6 +182,7 @@ export default function Note() {
             let shortcut = shortcuts[i]
             if(e.keyCode == shortcut.keyCode) {
                 console.log('ran: ' + shortcut.name)
+                e.preventDefault()
                 return shortcut.name
             }
         }

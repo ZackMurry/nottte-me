@@ -74,6 +74,7 @@ public class NoteController {
 
     @GetMapping("/note/{title}/raw")
     public String getRawNote(@PathVariable String title) throws NotFoundException, UnauthorizedException, UnsupportedEncodingException {
+        //i think spring decodes URLs sometimes but sometimes it breaks itself
         try {
             title = URLDecoder.decode(title, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
