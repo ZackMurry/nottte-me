@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.dao.user;
 
 import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.StyleShortcut;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -26,6 +27,17 @@ public interface UserDao {
 
     ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut newKeyboardShortcut);
 
-    ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcut);
+    ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcuts);
+
+
+    List<StyleShortcut> getStyleShortcutsByUsername(String username);
+
+    ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String style, String value);
+
+    ResponseEntity<HttpStatus> setStyleShortcutsByName(String username, List<StyleShortcut> updatedStyleShortcuts);
+
+    ResponseEntity<HttpStatus> deleteStyleShortcutByName(String username, String shortcutName);
+
+    ResponseEntity<HttpStatus> updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut);
 
 }

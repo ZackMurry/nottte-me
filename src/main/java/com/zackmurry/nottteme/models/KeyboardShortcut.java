@@ -2,8 +2,9 @@ package com.zackmurry.nottteme.models;
 
 /**
  * used for user-defined keyboard shortcuts
+ * todo rename to text shortcut
  */
-public class KeyboardShortcut {
+public class KeyboardShortcut implements Shortcut {
 
     private String name;
     private String key;

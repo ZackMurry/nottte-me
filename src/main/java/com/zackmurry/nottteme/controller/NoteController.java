@@ -52,8 +52,9 @@ public class NoteController {
                 titleBuilder.append(charAt);
             }
             title = titleBuilder.toString();
-        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return noteService.saveNote(title, SecurityContextHolder.getContext().getAuthentication().getName(), request);
     }
 

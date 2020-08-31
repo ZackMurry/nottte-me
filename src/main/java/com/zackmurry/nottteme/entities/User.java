@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.entities;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.StyleShortcut;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
@@ -23,10 +24,15 @@ public class User {
     @Column
     private String shortcuts;
 
+    @Column(name = "style_shortcuts")
+    private String styleShortcuts;
+
     @Transient
     private List<KeyboardShortcut> keyboardShortcuts;
+
     private static final Gson gson = new Gson();
     private static final Type keyboardShortcutListType = new TypeToken<ArrayList<KeyboardShortcut>>(){}.getType();
+    private static final Type styleShortcutListType = new TypeToken<ArrayList<StyleShortcut>>(){}.getType();
 
     public User() {
 
@@ -69,6 +75,15 @@ public class User {
      */
     public static List<KeyboardShortcut> convertKeyboardShortcutStringToObjects(String keyboardShortcuts) {
         return gson.fromJson(keyboardShortcuts, keyboardShortcutListType);
+    }
+
+    /**
+     * tool used for converting from JSON string to list of StyleShortcuts
+     * @param styleShortcuts JSON string to parse
+     * @return the list version of the JSON
+     */
+    public static List<StyleShortcut> convertStyleShortcutStringToObjects(String styleShortcuts) {
+        return gson.fromJson(styleShortcuts, styleShortcutListType);
     }
 
 }

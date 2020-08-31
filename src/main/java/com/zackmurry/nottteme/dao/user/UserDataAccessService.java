@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.dao.user;
 import com.google.gson.Gson;
 import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.StyleShortcut;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
-import javax.transaction.Transactional;
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -160,22 +159,22 @@ public class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut newKeyboardShortcut) {
+    public ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut updatedKeyboardShortcut) {
         List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
         if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         //finds shortcuts with matching name and sets it/them to the newKeyboardShortcut
         shortcuts = shortcuts.stream()
                 .map(keyboardShortcut -> {
-                    if(keyboardShortcut.getName().equals(shortcutName)) return newKeyboardShortcut;
+                    if(keyboardShortcut.getName().equals(shortcutName)) return updatedKeyboardShortcut;
                     return keyboardShortcut;
         }).collect(Collectors.toList());
         return setKeyboardShortcutsByName(username, shortcuts);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcut) {
-        String shortcutString = gson.toJson(updatedKeyboardShortcut);
+    public ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcuts) {
+        String shortcutString = gson.toJson(updatedKeyboardShortcuts);
         String sql = "UPDATE users SET shortcuts = ? WHERE username=?";
 
         try {
@@ -189,6 +188,75 @@ public class UserDataAccessService implements UserDao {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public List<StyleShortcut> getStyleShortcutsByUsername(String username) {
+        String sql = "SELECT style_shortcuts FROM users WHERE username=?";
+
+        try {
+            String styleShortcutString = jdbcTemplate.queryForString(
+                    sql,
+                    username
+            );
+            return User.convertStyleShortcutStringToObjects(styleShortcutString);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String attribute, String value) {
+        List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
+
+        //todo also check for the same keybinding
+        if(shortcuts.stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name))) {
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+        }
+        shortcuts.add(new StyleShortcut(name, key, attribute, value));
+        return setStyleShortcutsByName(username, shortcuts);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> setStyleShortcutsByName(String username, List<StyleShortcut> updatedStyleShortcuts) {
+        String shortcutString = gson.toJson(updatedStyleShortcuts);
+        String sql = "UPDATE users SET style_shortcuts = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    shortcutString,
+                    username
+            );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> deleteStyleShortcutByName(String username, String shortcutName) {
+        List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
+        if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        shortcuts = shortcuts.stream().filter(styleShortcut -> !styleShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
+        return setStyleShortcutsByName(username, shortcuts);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
+        List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
+        if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        //finds shortcuts with matching name and sets it/them to the newStyleShortcut
+        shortcuts = shortcuts.stream()
+                .map(styleShortcut -> {
+                    if(styleShortcut.getName().equals(shortcutName)) return updatedStyleShortcut;
+                    return styleShortcut;
+                }).collect(Collectors.toList());
+        return setStyleShortcutsByName(username, shortcuts);
     }
 
 

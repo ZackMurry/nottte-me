@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.services;
 import com.zackmurry.nottteme.dao.user.UserDao;
 import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.StyleShortcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,4 +50,19 @@ public class UserService {
         return userDao.updateKeyboardShortcutByName(username, shortcutName, updatedKeyboardShortcut);
     }
 
+    public List<StyleShortcut> getStyleShortcutsByUsername(String username) {
+        return userDao.getStyleShortcutsByUsername(username);
+    }
+
+    public ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String attribute, String value) {
+        return userDao.addStyleShortcut(username, name, key, attribute, value);
+    }
+
+    public ResponseEntity<HttpStatus> deleteStyleShortcutByName(String username, String shortcutName) {
+        return userDao.deleteStyleShortcutByName(username, shortcutName);
+    }
+
+    public ResponseEntity<HttpStatus> updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
+        return userDao.updateStyleShortcutByName(username, shortcutName, updatedStyleShortcut);
+    }
 }

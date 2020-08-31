@@ -31,6 +31,8 @@ export default function Note() {
     const jwt = Cookie.get('jwt')
     const [ editorState, setEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
     const [ shortcuts, setShortcuts] = useState([])
+    const [ styleShortcuts, setStyleShortcuts ] = useState([])
+    const [ styleMap, setStyleMap ] = useState({})
 
     if(!jwt) {
         console.log('Unauthenticated')
@@ -54,7 +56,6 @@ export default function Note() {
                 body: convertToRaw(newEditorState.getCurrentContent())
             })
         }
-
         const response = await fetch('http://localhost:8080/api/v1/notes/save', requestOptions)
     }, 1000), [])
 
@@ -85,13 +86,15 @@ export default function Note() {
         //special key binds that are assigned from the start
         //todo make it so that users cannot make keybinds that start with nottte-
         if(command === 'nottte-save') {
-            debounceSave(editorState)
+            debounceSave(editorState) //todo make this not a debounce
             return 'handled'
         }
         else if(command === 'nottte-tab') {
             insertTextAtCursor('\t')
             return 'handled'
-        }
+        } 
+
+        //text shortcuts
         for(var i = 0; i < shortcuts.length; i++) {
             let shortcut = shortcuts[i]
             if(shortcut.name == command) {
@@ -117,6 +120,18 @@ export default function Note() {
                 return 'handled'
             }
         }
+
+        //style shortcuts
+        for(var i = 0; i < styleShortcuts.length; i++) {
+            let shortcut = styleShortcuts[i]
+            if(shortcut.name == command) {
+                //calling on change because it waits for the new editor state to update first
+                //else it would save the old editor state
+                onChange(RichUtils.toggleInlineStyle(editorState, shortcut.name))
+                return 'handled'
+            }
+        }
+
         const newState = RichUtils.handleKeyCommand(editorState, command)
         if (newState) {
           onChange(newState)
@@ -126,12 +141,8 @@ export default function Note() {
     }
 
     const onChange = async (newEditorState) => {
-        const oldContent = editorState.getCurrentContent()
-        const newContent = newEditorState.getCurrentContent()
         await setEditorState(newEditorState)
-        if(oldContent != newContent) {
-            debounceSave(newEditorState)
-        }
+        debounceSave(newEditorState)
     }
     
     const getFromServer = async () => {
@@ -171,9 +182,33 @@ export default function Note() {
         //todo
         if(shortcutResponse.status === 401) return;
         if(shortcutResponse.status === 404) return;
-        if(shortcutResponse.stats === 403) return;
+        if(shortcutResponse.status === 403) return;
         setShortcuts(JSON.parse(shortcutText))
 
+        //getting style shortcuts
+
+        const styleShortcutResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style', requestOptions)
+        const styleShortcutText = await styleShortcutResponse.text()
+
+        if(styleShortcutResponse.status === 401) return;
+        if(styleShortcutResponse.status === 403) return;
+        if(styleShortcutResponse.status === 404) return;
+        
+        await setStyleShortcuts(JSON.parse(styleShortcutText))
+        for(var i = 0; i < styleShortcuts.length; i++) {
+            let styleShortcut = styleShortcuts[i]
+            let name = styleShortcut.name, attribute = styleShortcut.attribute, value = styleShortcut.value
+            
+            //updating styleMap object with new info
+            await setStyleMap(
+                {
+                    ...styleMap,
+                    [name]: {
+                        [attribute]: value
+                    }
+                }
+            )
+        }
     }
     
     //e is a SyntheticKeyboardEvent. imagine being weakly typed
@@ -187,6 +222,7 @@ export default function Note() {
         if(!hasCommandModifier(e)) {
             return getDefaultKeyBinding(e);
         }
+
 
         //todo prevent users from making CTRL + S shortcuts
         //saving note with shortcut
@@ -203,10 +239,18 @@ export default function Note() {
                 return shortcut.name
             }
         }
+        for(var i = 0; i < styleShortcuts.length; i++) {
+            let shortcut = styleShortcuts[i]
+            if(e.key == shortcut.key) {
+                console.log('ran: ' + shortcut.name)
+                e.preventDefault()
+                return shortcut.name
+            }
+        }
 
         return getDefaultKeyBinding(e)
     }
-
+    
     return (
         <div>
             <Head>
@@ -220,6 +264,7 @@ export default function Note() {
                 handleKeyCommand={handleKeyCommand}
                 onChange={onChange}
                 keyBindingFn={keyBindingFn}
+                customStyleMap={styleMap}
             />
         </div>
         
