@@ -2,7 +2,7 @@ package com.zackmurry.nottteme.dao.user;
 
 import com.google.gson.Gson;
 import com.zackmurry.nottteme.entities.User;
-import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.TextShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +75,7 @@ public class UserDataAccessService implements UserDao {
                     sql,
                     resultSet -> new User(
                             resultSet.getString(1), //username
-                            resultSet.getString(2), //password
-                            resultSet.getString(3) //shortcuts
+                            resultSet.getString(2) //password
                             ),
                     username
             );
@@ -88,15 +87,15 @@ public class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public List<KeyboardShortcut> getKeyboardShortcutsByUsername(String username) {
-        String sql = "SELECT shortcuts FROM users WHERE username=?";
+    public List<TextShortcut> getTextShortcutsByUsername(String username) {
+        String sql = "SELECT text_shortcuts FROM users WHERE username=?";
 
         try {
             String shortcutString = jdbcTemplate.queryForString(
                     sql,
                     username
             );
-            return User.convertKeyboardShortcutStringToObjects(shortcutString);
+            return User.convertTextShortcutStringToObjects(shortcutString);
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -104,16 +103,16 @@ public class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(String username) {
-        String sql = "SELECT shortcuts FROM users WHERE username=?";
+    public List<TextShortcut> getTextShortcutsByUsernameOrderedByName(String username) {
+        String sql = "SELECT text_shortcuts FROM users WHERE username=?";
 
         try {
             String shortcutString = jdbcTemplate.queryForString(
                     sql,
                     username
             );
-            List<KeyboardShortcut> shortcuts = User.convertKeyboardShortcutStringToObjects(shortcutString);
-            shortcuts.sort(Comparator.comparing(KeyboardShortcut::getName)); //taking list and sorting it by the name attribute of KeyboardShortcut
+            List<TextShortcut> shortcuts = User.convertTextShortcutStringToObjects(shortcutString);
+            shortcuts.sort(Comparator.comparing(TextShortcut::getName)); //taking list and sorting it by the name attribute of KeyboardShortcut
             return shortcuts;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,15 +130,15 @@ public class UserDataAccessService implements UserDao {
      * @return http response describing success/fail
      */
     @Override
-    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, String key) {
-        List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
+    public ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String key) {
+        List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
 
         //todo also check for the same keybinding
         if(shortcuts.stream().anyMatch(keyboardShortcut -> keyboardShortcut.getName().equals(name))) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         }
-        shortcuts.add(new KeyboardShortcut(name, text, key));
-        return setKeyboardShortcutsByName(username, shortcuts);
+        shortcuts.add(new TextShortcut(name, text, key));
+        return setTextShortcutsByName(username, shortcuts);
     }
 
 
@@ -151,31 +150,31 @@ public class UserDataAccessService implements UserDao {
      * @return an http response of whether it worked out not and where it failed
      */
     @Override
-    public ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName) {
-        List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
+    public ResponseEntity<HttpStatus> deleteTextShortcutByName(String username, String shortcutName) {
+        List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
         if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         shortcuts = shortcuts.stream().filter(keyboardShortcut -> !keyboardShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
-        return setKeyboardShortcutsByName(username, shortcuts);
+        return setTextShortcutsByName(username, shortcuts);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut updatedKeyboardShortcut) {
-        List<KeyboardShortcut> shortcuts = getKeyboardShortcutsByUsername(username);
+    public ResponseEntity<HttpStatus> updateTextShortcutByName(String username, String shortcutName, TextShortcut updatedTextShortcut) {
+        List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
         if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         //finds shortcuts with matching name and sets it/them to the newKeyboardShortcut
         shortcuts = shortcuts.stream()
-                .map(keyboardShortcut -> {
-                    if(keyboardShortcut.getName().equals(shortcutName)) return updatedKeyboardShortcut;
-                    return keyboardShortcut;
+                .map(textShortcut -> {
+                    if(textShortcut.getName().equals(shortcutName)) return updatedTextShortcut;
+                    return textShortcut;
         }).collect(Collectors.toList());
-        return setKeyboardShortcutsByName(username, shortcuts);
+        return setTextShortcutsByName(username, shortcuts);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcuts) {
-        String shortcutString = gson.toJson(updatedKeyboardShortcuts);
-        String sql = "UPDATE users SET shortcuts = ? WHERE username=?";
+    public ResponseEntity<HttpStatus> setTextShortcutsByName(String username, List<TextShortcut> updatedTextShortcuts) {
+        String shortcutString = gson.toJson(updatedTextShortcuts);
+        String sql = "UPDATE users SET text_shortcuts = ? WHERE username=?";
 
         try {
             jdbcTemplate.execute(

@@ -1,7 +1,7 @@
 package com.zackmurry.nottteme.dao.user;
 
 import com.zackmurry.nottteme.entities.User;
-import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.TextShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +17,17 @@ public interface UserDao {
 
     Optional<User> getUserByUsername(String username);
 
-    List<KeyboardShortcut> getKeyboardShortcutsByUsername(String username);
+    List<TextShortcut> getTextShortcutsByUsername(String username);
 
-    List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(String username);
+    List<TextShortcut> getTextShortcutsByUsernameOrderedByName(String username);
 
-    ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, String keyCode);
+    ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String keyCode);
 
-    ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName);
+    ResponseEntity<HttpStatus> deleteTextShortcutByName(String username, String shortcutName);
 
-    ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut newKeyboardShortcut);
+    ResponseEntity<HttpStatus> updateTextShortcutByName(String username, String shortcutName, TextShortcut newTextShortcut);
 
-    ResponseEntity<HttpStatus> setKeyboardShortcutsByName(String username, List<KeyboardShortcut> updatedKeyboardShortcuts);
+    ResponseEntity<HttpStatus> setTextShortcutsByName(String username, List<TextShortcut> updatedTextShortcuts);
 
 
     List<StyleShortcut> getStyleShortcutsByUsername(String username);

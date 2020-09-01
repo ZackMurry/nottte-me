@@ -1,16 +1,13 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.entities.User;
-import com.zackmurry.nottteme.models.KeyboardShortcut;
 import com.zackmurry.nottteme.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 //todo might want to only show a preview of the notes on the notes page for performance reasons (don't load full text)

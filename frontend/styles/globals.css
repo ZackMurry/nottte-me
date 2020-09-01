@@ -34,7 +34,6 @@ div.DraftEditor-root {
     overflow: visible;
     padding: 1.5vh 1.5vw;
     font-size: 24px;
-    color: black;
 }
 
 textarea:focus, input:focus {

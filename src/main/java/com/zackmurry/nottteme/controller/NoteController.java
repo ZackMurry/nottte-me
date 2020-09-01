@@ -1,6 +1,5 @@
 package com.zackmurry.nottteme.controller;
 
-import com.google.gson.Gson;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.CreateNoteRequest;
 import com.zackmurry.nottteme.models.CreateNoteWithBodyRequest;
@@ -35,6 +34,11 @@ public class NoteController {
     @PatchMapping("/save")
     public ResponseEntity<HttpStatus> save(@RequestBody String request) {
         String title;
+
+        //todo remove once i sort out authorization
+        if(SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
         //grabbing title from request and then substringing to the body part to keep that in the database
         //todo probably mad vulnerabilities in this

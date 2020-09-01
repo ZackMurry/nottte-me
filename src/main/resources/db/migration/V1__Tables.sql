@@ -1,7 +1,8 @@
+--todo separate shortcuts into another table
 CREATE TABLE users (
     username VARCHAR(32) NOT NULL PRIMARY KEY,
     password VARCHAR(64) NOT NULL,
-    shortcuts TEXT DEFAULT '[]',
+    text_shortcuts TEXT DEFAULT '[]',
     style_shortcuts TEXT DEFAULT '[]'
 --    maybe change password to 60 bc bcrypt produces 60 char long outputs
 );

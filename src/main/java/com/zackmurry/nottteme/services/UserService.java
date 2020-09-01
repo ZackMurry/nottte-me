@@ -2,7 +2,7 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.user.UserDao;
 import com.zackmurry.nottteme.entities.User;
-import com.zackmurry.nottteme.models.KeyboardShortcut;
+import com.zackmurry.nottteme.models.TextShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,24 +30,24 @@ public class UserService {
         return userDao.getUserByUsername(username);
     }
 
-    public ResponseEntity<HttpStatus> addKeyboardShortcut(String username, String name, String text, String key) {
-        return userDao.addKeyboardShortcut(username, name, text, key);
+    public ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String key) {
+        return userDao.addTextShortcut(username, name, text, key);
     }
 
-    public List<KeyboardShortcut> getKeyboardShortcutsByUsername(String username) {
-        return userDao.getKeyboardShortcutsByUsername(username);
+    public List<TextShortcut> getTextShortcutsByUsername(String username) {
+        return userDao.getTextShortcutsByUsername(username);
     }
 
-    public List<KeyboardShortcut> getKeyboardShortcutsByUsernameOrderedByName(String username) {
-        return userDao.getKeyboardShortcutsByUsernameOrderedByName(username);
+    public List<TextShortcut> getTextShortcutsByUsernameOrderedByName(String username) {
+        return userDao.getTextShortcutsByUsernameOrderedByName(username);
     }
 
-    public ResponseEntity<HttpStatus> deleteKeyboardShortcutByName(String username, String shortcutName) {
-        return userDao.deleteKeyboardShortcutByName(username, shortcutName);
+    public ResponseEntity<HttpStatus> deleteTextShortcutByName(String username, String shortcutName) {
+        return userDao.deleteTextShortcutByName(username, shortcutName);
     }
 
-    public ResponseEntity<HttpStatus> updateKeyboardShortcutByName(String username, String shortcutName, KeyboardShortcut updatedKeyboardShortcut) {
-        return userDao.updateKeyboardShortcutByName(username, shortcutName, updatedKeyboardShortcut);
+    public ResponseEntity<HttpStatus> updateTextShortcutByName(String username, String shortcutName, TextShortcut updatedTextShortcut) {
+        return userDao.updateTextShortcutByName(username, shortcutName, updatedTextShortcut);
     }
 
     public List<StyleShortcut> getStyleShortcutsByUsername(String username) {
