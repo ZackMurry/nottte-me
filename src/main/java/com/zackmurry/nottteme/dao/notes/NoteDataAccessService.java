@@ -5,14 +5,15 @@ import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * used for accessing and updating data about notes
+ */
 @Service
 public class NoteDataAccessService implements NoteDao {
 

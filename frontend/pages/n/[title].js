@@ -4,7 +4,7 @@ import { Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Cookie from 'js-cookie'
 import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
-import { debounce, sortedUniq } from 'lodash'
+import { debounce } from 'lodash'
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
@@ -34,17 +34,17 @@ function Note() {
     const [ styleShortcuts, setStyleShortcuts ] = useState([])
     const [ styleMap, setStyleMap ] = useState({})
 
-    if(!jwt) {
-        console.log('Unauthenticated')
-    }
-
     useEffect(() => {
         if(title) {
             getFromServer()
         }
+        if(!jwt) {
+            console.log('Unauthenticated')
+            router.push('/login')
+        }
     }, [ title ])
 
-    //saves once user stops typing for one second. todo probly need to save less often
+    //saves once user stops typing for 1.5 seconds. todo probly need to save less often (especially with selections counting as saves because of style saving)
     const debounceSave = useCallback(debounce(async (newEditorState) => {
         console.log('saving...')
         if(!jwt || !title) {
@@ -186,8 +186,6 @@ function Note() {
         }
         await setStyleMap(newStyleMap)
 
-        
-
         //getting editor state
 
         const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + encodeURI(title) + '/raw', requestOptions)
@@ -266,7 +264,7 @@ function Note() {
     return (
         <div>
             <Head>
-                <title>{title ? title : ''} | nottte.me</title>
+                <title>{title ? title + ' | ' : ''}nottte.me</title>
             </Head>
             <Typography variant='h1' color='primary'>
                 {title}
@@ -276,7 +274,8 @@ function Note() {
                 handleKeyCommand={handleKeyCommand}
                 onChange={onChange}
                 keyBindingFn={keyBindingFn}
-                customStyleMap={styleMap /* might want to do something like `styleMap !== {} ? styleMap : {}`, but this seems to work */}
+                customStyleMap={styleMap}
+                editorKey='editor' //this fixes a 'props did not match' error
             />
         </div>
         

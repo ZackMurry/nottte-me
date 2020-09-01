@@ -1,6 +1,5 @@
 package com.zackmurry.nottteme.dao.notes;
 
-import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
