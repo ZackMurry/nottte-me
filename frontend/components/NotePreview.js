@@ -5,7 +5,7 @@ export default function NotePreview({ name }) {
 
 
     return (
-        <div style={{margin: 0}}>
+        <div style={{margin: 0, cursor: 'pointer'}}>
             <Card>
                 <CardContent>
                     <div style={{backgroundColor: '#2d323e', width: '100%', height: '25vh', borderRadius: 10, margin: 0, padding: 0, display: 'flex'}}>
@@ -17,7 +17,7 @@ export default function NotePreview({ name }) {
                     </div>
                 </CardContent>
                 <CardActions>
-                    <Typography variant='h4'>{ name }</Typography>
+                    <Typography variant='h4' style={{marginLeft: 10}}>{ name }</Typography>
                 </CardActions>
                 
             </Card>

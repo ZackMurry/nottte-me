@@ -13,7 +13,7 @@ const emptyContentState = convertFromRaw({
     blocks: [
       {
         text: '',
-        key: 'foo',
+        key: 'nottte',
         type: 'unstyled',
         entityRanges: [],
       },
@@ -201,6 +201,7 @@ function Note() {
         if(editorResponse === '') {
             setEditorState(EditorState.createEmpty())
         } else {
+            console.log(editorText)
             const parsedText = JSON.parse(editorText)
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)

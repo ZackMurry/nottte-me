@@ -3,6 +3,7 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import theme from '../components/theme';
 
+
 export default class MyDocument extends Document {
   render() {
     return (
@@ -17,7 +18,7 @@ export default class MyDocument extends Document {
           <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" as='Fjalla One' />
         </Head>
         <body>
-          <Main />
+            <Main />
           <NextScript />
         </body>
       </Html>

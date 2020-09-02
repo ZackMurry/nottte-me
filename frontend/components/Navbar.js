@@ -2,6 +2,7 @@ import React from 'react'
 import { Typography } from '@material-ui/core'
 import Link from 'next/link'
 
+//todo have account if user is logged in
 export default function Navbar() {
 
     return (
@@ -14,10 +15,9 @@ export default function Navbar() {
                 </Link>
             </div>
             <div style={{display: 'flex', width: '80%', alignSelf: 'flex-end', justifyContent: 'flex-end'}}>
-                {/* todo probably replace home with something better*/}
-                <Link href="/">
+                <Link href="/notes">
                     <Typography color='primary' style={{fontSize: 36, fontWeight: 100, marginRight: '3vw', cursor: 'pointer'}}>
-                        home
+                        notes
                     </Typography>
                 </Link>
                 <Link href="/about">

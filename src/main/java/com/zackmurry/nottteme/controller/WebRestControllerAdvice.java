@@ -4,12 +4,11 @@ import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -88,10 +87,13 @@ public class WebRestControllerAdvice {
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public String handleIOException(IOException exception) {
+        System.out.println("io");
         if (ExceptionUtils.getRootCauseMessage(exception).toUpperCase().contains("BROKEN PIPE")) {
             //this means that the socket is closed, so we can't return a response
+            System.out.println(ExceptionUtils.getRootCauseMessage(exception));
             return null;
         } else {
+            exception.printStackTrace();
             return exception.getMessage();
         }
     }
