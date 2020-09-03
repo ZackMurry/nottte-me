@@ -21,16 +21,16 @@ public class UserController {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUserAccount(@RequestBody User user) {
-        if(user.getPassword() == null) return new ResponseEntity<HttpStatus>(HttpStatus.LENGTH_REQUIRED);
-        if(user.getPassword().length() > 40) return new ResponseEntity<HttpStatus>(HttpStatus.LENGTH_REQUIRED); //bcrypt has a length limit
+    public ResponseEntity<HttpStatus> createUserAccount(@RequestBody User user) {
+        if(user.getPassword() == null) return new ResponseEntity<>(HttpStatus.LENGTH_REQUIRED);
+        if(user.getPassword().length() > 40) return new ResponseEntity<>(HttpStatus.LENGTH_REQUIRED); //bcrypt has a length limit
         //encoding password so that it's never stored in plain text
         //encoder automatically salts it
         String encodedPassword = encoder.encode(user.getPassword());
 
         boolean create = userService.createUserAccount(user.getUsername(), encodedPassword);
-        if(create) return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-        else return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
+        if(create) return new ResponseEntity<>(HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/exists/{username}")

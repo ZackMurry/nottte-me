@@ -1,7 +1,10 @@
 package com.zackmurry.nottteme.dao.notes;
 
+import com.zackmurry.nottteme.models.Note;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 public interface NoteDao {
 
@@ -16,5 +19,7 @@ public interface NoteDao {
     boolean userHasNote(String title, String username);
 
     String getRawNote(String title, String author);
+
+    List<Note> getNotesByUser(String username);
 
 }

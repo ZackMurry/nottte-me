@@ -1,14 +1,37 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import NotePreview from '../../components/NotePreview'
 import { Grid, Paper, withStyles, IconButton } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
+import Cookie from 'js-cookie'
+import { useRouter, withRouter } from 'next/router';
 
 //todo display user's actual notes
-export default function Notes() {
+function Notes() {
+
+    const router = useRouter()
 
     const [ menuOpen, setMenuOpen ] = useState(false)
+    const [ notes, setNotes ] = useState([])
+
+    const jwt = Cookie.get('jwt')
+
+    useEffect(() => { 
+        if(!jwt) {
+            router.push('/login') //todo redirect back to /notes after login
+        } else {
+            getNotesFromServer()
+        }
+    }, [ jwt ])
+
+    const getNotesFromServer = async () => {
+        const response = await fetch('http://localhost:8080/api/v1/notes/principal/notes', {
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        })
+        const text = await response.text()
+        setNotes(JSON.parse(text))
+    }
 
     const handleCreateClick = () => {
         setMenuOpen(!menuOpen)
@@ -25,12 +48,13 @@ export default function Notes() {
                     {/* notes */}
                     <div style={{margin: 0}}>
                         <Grid container spacing={3} style={{margin: 0, width: '100%'}}>
-                            <Grid item xs={3}>
-                                <NotePreview name='Note name' />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <NotePreview name='Another note name' />
-                            </Grid>
+                            {
+                                notes.map(note => (
+                                    <Grid item xs={3} key={note.id}>
+                                        <NotePreview name={note.title} editorState={note.body} />
+                                    </Grid>
+                                ))
+                            }
                         </Grid>
                     </div>
                 </div>
@@ -49,3 +73,5 @@ export default function Notes() {
     )
 
 }
+
+export default withRouter(Notes)

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,7 +83,6 @@ public class NoteDataAccessService implements NoteDao {
     @Override
     public ResponseEntity<HttpStatus> createNote(String title, String body, String author) {
         String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
-        System.out.println("title: " + title + ", body: " + body + ", author: " + author);
         try {
             jdbcTemplate.execute(
                     sql,
@@ -162,6 +162,27 @@ public class NoteDataAccessService implements NoteDao {
             return "";
         }
 
+    }
+
+    @Override
+    public List<Note> getNotesByUser(String username) {
+        String sql = "SELECT * FROM notes WHERE author=?";
+
+        try {
+            return jdbcTemplate.query(
+                    sql,
+                    resultSet -> new Note(
+                            resultSet.getLong(1),
+                            resultSet.getString(2),
+                            resultSet.getString(3),
+                            resultSet.getString(4)
+                    ),
+                    username
+            );
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 

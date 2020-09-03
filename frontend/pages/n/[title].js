@@ -29,6 +29,7 @@ function Note() {
     const router = useRouter()
     const { title } = router.query
     const jwt = Cookie.get('jwt')
+
     const [ editorState, setEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
     const [ textShortcuts, setTextShortcuts] = useState([])
     const [ styleShortcuts, setStyleShortcuts ] = useState([])

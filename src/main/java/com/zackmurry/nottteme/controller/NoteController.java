@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.controller;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.CreateNoteRequest;
 import com.zackmurry.nottteme.models.CreateNoteWithBodyRequest;
+import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.services.NoteService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * rest controller for notes
+ * todo deleting notes
  */
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/notes")
@@ -103,6 +106,13 @@ public class NoteController {
 
         //since the user has the note they're requesting, return it
         return noteService.getRawNote(title, username);
+    }
+
+    @GetMapping("/principal/notes")
+    public List<Note> getNotesFromPrincipal() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return noteService.getNotesByUser(username);
+
     }
 
 
