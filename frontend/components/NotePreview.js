@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Paper, Typography, Card, CardContent, CardActions } from '@material-ui/core'
+import { useRouter, withRouter } from 'next/router'
 import { EditorState, convertFromRaw } from 'draft-js'
 
 export default function NotePreview({ name, editorState }) {
 
     const [ rawText, setRawText] = useState('')
+    const router = useRouter()
 
     useEffect(() => {
         if(editorState) {
@@ -19,8 +21,12 @@ export default function NotePreview({ name, editorState }) {
         }
     }, [ editorState ])
 
+    const goToNotePage = () => {
+        router.push('/n/' + encodeURI(name))
+    }
+
     return (
-        <div style={{margin: 0, cursor: 'pointer'}}>
+        <div style={{margin: 0, cursor: 'pointer'}} onClick={() => goToNotePage()}>
             <Card>
                 <CardContent>
                     <div style={{backgroundColor: '#2d323e', width: '100%', height: '25vh', borderRadius: 10, margin: 0, padding: 0, display: 'flex'}}>

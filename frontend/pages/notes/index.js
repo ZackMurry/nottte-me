@@ -50,7 +50,7 @@ function Notes() {
                         <Grid container spacing={3} style={{margin: 0, width: '100%'}}>
                             {
                                 notes.map(note => (
-                                    <Grid item xs={3} key={note.id}>
+                                    <Grid item xs={12} sm={6} md={4} lg={3} key={note.id}>
                                         <NotePreview name={note.title} editorState={note.body} />
                                     </Grid>
                                 ))

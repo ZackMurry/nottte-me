@@ -10,7 +10,6 @@ function CreateNoteMenu({ open }) {
     const jwt = Cookie.get('jwt')
 
     const router = useRouter()
-    const { pageTitle } = router.query
 
 
     const handleKeyDown = (e) => {
