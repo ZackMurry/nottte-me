@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import NotePreview from '../../components/NotePreview'
-import { Grid, Paper, withStyles, IconButton } from '@material-ui/core'
+import { Grid, Paper, withStyles, IconButton, Typography } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
@@ -54,6 +54,18 @@ function Notes() {
                                         <NotePreview name={note.title} editorState={note.body} />
                                     </Grid>
                                 ))
+                                
+                            }
+
+                            {
+                                notes.length <= 0 && (
+                                    <div style={{margin: '15% auto'}}>
+                                        <Typography variant='h4'>
+                                            You don't have any notes!
+                                            Click the button in the bottom right to make some.
+                                        </Typography>
+                                    </div>
+                                )    
                             }
                         </Grid>
                     </div>
