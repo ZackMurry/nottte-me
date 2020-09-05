@@ -34,6 +34,13 @@ function Note() {
     const [ textShortcuts, setTextShortcuts] = useState([])
     const [ styleShortcuts, setStyleShortcuts ] = useState([])
     const [ styleMap, setStyleMap ] = useState({})
+    // right click override
+    // const handleContext = (event) => {
+    //     event.preventDefault();
+    //     const xPos = event.pageX + "px";
+    //     const yPos = event.pageY + "px";
+    //     console.log('right click: ' + xPos + ', ' + yPos)
+    // }  
 
     useEffect(() => {
         if(title) {
@@ -43,6 +50,14 @@ function Note() {
             console.log('Unauthenticated')
             router.push('/login')
         }
+
+        // for when i add custom right click. too early on to do that right now, though
+        // document.addEventListener("contextmenu", handleContext);
+
+        // return () => {
+        //     document.removeEventListener('contextmenu', handleContext)
+        // }
+
     }, [ title ])
 
     //saves once user stops typing for 1.5 seconds. todo probly need to save less often (especially with selections counting as saves because of style saving)
@@ -211,7 +226,7 @@ function Note() {
 
         //getting shortcuts
 
-        const textShortcutResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts', requestOptions)
+        const textShortcutResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/text', requestOptions)
         const textShortcutText = await textShortcutResponse.text()
 
         //todo
@@ -262,6 +277,7 @@ function Note() {
 
         return getDefaultKeyBinding(e)
     }
+
     
     return (
         <div>

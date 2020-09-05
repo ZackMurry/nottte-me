@@ -19,6 +19,9 @@ const theme = createMuiTheme({
     background: {
         default: '#2d323e',
     },
+    action: {
+        disabled: '#2d323e'
+    },
   }
 });
 

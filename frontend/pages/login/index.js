@@ -2,9 +2,12 @@ import React, { useState } from 'react'
 import Cookie from 'js-cookie'
 import Navbar from '../../components/Navbar'
 import { Paper, Typography, Button } from '@material-ui/core'
+import { useRouter, withRouter } from 'next/router'
 
-export default function index() {
+function Login() {
     
+    const router = useRouter()
+
     const [ username, setUsername ] = useState('')
     const [ password, setPassword ] = useState('')
 
@@ -19,9 +22,15 @@ export default function index() {
                 password: password
             })
         }
-        const text = await (await fetch('http://localhost:8080/api/v1/jwt/authenticate', requestOptions)).text()
+        const response = await fetch('http://localhost:8080/api/v1/jwt/authenticate', requestOptions)
+        const text = await response.text()
         console.log('jwt: ' + text)
         Cookie.set('jwt', JSON.parse(text).jwt)
+
+        if(response.status == 200) {
+            router.push('/notes')
+        }
+
     }
 
     //after the username field, you can press enter to go to the password field
@@ -84,3 +93,5 @@ export default function index() {
     )
 
 }
+
+export default withRouter(Login)

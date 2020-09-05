@@ -21,53 +21,53 @@ public class TextShortcutController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/user/{username}/preferences/shortcuts")
+    @PostMapping("/user/{username}/preferences/shortcuts/text")
     public ResponseEntity<HttpStatus> addTextShortcut(@PathVariable String username, @RequestBody TextShortcut textShortcut) {
         return userService.addTextShortcut(username, textShortcut.getName(), textShortcut.getText(), textShortcut.getKey());
     }
 
-    @PostMapping("/principal/preferences/shortcuts")
+    @PostMapping("/principal/preferences/shortcuts/text")
     public ResponseEntity<HttpStatus> addTextShortcutToPrincipal(@RequestBody TextShortcut textShortcut) {
         return userService.addTextShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), textShortcut.getName(), textShortcut.getText(), textShortcut.getKey());
     }
 
-    @GetMapping("/user/{username}/preferences/shortcuts")
+    @GetMapping("/user/{username}/preferences/shortcuts/text")
     public List<TextShortcut> getTextShortcutsByUsername(@PathVariable String username) {
         return userService.getTextShortcutsByUsername(username);
     }
 
-    @GetMapping("/principal/preferences/shortcuts")
+    @GetMapping("/principal/preferences/shortcuts/text")
     public List<TextShortcut> getTextShortcutsOfPrincipal() {
         return userService.getTextShortcutsByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     //not really sure if entirely necessary
-    @GetMapping("/user/{username}/preferences/shortcuts-sorted")
+    @GetMapping("/user/{username}/preferences/shortcuts/text-sorted")
     public List<TextShortcut> getTextShortcutsByUsernameOrderedByName(@PathVariable String username) {
         return userService.getTextShortcutsByUsernameOrderedByName(username);
     }
 
-    @GetMapping("/principal/preferences/shortcuts-sorted")
+    @GetMapping("/principal/preferences/shortcuts/text-sorted")
     public List<TextShortcut> getTextShortcutsOfPrincipalOrderedByName() {
         return userService.getTextShortcutsByUsernameOrderedByName(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    @DeleteMapping("/user/{username}/preferences/shortcuts/{shortcutName}")
+    @DeleteMapping("/user/{username}/preferences/shortcuts/text/{shortcutName}")
     public ResponseEntity<HttpStatus> deleteUserTextShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) {
         return userService.deleteTextShortcutByName(username, shortcutName);
     }
 
-    @DeleteMapping("/principal/preferences/shortcuts/{shortcutName}")
+    @DeleteMapping("/principal/preferences/shortcuts/text/{shortcutName}")
     public ResponseEntity<HttpStatus> deletePrincipalTextShortcutByName(@PathVariable("shortcutName") String shortcutName) {
         return userService.deleteTextShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName);
     }
 
-    @PatchMapping("/user/{username}/preferences/shortcuts/{shortcutName}")
+    @PatchMapping("/user/{username}/preferences/shortcuts/text/{shortcutName}")
     public ResponseEntity<HttpStatus> updateUserTextShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName, @RequestBody TextShortcut updatedTextShortcut) {
         return userService.updateTextShortcutByName(username, shortcutName, updatedTextShortcut);
     }
 
-    @PatchMapping("/principal/preferences/shortcuts/{shortcutName}")
+    @PatchMapping("/principal/preferences/shortcuts/text/{shortcutName}")
     public ResponseEntity<HttpStatus> updatePrincipalTextShortcutByName(@PathVariable("shortcutName") String shortcutName, @RequestBody TextShortcut updatedTextShortcut) {
         return userService.updateTextShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName, updatedTextShortcut);
     }
