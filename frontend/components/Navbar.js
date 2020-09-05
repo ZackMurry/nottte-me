@@ -1,9 +1,13 @@
 import React from 'react'
-import { Typography } from '@material-ui/core'
+import { Typography, IconButton } from '@material-ui/core'
 import Link from 'next/link'
+import Cookie from 'js-cookie'
 
 //todo have account if user is logged in
 export default function Navbar() {
+
+    const jwt = Cookie.get('jwt')
+
 
     return (
         <div style={{backgroundColor: '#2d323e', width: '100%', display: 'flex', position: 'fixed', top: 0, left: 0}}>
@@ -25,11 +29,26 @@ export default function Navbar() {
                         about
                     </Typography>
                 </Link>
-                <Link href="/login">
-                    <Typography color='primary' style={{marginRight: '7.5vw', fontSize: 36, fontWeight: 100, cursor: 'pointer'}}>
-                        login
-                    </Typography>
-                </Link>
+                {
+                    !jwt && (
+                        <Link href="/login">
+                            <Typography color='primary' style={{marginRight: '7.5vw', fontSize: 36, fontWeight: 100, cursor: 'pointer'}}>
+                                login
+                            </Typography>
+                        </Link>
+                    )
+                }
+                
+                {
+                    jwt && (
+                        <Link href="/account">
+                            <Typography color='primary' style={{marginRight: '7.5vw', fontSize: 36, fontWeight: 100, cursor: 'pointer'}}>
+                                account
+                            </Typography>
+                        </Link>
+                    )
+                }
+
             </div>
         </div>
     )
