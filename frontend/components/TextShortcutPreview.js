@@ -4,7 +4,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 
 
-//todo deleting and editing
+//todo deleting
 export default function TextShortcutPreview({ name, button, text, update, jwt }) {
 
     const [ editMode, setEditMode ] = useState(false)
@@ -13,6 +13,10 @@ export default function TextShortcutPreview({ name, button, text, update, jwt })
 
     const handleDone = async () => {
         setEditMode(false)
+
+        //checking if anything has been changed
+        if(editedKey == button && editedText == text) return
+        
         update(name, editedKey, editedText)
         
         //sending to server
@@ -70,6 +74,8 @@ export default function TextShortcutPreview({ name, button, text, update, jwt })
                                 style={{padding: 0, width: '100%'}}
                                 error={editedText.length <= 0 }
                                 helperText={editedText.length <= 0 ? 'the text should not be empty' : ''}
+                                rowsMax={10}
+                                multiline
                             />
                         </Grid>
                         <Grid item xs={12} lg={1}>

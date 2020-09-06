@@ -19,7 +19,7 @@ const nottteShortcuts = [
     }
 ]
 
-//todo style shortcuts
+//todo help page
 function Shortcuts() {
 
     const router = useRouter()
@@ -79,7 +79,7 @@ function Shortcuts() {
         return (array[middle].name != name) ? -1 : middle
     }
 
-    const updateTextShortcut = async (name, key, text) => {
+    const updateTextShortcut = (name, key, text) => {
         let index = binarySearchShortcuts(textShortcuts, name)
         let updatedTextShortcuts = textShortcuts.slice()
         updatedTextShortcuts.splice(index, 1, {
@@ -87,7 +87,19 @@ function Shortcuts() {
             key: key,
             text: text
         })
-        await setTextShortcuts(updatedTextShortcuts)
+        setTextShortcuts(updatedTextShortcuts)
+    }
+
+    const updateStyleShortcut = (name, key, attribute, value) => {
+        let index = binarySearchShortcuts(styleShortcuts, name)
+        let updatedStyleShortcuts = styleShortcuts.slice()
+        updatedStyleShortcuts.splice(index, 1, {
+            name: name,
+            key: key,
+            attribute: attribute,
+            value: value
+        })
+        setStyleShortcuts(updatedStyleShortcuts)
     }
 
     return (
@@ -236,7 +248,7 @@ function Shortcuts() {
                                         <Grid item xs={2}>
                                             <Typography variant='h6' style={{fontWeight: 700}} >shortcut</Typography>
                                         </Grid>
-                                        <Grid item xs={4}>
+                                        <Grid item xs={3}>
                                             <Typography variant='h6' style={{fontWeight: 700}} >attribute</Typography>
                                         </Grid>
                                         <Grid item xs={3}>
@@ -255,6 +267,8 @@ function Shortcuts() {
                                             button={styleShortcut.key} 
                                             attribute={styleShortcut.attribute} 
                                             value={styleShortcut.value} 
+                                            update={(name, key, attribute, value) => updateStyleShortcut(name, key, attribute, value)}
+                                            jwt={jwt}
                                         />
                                     </Grid>
                                 )
