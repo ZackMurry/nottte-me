@@ -2,8 +2,8 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.user.UserDao;
 import com.zackmurry.nottteme.entities.User;
-import com.zackmurry.nottteme.models.TextShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
+import com.zackmurry.nottteme.models.TextShortcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,5 +64,9 @@ public class UserService {
 
     public ResponseEntity<HttpStatus> updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
         return userDao.updateStyleShortcutByName(username, shortcutName, updatedStyleShortcut);
+    }
+
+    public List<StyleShortcut> getStyleShortcutsByUsernameOrderedByName(String username) {
+        return userDao.getStyleShortcutsByUsernameOrderedByName(username);
     }
 }

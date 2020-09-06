@@ -147,6 +147,7 @@ function Note() {
             if(shortcut.name == command) {
                 //calling on change because it waits for the new editor state to update first
                 //else it would save the old editor state
+                console.log('command: ' + shortcut.name)
                 setEditorState(RichUtils.toggleInlineStyle(editorState, shortcut.name))
                 return 'handled'
             }
@@ -165,6 +166,7 @@ function Note() {
         debounceSave(newEditorState)
     }
     
+    //todo only get editorstate from server on first load
     const getFromServer = async () => {
         if(!jwt) return; //todo prompt sign in or un-auth'd note
 
@@ -201,6 +203,7 @@ function Note() {
             }
         }
         await setStyleMap(newStyleMap)
+        console.log(styleMap)
 
         //getting editor state
 

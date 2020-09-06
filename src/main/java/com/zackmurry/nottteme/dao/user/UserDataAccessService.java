@@ -212,6 +212,7 @@ public class UserDataAccessService implements UserDao {
 
     }
 
+    //todo not allow two shortcuts with the same key (only one would get activated because of returning)
     @Override
     public ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String attribute, String value) {
         List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
@@ -262,6 +263,24 @@ public class UserDataAccessService implements UserDao {
                     return styleShortcut;
                 }).collect(Collectors.toList());
         return setStyleShortcutsByName(username, shortcuts);
+    }
+
+    @Override
+    public List<StyleShortcut> getStyleShortcutsByUsernameOrderedByName(String username) {
+        String sql = "SELECT style_shortcuts FROM users WHERE username=?";
+
+        try {
+            String shortcutString = jdbcTemplate.queryForString(
+                    sql,
+                    username
+            );
+            List<StyleShortcut> shortcuts = User.convertStyleShortcutStringToObjects(shortcutString);
+            shortcuts.sort(Comparator.comparing(StyleShortcut::getName)); //taking list and sorting it by the name attribute of KeyboardShortcut
+            return shortcuts;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 

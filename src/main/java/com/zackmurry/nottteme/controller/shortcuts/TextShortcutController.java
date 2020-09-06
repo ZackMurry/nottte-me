@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * rest controller for adding, getting, editing, and removing keyboard shortcuts (defined as shortcuts that insert text)
- * todo maybe rename keyboard shortcuts to text shortcuts
+ * rest controller for adding, getting, editing, and removing text shortcuts (defined as shortcuts that insert text)
  */
 @RestController
 @RequestMapping("/api/v1/users")
@@ -41,7 +40,6 @@ public class TextShortcutController {
         return userService.getTextShortcutsByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    //not really sure if entirely necessary
     @GetMapping("/user/{username}/preferences/shortcuts/text-sorted")
     public List<TextShortcut> getTextShortcutsByUsernameOrderedByName(@PathVariable String username) {
         return userService.getTextShortcutsByUsernameOrderedByName(username);

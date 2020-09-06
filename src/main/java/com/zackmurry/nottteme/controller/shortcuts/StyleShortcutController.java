@@ -32,22 +32,32 @@ public class StyleShortcutController {
     }
 
     @PostMapping("/user/{username}/preferences/shortcuts/style")
-    public ResponseEntity<HttpStatus> addKeyboardShortcut(@PathVariable String username, @RequestBody StyleShortcut styleShortcut) {
+    public ResponseEntity<HttpStatus> addStyleShortcut(@PathVariable String username, @RequestBody StyleShortcut styleShortcut) {
         return userService.addStyleShortcut(username, styleShortcut.getName(), styleShortcut.getKey(), styleShortcut.getAttribute(), styleShortcut.getValue());
     }
 
     @PostMapping("/principal/preferences/shortcuts/style")
-    public ResponseEntity<HttpStatus> addKeyboardShortcutToPrincipal(@RequestBody StyleShortcut styleShortcut) {
+    public ResponseEntity<HttpStatus> addStyleShortcutToPrincipal(@RequestBody StyleShortcut styleShortcut) {
         return userService.addStyleShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), styleShortcut.getName(), styleShortcut.getKey(), styleShortcut.getAttribute(), styleShortcut.getValue());
     }
 
+    @GetMapping("/user/{username}/preferences/shortcuts/style-sorted")
+    public List<StyleShortcut> getStyleShortcutsByUsernameOrderedByName(@PathVariable String username) {
+        return userService.getStyleShortcutsByUsernameOrderedByName(username);
+    }
+
+    @GetMapping("/principal/preferences/shortcuts/style-sorted")
+    public List<StyleShortcut> getStyleShortcutsOfPrincipalOrderedByName() {
+        return userService.getStyleShortcutsByUsernameOrderedByName(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
     @DeleteMapping("/user/{username}/preferences/shortcuts/style/{shortcutName}")
-    public ResponseEntity<HttpStatus> deleteUserKeyboardShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) {
+    public ResponseEntity<HttpStatus> deleteUserStyleShortcutByName(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) {
         return userService.deleteStyleShortcutByName(username, shortcutName);
     }
 
     @DeleteMapping("/principal/preferences/shortcuts/style/{shortcutName}")
-    public ResponseEntity<HttpStatus> deletePrincipalKeyboardShortcutByName(@PathVariable("shortcutName") String shortcutName) {
+    public ResponseEntity<HttpStatus> deletePrincipalStyleShortcutByName(@PathVariable("shortcutName") String shortcutName) {
         return userService.deleteStyleShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName);
     }
 
@@ -57,7 +67,7 @@ public class StyleShortcutController {
     }
 
     @PatchMapping("/principal/preferences/shortcuts/style/{shortcutName}")
-    public ResponseEntity<HttpStatus> updatePrincipalKeyboardShortcutByName(@PathVariable("shortcutName") String shortcutName, @RequestBody StyleShortcut updatedStyleShortcut) {
+    public ResponseEntity<HttpStatus> updatePrincipalStyleShortcutByName(@PathVariable("shortcutName") String shortcutName, @RequestBody StyleShortcut updatedStyleShortcut) {
         return userService.updateStyleShortcutByName(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName, updatedStyleShortcut);
     }
 

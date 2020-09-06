@@ -5,7 +5,7 @@ public class StyleShortcut implements Shortcut {
     private String name;
     private String key;
     private String attribute; //css attribute
-    private String value; //text-decoration, or todo css
+    private String value; //css value
 
     public StyleShortcut() {
 

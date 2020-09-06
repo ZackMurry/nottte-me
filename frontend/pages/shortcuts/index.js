@@ -7,6 +7,8 @@ import CreateTextShortcut from '../../components/CreateTextShortcut'
 import Cookie from 'js-cookie'
 import { useRouter, withRouter } from 'next/router'
 import NottteShortcutDisplay from '../../components/NottteShortcutDisplay'
+import StyleShortcutEditor from '../../components/StyleShortcutEditor'
+import CreateStyleShortcut from '../../components/CreateStyleShortcut'
 
 //default text shortcuts
 const nottteShortcuts = [
@@ -23,7 +25,9 @@ function Shortcuts() {
     const router = useRouter()
 
     const [ jwt, setJwt ] = useState(Cookie.get('jwt'))
+
     const [ textShortcuts, setTextShortcuts ] = useState([])
+    const [ styleShortcuts, setStyleShortcuts ] = useState([])
 
     useEffect(() => {
         if(jwt) {
@@ -36,17 +40,21 @@ function Shortcuts() {
 
     const getShortcuts = async () => {
 
-        //getting text shortcuts
         const requestOptions = {
-            method: 'GET',
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
         }
 
-        const response = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/text', requestOptions)
-        console.log(response.status)
-        const text = await response.text()
-        await setTextShortcuts(JSON.parse(text))
-        console.log(textShortcuts)
+        //todo check for bad response codes
+
+        //getting text shortcuts
+        const textResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/text-sorted', requestOptions)
+        const textText = await textResponse.text()
+        setTextShortcuts(JSON.parse(textText))
+
+        //getting style shortcuts
+        const styleResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style-sorted', requestOptions)
+        const styleText = await styleResponse.text()
+        setStyleShortcuts(JSON.parse(styleText))
     }
 
 
@@ -98,7 +106,7 @@ function Shortcuts() {
                     {
                         textShortcuts.length == 0 && (
                             <Typography variant='h6' style={{textAlign: 'center', fontWeight: 300, marginBottom: '3vh'}}>
-                                You don't have any shortcuts. You should make some!
+                                You don't have any text shortcuts. You should make some!
                             </Typography>
                         )
                     }
@@ -127,7 +135,12 @@ function Shortcuts() {
                             textShortcuts && textShortcuts.map(textShortcut => {
                                 return (
                                     <Grid item xs={12} key={textShortcut.name}>
-                                        <TextShortcutEditor name={textShortcut.name} button={textShortcut.key} text={textShortcut.text} key={textShortcut.name}/>
+                                        <TextShortcutEditor 
+                                            name={textShortcut.name} 
+                                            button={textShortcut.key} 
+                                            text={textShortcut.text} 
+                                            key={textShortcut.name}
+                                        />
                                     </Grid>
                                 )
                             })
@@ -143,8 +156,90 @@ function Shortcuts() {
                         </Grid>
                     </Grid>
                     
+                    {/* style shortcuts */}
+                    <Typography 
+                        variant='h4' 
+                        style={{
+                            textAlign: 'center', 
+                            marginBottom: '3.5vh', 
+                            marginTop: '2.5vh', 
+                            fontWeight: 300}}
+                        >
+                        Style shortcuts
+                    </Typography>
+                    <Typography 
+                        variant='h6' 
+                        style={{
+                            padding: 0, 
+                            fontWeight: 100, 
+                            textAlign: 'center', 
+                            width: '80%', 
+                            marginLeft: 'auto', 
+                            marginRight: 'auto', 
+                            marginBottom: '3vh'}}
+                    >
+                        Text shortcuts insert text at your cursor when you press the combination of keys that activate them
+                    </Typography>
+
+                    {/* if user doesn't have any style shortcuts, show this */}
+                    {
+                        styleShortcuts.length == 0 && (
+                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 300, marginBottom: '3vh'}}>
+                                You don't have any style shortcuts. You should make some!
+                            </Typography>
+                        )
+                    }
+                    <Grid container spacing={3}>
+
+                        {/* labels of columns */}
+                        {
+                            styleShortcuts.length !== 0 && (
+                                <Grid item xs={12}>
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={3}>
+                                            <Typography variant='h6' style={{fontWeight: 700}} >name</Typography>
+                                        </Grid>
+                                        <Grid item xs={2}>
+                                            <Typography variant='h6' style={{fontWeight: 700}} >shortcut</Typography>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <Typography variant='h6' style={{fontWeight: 700}} >attribute</Typography>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <Typography variant='h6' style={{fontWeight: 700}} >value</Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            )
+                        }
+                        {
+                            styleShortcuts && styleShortcuts.map(styleShortcut => {
+                                return (
+                                    <Grid item xs={12} key={styleShortcut.name}>
+                                        <StyleShortcutEditor 
+                                            name={styleShortcut.name} 
+                                            button={styleShortcut.key} 
+                                            attribute={styleShortcut.attribute} 
+                                            value={styleShortcut.value} />
+                                    </Grid>
+                                )
+                            })
+                        }
+
+                        <Grid item xs={12}>
+                            <Typography variant='h6' style={{textAlign: 'center'}}>
+                                Create custom style shortcut
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <CreateStyleShortcut jwt={jwt}/>
+                        </Grid>
+
+                    </Grid>
+
+
                     {/* default shortcuts */}
-                    <Typography variant='h4' style={{textAlign: 'center', marginBottom: '3.5vh', marginTop: '3.5vh', fontWeight: 300}}>
+                    <Typography variant='h4' style={{textAlign: 'center', marginBottom: '3.5vh', marginTop: '5vh', fontWeight: 300}}>
                         Reserved shortcuts
                     </Typography>
                     <Typography 
