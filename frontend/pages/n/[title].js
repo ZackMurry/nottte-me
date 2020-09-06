@@ -22,6 +22,7 @@ const emptyContentState = convertFromRaw({
 
 //used for writing notes
 //todo visual saving indicator
+//todo collapse selection on shortcut (or preferably replace selected text)
 function Note() {
     
     const { hasCommandModifier } = KeyBindingUtil
@@ -230,12 +231,18 @@ function Note() {
         //getting shortcuts
 
         const textShortcutResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/text', requestOptions)
-        const textShortcutText = await textShortcutResponse.text()
+        let textShortcutText = await textShortcutResponse.text()
 
         //todo
         if(textShortcutResponse.status === 401) return;
         if(textShortcutResponse.status === 404) return;
         if(textShortcutResponse.status === 403) return;
+
+        //allowing for \n symbols in shortcuts to represent new lines and \t to represent tabs
+        //todo maybe make custom replaceall function so that it can scan for all of the replaces in O(n) instead
+        //of O(n*checks). can use a HashMap for that (or whatever it is in javascript)
+        textShortcutText = textShortcutText.replaceAll("\\\\n", "\\n").replaceAll("\\\\t", "\\t")
+
         setTextShortcuts(JSON.parse(textShortcutText))
 
         

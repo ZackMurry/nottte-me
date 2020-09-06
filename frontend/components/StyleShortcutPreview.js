@@ -2,7 +2,7 @@ import React from 'react'
 import { Grid, Typography } from '@material-ui/core'
 
 //todo deleting and editing
-export default function StyleShortcutEditor({ name, button, attribute, value }) {
+export default function StyleShortcutPreview({ name, button, attribute, value }) {
 
 
     return (

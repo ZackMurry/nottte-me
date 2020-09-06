@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
-import { Paper, Typography, Grid } from '@material-ui/core'
+import { Paper, Typography, Grid, TextField } from '@material-ui/core'
 import Head from 'next/head'
-import TextShortcutEditor from '../../components/TextShortcutEditor'
+import TextShortcutPreview from '../../components/TextShortcutPreview'
 import CreateTextShortcut from '../../components/CreateTextShortcut'
 import Cookie from 'js-cookie'
 import { useRouter, withRouter } from 'next/router'
 import NottteShortcutDisplay from '../../components/NottteShortcutDisplay'
-import StyleShortcutEditor from '../../components/StyleShortcutEditor'
 import CreateStyleShortcut from '../../components/CreateStyleShortcut'
+import StyleShortcutPreview from '../../components/StyleShortcutPreview'
 
 //default text shortcuts
 const nottteShortcuts = [
@@ -38,6 +38,7 @@ function Shortcuts() {
         }
     }, [])
 
+
     const getShortcuts = async () => {
 
         const requestOptions = {
@@ -57,6 +58,37 @@ function Shortcuts() {
         setStyleShortcuts(JSON.parse(styleText))
     }
 
+    //find current index of shortcut
+    const binarySearchShortcuts = (array, name) => {
+        let start = 0
+        let stop = array.length-1
+        let middle = Math.floor((stop + start)/2)
+
+        while(array[middle].name != name && start < stop) {
+
+            //adjusting search area
+            if(name < array[middle].name) {
+                stop = middle-1
+            } else if(name > array[middle].name) {
+                start= middle+1
+            }
+
+            //recalculate middle
+            middle = Math.floor((stop + start)/2)
+        }
+        return (array[middle].name != name) ? -1 : middle
+    }
+
+    const updateTextShortcut = async (name, key, text) => {
+        let index = binarySearchShortcuts(textShortcuts, name)
+        let updatedTextShortcuts = textShortcuts.slice()
+        updatedTextShortcuts.splice(index, 1, {
+            name: name,
+            key: key,
+            text: text
+        })
+        await setTextShortcuts(updatedTextShortcuts)
+    }
 
     return (
         <div>
@@ -130,16 +162,18 @@ function Shortcuts() {
                                 </Grid>
                             )
                         }
-                        
+
                         {
-                            textShortcuts && textShortcuts.map(textShortcut => {
+                            textShortcuts && textShortcuts.map((textShortcut) => {
                                 return (
                                     <Grid item xs={12} key={textShortcut.name}>
-                                        <TextShortcutEditor 
+                                        <TextShortcutPreview 
                                             name={textShortcut.name} 
                                             button={textShortcut.key} 
                                             text={textShortcut.text} 
                                             key={textShortcut.name}
+                                            update={(name, key, text) => updateTextShortcut(name, key, text)}
+                                            jwt={jwt}
                                         />
                                     </Grid>
                                 )
@@ -178,7 +212,7 @@ function Shortcuts() {
                             marginRight: 'auto', 
                             marginBottom: '3vh'}}
                     >
-                        Text shortcuts insert text at your cursor when you press the combination of keys that activate them
+                        Style shortcuts change CSS attributes when you activate them
                     </Typography>
 
                     {/* if user doesn't have any style shortcuts, show this */}
@@ -216,11 +250,12 @@ function Shortcuts() {
                             styleShortcuts && styleShortcuts.map(styleShortcut => {
                                 return (
                                     <Grid item xs={12} key={styleShortcut.name}>
-                                        <StyleShortcutEditor 
+                                        <StyleShortcutPreview
                                             name={styleShortcut.name} 
                                             button={styleShortcut.key} 
                                             attribute={styleShortcut.attribute} 
-                                            value={styleShortcut.value} />
+                                            value={styleShortcut.value} 
+                                        />
                                     </Grid>
                                 )
                             })
