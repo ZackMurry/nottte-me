@@ -32,39 +32,20 @@ public class NoteController {
     /**
      * todo authorization
      *
-     * @param request object in JSON format (for ease of keeping in database). contains the post title and the editor state
+     * @param request object in JSON format (for ease of keeping in database). contains the raw editor state
      */
-    @PatchMapping("/save")
-    public ResponseEntity<HttpStatus> save(@RequestBody String request) {
-        String title;
+    @PatchMapping("/save/{title}")
+    public ResponseEntity<HttpStatus> save(@PathVariable String title, @RequestBody String request) {
 
         //todo remove once i sort out authorization
         if(SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        //grabbing title from request and then substringing to the body part to keep that in the database
-        //todo probably mad vulnerabilities in this
-        if(request.startsWith("{\"title\":\"")) {
-            //todo this is O(n) and not very cool
-            request = request.substring(10, request.length()-1); //getting rid of the title part and the last brace
-            StringBuilder titleBuilder = new StringBuilder();
-            for (int i = 0; i < request.length(); i++) {
-                char charAt = request.charAt(i);
-                if(charAt == '"') {
-                    if(!request.startsWith("\",\"body\":{\"blocks\":[{\"key\":\"", i)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    request = request.substring(i+9);
-                    break;
-                }
-                titleBuilder.append(charAt);
-            }
-            title = titleBuilder.toString();
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         return noteService.saveNote(title, SecurityContextHolder.getContext().getAuthentication().getName(), request);
     }
 
+    //todo no notes with % sign in title (bc of urls)
     @PostMapping("/create")
     public ResponseEntity<HttpStatus> create(@RequestBody CreateNoteRequest request) {
         if(request.getTitle().contains("\"")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //because of JSON. todo show on website
@@ -113,6 +94,21 @@ public class NoteController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return noteService.getNotesByUser(username);
 
+    }
+
+    @DeleteMapping("/user/{username}/note/{noteName}")
+    public ResponseEntity<HttpStatus> deleteNoteOfUsernameByName(@PathVariable("username") String username, @PathVariable("noteName") String noteName) throws NotFoundException {
+        return noteService.deleteNote(noteName, username);
+    }
+
+    @DeleteMapping("/principal/note/{noteName}")
+    public ResponseEntity<HttpStatus> deleteNoteOfPrincipalByName(@PathVariable("noteName") String noteName) throws NotFoundException {
+        return noteService.deleteNote(noteName, SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @PatchMapping("/note/{title}/rename/{newTitle}")
+    public ResponseEntity<HttpStatus> renameNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) throws NotFoundException {
+         return noteService.renameNote(oldTitle, newTitle, SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
 

@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.dao.notes;
 
 import com.zackmurry.nottteme.models.Note;
+import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.List;
  * used for accessing and updating data about notes
  */
 @Service
-public class NoteDataAccessService implements NoteDao {
+public final class NoteDataAccessService implements NoteDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -183,6 +184,52 @@ public class NoteDataAccessService implements NoteDao {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> deleteNote(String title, String username) throws NotFoundException {
+        String sql = "DELETE FROM notes WHERE title=? AND author=?";
+
+        if(!userHasNote(title, username)) {
+            throw new NotFoundException("Note " + title + " with author " + username + " not found.");
+        }
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    title,
+                    username
+            );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> renameNote(String oldTitle, String newTitle, String username) throws NotFoundException {
+        //checking if user has a note with that name
+        if(!userHasNote(oldTitle, username)) {
+            throw new NotFoundException("Cannot find note with title " + oldTitle + " by user " + username + ".");
+        }
+
+        String sql = "UPDATE notes SET title=? WHERE title=? AND author=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    newTitle,
+                    oldTitle,
+                    username
+            );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 

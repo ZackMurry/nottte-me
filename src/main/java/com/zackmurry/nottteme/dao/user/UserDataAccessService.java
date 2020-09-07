@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * todo maybe move shortcuts into their own table and thus their own class for services et al
  */
 @Service
-public class UserDataAccessService implements UserDao {
+public final class UserDataAccessService implements UserDao {
 
 
     private final Gson gson = new Gson();
@@ -137,15 +137,21 @@ public class UserDataAccessService implements UserDao {
      */
     @Override
     public ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String key) {
-        List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
+        List<TextShortcut> textShortcuts = getTextShortcutsByUsername(username);
 
-        //todo need to check for style shortcuts with the same name as well
-        //opposite goes with adding style shortcuts as well
-        if(shortcuts.stream().anyMatch(keyboardShortcut -> keyboardShortcut.getName().equals(name))) {
+        //checking if any existing text shortcuts have the same name
+        if(textShortcuts.stream().anyMatch(textShortcut -> textShortcut.getName().equals(name))) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         }
-        shortcuts.add(new TextShortcut(name, text, key));
-        return setTextShortcutsByName(username, shortcuts);
+
+        //checking if any style shortcuts have the same name
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
+        if(styleShortcuts.stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name))) {
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+        }
+
+        textShortcuts.add(new TextShortcut(name, text, key));
+        return setTextShortcutsByName(username, textShortcuts);
     }
 
 
@@ -216,14 +222,21 @@ public class UserDataAccessService implements UserDao {
     //todo not allow two shortcuts with the same key (only one would get activated because of returning)
     @Override
     public ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String attribute, String value) {
-        List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
 
-        //todo also check for the same keybinding
-        if(shortcuts.stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name))) {
+        //checking if any existing style shortcuts have the same name as the new shortcut's name
+        if(styleShortcuts.stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name))) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         }
-        shortcuts.add(new StyleShortcut(name, key, attribute, value));
-        return setStyleShortcutsByName(username, shortcuts);
+
+        //checking for text shortcuts with the same name
+        List<TextShortcut> textShortcuts = getTextShortcutsByUsername(username);
+        if(textShortcuts.stream().anyMatch(textShortcut -> textShortcut.getName().equals(name))) {
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+        }
+
+        styleShortcuts.add(new StyleShortcut(name, key, attribute, value));
+        return setStyleShortcutsByName(username, styleShortcuts);
     }
 
     @Override
@@ -283,6 +296,8 @@ public class UserDataAccessService implements UserDao {
             return new ArrayList<>();
         }
     }
+
+
 
 
 }

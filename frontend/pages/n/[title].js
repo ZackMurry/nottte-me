@@ -72,12 +72,9 @@ function Note() {
         const requestOptions = {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
-            body: JSON.stringify({
-                title: title,
-                body: convertToRaw(newEditorState.getCurrentContent())
-            })
+            body: JSON.stringify(convertToRaw(newEditorState.getCurrentContent()))
         }
-        const response = await fetch('http://localhost:8080/api/v1/notes/save', requestOptions)
+        const response = await fetch('http://localhost:8080/api/v1/notes/save/' + encodeURI(title), requestOptions)
     }, 1500), [ jwt, title])
 
     const insertTextAtCursor = (text) => {

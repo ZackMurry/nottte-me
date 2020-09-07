@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 //todo might want to only show a preview of the notes on the notes page for performance reasons (don't load full text)
+//todo deleting accounts
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
