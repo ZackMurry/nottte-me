@@ -9,6 +9,7 @@ import { useRouter, withRouter } from 'next/router'
 import NottteShortcutDisplay from '../../components/NottteShortcutDisplay'
 import CreateStyleShortcut from '../../components/CreateStyleShortcut'
 import StyleShortcutPreview from '../../components/StyleShortcutPreview'
+import PlainSnackbar from '../../components/PlainSnackbar'
 
 //default text shortcuts
 const nottteShortcuts = [
@@ -28,6 +29,8 @@ function Shortcuts() {
 
     const [ textShortcuts, setTextShortcuts ] = useState([])
     const [ styleShortcuts, setStyleShortcuts ] = useState([])
+    const [ error, setError ] = useState('')
+    const [ showError, setShowError ] = useState(false)
 
     useEffect(() => {
         if(jwt) {
@@ -37,7 +40,6 @@ function Shortcuts() {
             router.push('/login')
         }
     }, [])
-
 
     const getShortcuts = async () => {
 
@@ -149,7 +151,7 @@ function Shortcuts() {
                     {/* if user doesn't have any text shortcuts, show this */}
                     {
                         textShortcuts.length == 0 && (
-                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 300, marginBottom: '3vh'}}>
+                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 700, marginBottom: '3vh'}}>
                                 You don't have any text shortcuts. You should make some!
                             </Typography>
                         )
@@ -186,6 +188,8 @@ function Shortcuts() {
                                             key={textShortcut.name}
                                             update={(name, key, text) => updateTextShortcut(name, key, text)}
                                             jwt={jwt}
+                                            onError={err => setError(err)}
+                                            showError={show => setShowError(show)}
                                         />
                                     </Grid>
                                 )
@@ -224,13 +228,14 @@ function Shortcuts() {
                             marginRight: 'auto', 
                             marginBottom: '3vh'}}
                     >
-                        Style shortcuts change CSS attributes when you activate them
+                        Style shortcuts change CSS attributes when you activate them.<br/>
+                        Changing these will also change their past usages 
                     </Typography>
 
                     {/* if user doesn't have any style shortcuts, show this */}
                     {
                         styleShortcuts.length == 0 && (
-                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 300, marginBottom: '3vh'}}>
+                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 700, marginBottom: '3vh'}}>
                                 You don't have any style shortcuts. You should make some!
                             </Typography>
                         )
@@ -269,6 +274,8 @@ function Shortcuts() {
                                             value={styleShortcut.value} 
                                             update={(name, key, attribute, value) => updateStyleShortcut(name, key, attribute, value)}
                                             jwt={jwt}
+                                            onError={err => setError(err)}
+                                            showError={show => setShowError(show)}
                                         />
                                     </Grid>
                                 )
@@ -337,7 +344,12 @@ function Shortcuts() {
                     </Grid>
                 </div>
             </Paper>
-
+            <PlainSnackbar
+                message={error}
+                duration={3000}
+                value={showError}
+                onClose={() => setShowError(!showError)}
+            />
         </div>
         
     )

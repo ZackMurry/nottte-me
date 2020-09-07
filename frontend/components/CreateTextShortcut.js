@@ -8,6 +8,10 @@ const defaultName = 'myShortcutTitle'
 const defaultKey = 'none'
 const defaultText = 'shortcut text'
 
+const nameError = 'two shortcuts cannot have the same name'
+const miscError = "there was an error while creating a shortcut (this could be a server error). please double-check the shortcut's values"
+const contactError = "the server couldn't be reached"
+
 //todo show user error codes
 export default function CreateTextShortcut({ jwt }) {
 
@@ -43,6 +47,14 @@ export default function CreateTextShortcut({ jwt }) {
         console.log(response.status)
         if(response.status == 200) {
             Router.reload()
+        } else if(response.status == 412) {
+            //412 is PRECONDITION_FAILED — used if the new shortcut has the same name as another
+            setCreateError(nameError)
+        } else if(response.status == 400) {
+            setCreateError(miscError)
+        } else if(response.status >= 500) {
+            //if there's a server error
+            setCreateError(contactError)
         }
     }
 
@@ -53,8 +65,8 @@ export default function CreateTextShortcut({ jwt }) {
                     value={name} 
                     onChange={e => setName(e.target.value)} 
                     style={{width: '100%'}} 
-                    helperText={name.length < 4 ? 'the name must be more than three characters' : 'name of your new shortcut'}
-                    error={name.length < 4}
+                    helperText={name.length < 4 ? 'the name must be more than three characters' : (createError ? createError : 'name of your new shortcut')}
+                    error={name.length < 4 || createError}
                     spellCheck='false'
                 />
             </Grid>

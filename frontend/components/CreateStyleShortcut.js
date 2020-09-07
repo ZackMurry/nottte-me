@@ -9,6 +9,10 @@ const defaultKey = 'none'
 const defaultAttribute = 'border'
 const defaultValue = '4px black solid'
 
+const nameError = 'two shortcuts cannot have the same name'
+const miscError = "there was an error while creating a shortcut (this could be a server error). please double-check the shortcut's values"
+const contactError = "the server couldn't be reached"
+
 //todo show user error codes
 //verrry similar to CreateTextShortcut
 export default function CreateStyleShortcut({ jwt }) {
@@ -27,7 +31,6 @@ export default function CreateStyleShortcut({ jwt }) {
     }
 
     const handleCreate = async () => {
-        console.log(name + ', ' + key + ', ' + attribute + ', ' + value)
         if(!jwt) { 
             setCreateError('You have to be signed in to create a shortcut')
             return
@@ -45,9 +48,18 @@ export default function CreateStyleShortcut({ jwt }) {
         }
 
         const response = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style', requestOptions)
-        console.log(response.status)
+
         if(response.status == 200) {
             Router.reload()
+        } else if(response.status == 412) {
+            //412 is PRECONDITION_FAILED; used if a shortcut with that name already exists
+            setCreateError(nameError)
+        } else if(response.status == 400) {
+            //thrown by an SQLException in backend. realistically shouldn't happen
+            setCreateError(miscError)
+        } else if(response.status >= 500) {
+            //thrown if cannot reach server
+            setCreateError(contactError)
         }
     }
 
@@ -58,8 +70,8 @@ export default function CreateStyleShortcut({ jwt }) {
                     value={name} 
                     onChange={e => setName(e.target.value)} 
                     style={{width: '100%'}} 
-                    helperText={name.length < 4 ? 'the name must be more than three characters' : 'name of your new shortcut'}
-                    error={name.length < 4}
+                    helperText={name.length < 4 ? 'the name must be more than three characters' : (createError ? createError : 'name of your new shortcut')}
+                    error={name.length < 4 || createError}
                     spellCheck='false'
                 />
             </Grid>

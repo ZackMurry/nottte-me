@@ -5,7 +5,7 @@ import DoneIcon from '@material-ui/icons/Done';
 
 
 //todo deleting
-export default function TextShortcutPreview({ name, button, text, update, jwt }) {
+export default function TextShortcutPreview({ name, button, text, update, jwt, onError, showError }) {
 
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button)
@@ -16,8 +16,6 @@ export default function TextShortcutPreview({ name, button, text, update, jwt })
 
         //checking if anything has been changed
         if(editedKey == button && editedText == text) return
-        
-        update(name, editedKey, editedText)
         
         //sending to server
         const requestOptions = {
@@ -32,6 +30,14 @@ export default function TextShortcutPreview({ name, button, text, update, jwt })
 
         const response = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/text/' + encodeURI(name), requestOptions)
         console.log(response.status)
+
+        if(response.status == 400) {
+            onError('Unable to update text shortcut: error code 400')
+            showError(true)
+            return
+        }
+
+        update(name, editedKey, editedText)
     }
 
     const handleKeyDown = (e) => {

@@ -204,8 +204,7 @@ function Note() {
             }
         }
         await setStyleMap(newStyleMap)
-        console.log(styleMap)
-
+        
         //getting editor state
 
         const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + encodeURI(title) + '/raw', requestOptions)

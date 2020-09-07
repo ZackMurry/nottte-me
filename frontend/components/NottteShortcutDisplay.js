@@ -1,5 +1,3 @@
-const { runInContext } = require("lodash");
-
 import React from 'react'
 import { Grid, Typography } from '@material-ui/core';
 

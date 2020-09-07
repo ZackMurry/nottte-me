@@ -139,7 +139,8 @@ public class UserDataAccessService implements UserDao {
     public ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String key) {
         List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
 
-        //todo also check for the same keybinding
+        //todo need to check for style shortcuts with the same name as well
+        //opposite goes with adding style shortcuts as well
         if(shortcuts.stream().anyMatch(keyboardShortcut -> keyboardShortcut.getName().equals(name))) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         }

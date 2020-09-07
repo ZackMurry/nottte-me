@@ -4,7 +4,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 
 //todo deleting
-export default function StyleShortcutPreview({ name, button, attribute, value, update, jwt }) {
+export default function StyleShortcutPreview({ name, button, attribute, value, update, jwt, onError, showError }) {
 
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button)
@@ -22,8 +22,7 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
         //checking if anything has been changed
         if(editedKey == button && editedAttribute == attribute && editedValue == value) return
         
-        //sends to parent
-        update(name, editedKey, editedAttribute, editedValue)
+        
         
         //sending to server
         const requestOptions = {
@@ -38,7 +37,15 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
         }
 
         const response = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style/' + encodeURI(name), requestOptions)
-        console.log(response.status)
+
+        if(response.status == 400) {
+            onError('Unable to update style shortcut: error code 400')
+            showError(true)
+            return
+        }
+
+        //sends to parent
+        update(name, editedKey, editedAttribute, editedValue)
     }
 
     //automatically finishes editing when enter is pressed on text field

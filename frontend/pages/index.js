@@ -10,13 +10,13 @@ export default function Home() {
 
         {/* head */}
         <Head>
-            <title>Nottte.me</title>
+            <title>nottte.me</title>
         </Head>
 
         {/* slope at top of white section */}
         <div style={{top: '50vh', left:0, backgroundColor: 'white', position: 'absolute', width: '100%', height: '25vh', clipPath: 'polygon(100% 0, 100% 100%, 0% 100%)', zIndex: -1, overflowX: 'hidden'}} ></div>
         {/* white section */}
-        <div style={{position: 'absolute', top: '75vh', left: 0, backgroundColor: 'white', height: '100vh', width: '100%', zIndex: -1, overflowX: 'hidden'}}></div>
+        <div style={{position: 'absolute', top: '74.9vh', left: 0, backgroundColor: 'white', height: '100.2vh', width: '100%', zIndex: -1, overflowX: 'hidden'}}></div>
         {/* slope at bottom of white section */}
         <div style={{top: '174.95vh', left:0, backgroundColor: 'white', position: 'absolute', width: '100%', height: '25.05vh', clipPath: 'polygon(0% 0, 100% 0%, 0% 100%)', zIndex: -1, overflowX: 'hidden'}} ></div>
         
