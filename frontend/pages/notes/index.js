@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import NotePreview from '../../components/NotePreview'
-import { Grid, Paper, withStyles, IconButton, Typography } from '@material-ui/core'
+import { Grid, Paper, withStyles, IconButton, Typography, Fab } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
@@ -71,13 +71,14 @@ function Notes() {
                     </div>
                 </div>
             </div>
+            
             <div style={{position: 'absolute', bottom: '3vw', right: '3vw', width: '3.5vw', height: '3.5vw', backgroundColor: '#2d323e', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <IconButton onClick={handleCreateClick} style={{color: 'white'}}>
+                <Fab color='secondary' aria-label='new note' onClick={handleCreateClick} >
                     <CreateIcon fontSize='large' />
-                </IconButton>
+                </Fab>
             </div>
             <div style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-                <CreateNoteMenu open={menuOpen} />
+                <CreateNoteMenu open={menuOpen} onClose={handleCreateClick} />
             </div>
         </div>
         

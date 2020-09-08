@@ -10,14 +10,13 @@ export default function NotePreview({ name, editorState }) {
 
     useEffect(() => {
         if(editorState) {
-            console.log(editorState)
             
             let raw = convertFromRaw(JSON.parse(editorState))
             let objEditorState = EditorState.createWithContent(raw)
             let currentContent = objEditorState.getCurrentContent()
-            let plainText = currentContent.getPlainText('\u0001') + '' // the \u0001 is used as a delimiter to split between the blocks (no styling)
-            setRawText(plainText) 
-            
+            let plainText = currentContent.getPlainText('') + ''
+            setRawText(plainText)
+            console.log(plainText)
         }
     }, [ editorState ])
 
@@ -30,8 +29,8 @@ export default function NotePreview({ name, editorState }) {
             <Card>
                 <CardContent>
                     <div style={{backgroundColor: '#2d323e', width: '100%', height: '25vh', borderRadius: 10, margin: 0, padding: 0, display: 'flex'}}>
-                        <Paper elevation={0} style={{width: '60%', marginLeft: 'auto', marginRight: 'auto', marginBottom: 0, height: '60%', verticalAlign: 'bottom', alignSelf: 'flex-end', borderRadius: '10px 10px 0 0'}}>
-                            <Typography style={{margin: 10}}>
+                        <Paper elevation={0} style={{width: '60%', marginLeft: 'auto', marginRight: 'auto', marginBottom: 0, height: '60%', verticalAlign: 'bottom', alignSelf: 'flex-end', borderRadius: '10px 10px 0 0', overflow: 'hidden'}}>
+                            <Typography style={{margin: 10, width: '100%', height: '92.5%', overflowY: 'scroll', paddingRight: 3, boxSizing: 'content-box'}}>
                                 { rawText }
                             </Typography>
                         </Paper>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Cookie from 'js-cookie'
+import Navbar from '../../components/Navbar'
 
 export default function index() {
 
@@ -26,6 +27,8 @@ export default function index() {
 
     return (
         <div>
+            <Navbar />
+            <div style={{marginTop: '15vh'}}></div>
             {response}
         </div>
         

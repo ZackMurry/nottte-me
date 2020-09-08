@@ -83,6 +83,10 @@ public final class NoteDataAccessService implements NoteDao {
 
     @Override
     public ResponseEntity<HttpStatus> createNote(String title, String body, String author) {
+        if(userHasNote(title, author)) {
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+        }
+
         String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
         try {
             jdbcTemplate.execute(

@@ -35,6 +35,7 @@ function Note() {
     const [ textShortcuts, setTextShortcuts] = useState([])
     const [ styleShortcuts, setStyleShortcuts ] = useState([])
     const [ styleMap, setStyleMap ] = useState({})
+    
     // right click override
     // const handleContext = (event) => {
     //     event.preventDefault();
@@ -111,6 +112,17 @@ function Note() {
             insertTextAtCursor('\t')
             return 'handled'
         } 
+
+        //todo block styles
+        console.log(command)
+        //user can set shortcut name to __BLOCK-CLASS__ to enable some special block types
+        if(command == '__center__') {
+            setEditorState(RichUtils.toggleBlockType(editorState, 'center'))
+            return 'handled'
+        } else if(command == '__right__') {
+            setEditorState(RichUtils.toggleBlockType(editorState, 'right'))
+            return 'handled'
+        }
 
         //text shortcuts
         for(var i = 0; i < textShortcuts.length; i++) {
@@ -284,7 +296,19 @@ function Note() {
         return getDefaultKeyBinding(e)
     }
 
-    
+    const getBlockStyle = (block) => {
+        switch (block.getType()) {
+            case 'left':
+                return 'align-left'
+            case 'center':
+                return 'align-center'
+            case 'right':
+                return 'align-right'
+            default:
+                return 'block'
+        }
+    }
+
     return (
         <div>
             <Head>
@@ -300,6 +324,7 @@ function Note() {
                 keyBindingFn={keyBindingFn}
                 customStyleMap={styleMap}
                 editorKey='editor' //this fixes a 'props did not match' error
+                blockStyleFn={getBlockStyle}
             />
         </div>
         

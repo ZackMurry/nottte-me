@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Paper } from '@material-ui/core'
+import { Paper, IconButton } from '@material-ui/core'
 import Cookie from 'js-cookie'
 import { useRouter, withRouter } from 'next/router'
+import CloseIcon from '@material-ui/icons/Close';
 
 //todo title validation
-function CreateNoteMenu({ open }) {
+function CreateNoteMenu({ open, onClose }) {
 
     const [ title, setTitle ] = useState('')
     const jwt = Cookie.get('jwt')
@@ -67,6 +68,11 @@ function CreateNoteMenu({ open }) {
                     rows='5'
                     onKeyDown={handleKeyDown}
                 />
+            </div>
+            <div style={{position: 'absolute', top: '0.75vh', right: '0.75vw'}}>
+                <IconButton onClick={onClose}>
+                    <CloseIcon fontSize='large' />
+                </IconButton>
             </div>
         </Paper>
         
