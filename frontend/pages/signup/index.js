@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar'
 import { Typography, Paper, Button } from '@material-ui/core'
 import Cookie from 'js-cookie'
 import { useRouter, withRouter } from 'next/router'
+import Link from 'next/link'
 
 //todo show errors as snackbars (username taken as error on form) and do some elementary password security
 function SignUpPage() {
@@ -97,6 +98,17 @@ function SignUpPage() {
                         </Button>
                     </div>
                 </form>
+                <div style={{display: 'inline-flex', marginTop: '2.5vh', width: '100%', justifySelf: 'center', justifyContent: 'center'}}>
+                    <Typography style={{textAlign: 'center'}}>
+                        Already have an account?
+                    </Typography>
+                    <Link href='/login'>
+                        <div style={{margin: '0 5px', cursor: 'pointer', textDecoration: 'underline'}} className='MuiTypography-body1' >
+                            Sign in.
+                        </div>
+                    </Link>
+                </div>
+
             </Paper>
             
             

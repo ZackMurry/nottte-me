@@ -236,5 +236,21 @@ public final class NoteDataAccessService implements NoteDao {
 
     }
 
+    @Override
+    public int getNoteCount(String username) {
+        String sql = "SELECT COUNT(*) FROM notes WHERE author=?";
+
+        try {
+            return jdbcTemplate.queryForInt(
+                    sql,
+                    username
+            );
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+
+    }
+
 
 }

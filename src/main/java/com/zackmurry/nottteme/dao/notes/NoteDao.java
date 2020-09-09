@@ -26,4 +26,7 @@ public interface NoteDao {
     ResponseEntity<HttpStatus> deleteNote(String title, String username) throws NotFoundException;
 
     ResponseEntity<HttpStatus> renameNote(String oldTitle, String newTitle, String username) throws NotFoundException;
+
+    int getNoteCount(String username);
+
 }

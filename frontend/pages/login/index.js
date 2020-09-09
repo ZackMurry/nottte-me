@@ -3,6 +3,7 @@ import Cookie from 'js-cookie'
 import Navbar from '../../components/Navbar'
 import { Paper, Typography, Button } from '@material-ui/core'
 import { useRouter, withRouter } from 'next/router'
+import Link from 'next/link'
 
 function Login() {
     
@@ -82,6 +83,16 @@ function Login() {
                         <Button type='submit' style={{backgroundColor: '#2d323e', color: '#fff', padding: '7.5px 15px', margin: 10}}>
                             Sign in
                         </Button>
+                    </div>
+                    <div style={{marginTop: 25}}>
+                        <Typography style={{color: 'black'}}>
+                            Don't have an account?
+                            <Link href='/signup'>
+                                <div style={{display: 'inline-flex', margin: '0 5px', cursor: 'pointer', textDecoration: 'underline'}}>
+                                    Sign up.
+                                </div>
+                            </Link>
+                        </Typography>
                     </div>
                 </form>
             </Paper>

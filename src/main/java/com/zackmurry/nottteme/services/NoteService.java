@@ -47,4 +47,8 @@ public class NoteService {
     public ResponseEntity<HttpStatus> renameNote(String oldTitle, String newTitle, String username) throws NotFoundException {
         return noteDao.renameNote(oldTitle, newTitle, username);
     }
+
+    public int getNoteCount(String username) {
+        return noteDao.getNoteCount(username);
+    }
 }

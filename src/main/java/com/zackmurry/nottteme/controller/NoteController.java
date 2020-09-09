@@ -93,7 +93,6 @@ public class NoteController {
     public List<Note> getNotesFromPrincipal() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return noteService.getNotesByUser(username);
-
     }
 
     @DeleteMapping("/user/{username}/note/{noteName}")
@@ -109,6 +108,17 @@ public class NoteController {
     @PatchMapping("/note/{title}/rename/{newTitle}")
     public ResponseEntity<HttpStatus> renameNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) throws NotFoundException {
          return noteService.renameNote(oldTitle, newTitle, SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @GetMapping("/count")
+    public int getNoteCountFromPrincipal() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return noteService.getNoteCount(username);
+    }
+
+    @GetMapping("/user/{username}/notes/count")
+    public int getNoteCountFromPrincipal(@PathVariable("username") String username) {
+        return noteService.getNoteCount(username);
     }
 
 
