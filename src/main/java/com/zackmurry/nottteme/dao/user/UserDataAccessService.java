@@ -7,7 +7,6 @@ import com.zackmurry.nottteme.models.TextShortcut;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -136,18 +135,18 @@ public final class UserDataAccessService implements UserDao {
      * @return http response describing success/fail
      */
     @Override
-    public ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String key) {
+    public HttpStatus addTextShortcut(String username, String name, String text, String key) {
         List<TextShortcut> textShortcuts = getTextShortcutsByUsername(username);
 
         //checking if any existing text shortcuts have the same name
         if(textShortcuts.stream().anyMatch(textShortcut -> textShortcut.getName().equals(name))) {
-            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+            return HttpStatus.PRECONDITION_FAILED;
         }
 
         //checking if any style shortcuts have the same name
         List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
         if(styleShortcuts.stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name))) {
-            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+            return HttpStatus.PRECONDITION_FAILED;
         }
 
         textShortcuts.add(new TextShortcut(name, text, key));
@@ -163,17 +162,17 @@ public final class UserDataAccessService implements UserDao {
      * @return an http response of whether it worked out not and where it failed
      */
     @Override
-    public ResponseEntity<HttpStatus> deleteTextShortcutByName(String username, String shortcutName) {
+    public HttpStatus deleteTextShortcutByName(String username, String shortcutName) {
         List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
-        if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(shortcuts.isEmpty()) return HttpStatus.BAD_REQUEST;
         shortcuts = shortcuts.stream().filter(keyboardShortcut -> !keyboardShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
         return setTextShortcutsByName(username, shortcuts);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> updateTextShortcutByName(String username, String shortcutName, TextShortcut updatedTextShortcut) {
+    public HttpStatus updateTextShortcutByName(String username, String shortcutName, TextShortcut updatedTextShortcut) {
         List<TextShortcut> shortcuts = getTextShortcutsByUsername(username);
-        if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(shortcuts.isEmpty()) return HttpStatus.BAD_REQUEST;
 
         //finds shortcuts with matching name and sets it/them to the newKeyboardShortcut
         shortcuts = shortcuts.stream()
@@ -185,7 +184,7 @@ public final class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> setTextShortcutsByName(String username, List<TextShortcut> updatedTextShortcuts) {
+    public HttpStatus setTextShortcutsByName(String username, List<TextShortcut> updatedTextShortcuts) {
         String shortcutString = gson.toJson(updatedTextShortcuts);
         String sql = "UPDATE users SET text_shortcuts = ? WHERE username=?";
 
@@ -195,10 +194,10 @@ public final class UserDataAccessService implements UserDao {
                     shortcutString,
                     username
             );
-            return new ResponseEntity<>(HttpStatus.OK);
+            return HttpStatus.OK;
         } catch (SQLException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return HttpStatus.BAD_REQUEST;
         }
     }
 
@@ -221,18 +220,18 @@ public final class UserDataAccessService implements UserDao {
 
     //todo not allow two shortcuts with the same key (only one would get activated because of returning)
     @Override
-    public ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String attribute, String value) {
+    public HttpStatus addStyleShortcut(String username, String name, String key, String attribute, String value) {
         List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
 
         //checking if any existing style shortcuts have the same name as the new shortcut's name
         if(styleShortcuts.stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name))) {
-            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+            return HttpStatus.PRECONDITION_FAILED;
         }
 
         //checking for text shortcuts with the same name
         List<TextShortcut> textShortcuts = getTextShortcutsByUsername(username);
         if(textShortcuts.stream().anyMatch(textShortcut -> textShortcut.getName().equals(name))) {
-            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+            return HttpStatus.PRECONDITION_FAILED;
         }
 
         styleShortcuts.add(new StyleShortcut(name, key, attribute, value));
@@ -240,7 +239,7 @@ public final class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> setStyleShortcutsByName(String username, List<StyleShortcut> updatedStyleShortcuts) {
+    public HttpStatus setStyleShortcutsByName(String username, List<StyleShortcut> updatedStyleShortcuts) {
         String shortcutString = gson.toJson(updatedStyleShortcuts);
         String sql = "UPDATE users SET style_shortcuts = ? WHERE username=?";
 
@@ -250,25 +249,25 @@ public final class UserDataAccessService implements UserDao {
                     shortcutString,
                     username
             );
-            return new ResponseEntity<>(HttpStatus.OK);
+            return HttpStatus.OK;
         } catch (SQLException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return HttpStatus.BAD_REQUEST;
         }
     }
 
     @Override
-    public ResponseEntity<HttpStatus> deleteStyleShortcutByName(String username, String shortcutName) {
+    public HttpStatus deleteStyleShortcutByName(String username, String shortcutName) {
         List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
-        if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(shortcuts.isEmpty()) return HttpStatus.BAD_REQUEST;
         shortcuts = shortcuts.stream().filter(styleShortcut -> !styleShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
         return setStyleShortcutsByName(username, shortcuts);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
+    public HttpStatus updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
         List<StyleShortcut> shortcuts = getStyleShortcutsByUsername(username);
-        if(shortcuts.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(shortcuts.isEmpty()) return HttpStatus.BAD_REQUEST;
 
         //finds shortcuts with matching name and sets it/them to the newStyleShortcut
         shortcuts = shortcuts.stream()
@@ -297,7 +296,26 @@ public final class UserDataAccessService implements UserDao {
         }
     }
 
+    @Override
+    public HttpStatus deleteAccount(String username) {
+        if(!accountExists(username)) {
+            return HttpStatus.NOT_FOUND;
+        }
 
+        String sql = "DELETE FROM users WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
 
 
 }

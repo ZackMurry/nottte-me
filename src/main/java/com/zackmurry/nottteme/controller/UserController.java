@@ -1,10 +1,12 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,12 +14,16 @@ import java.util.Optional;
 
 //todo might want to only show a preview of the notes on the notes page for performance reasons (don't load full text)
 //todo deleting accounts
+//todo changing account name
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private NoteService noteService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -42,6 +48,25 @@ public class UserController {
     @GetMapping("/user/{username}")
     public Optional<User> getUserByName(@PathVariable String username) {
         return userService.getUserByUsername(username);
+    }
+
+    /**
+     * deletes current account
+     * @return http status of whether or not it was successful
+     */
+    @DeleteMapping("/delete")
+    public ResponseEntity<HttpStatus> deleteUserAccount() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        //deleting account from users table
+        HttpStatus deleteAccountStatus = userService.deleteAccount(username);
+        if(deleteAccountStatus.value() != 200) {
+            return new ResponseEntity<>(deleteAccountStatus);
+        }
+
+        //deleting all the user's notes
+        HttpStatus deleteNotesStatus = noteService.deleteNotesByAuthor(username);
+        return new ResponseEntity<>(deleteNotesStatus);
     }
 
 }

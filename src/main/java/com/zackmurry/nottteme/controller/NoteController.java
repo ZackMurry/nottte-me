@@ -19,7 +19,6 @@ import java.util.List;
 
 /**
  * rest controller for notes
- * todo deleting notes
  */
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/notes")
@@ -42,20 +41,23 @@ public class NoteController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        return noteService.saveNote(title, SecurityContextHolder.getContext().getAuthentication().getName(), request);
+        HttpStatus status = noteService.saveNote(title, SecurityContextHolder.getContext().getAuthentication().getName(), request);
+        return new ResponseEntity<>(status);
     }
 
     //todo no notes with % sign in title (bc of urls)
     @PostMapping("/create")
     public ResponseEntity<HttpStatus> create(@RequestBody CreateNoteRequest request) {
         if(request.getTitle().contains("\"")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //because of JSON. todo show on website
-        return noteService.createNote(request.getTitle(), "", SecurityContextHolder.getContext().getAuthentication().getName());
+        HttpStatus status = noteService.createNote(request.getTitle(), "", SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<>(status);
     }
 
     @PostMapping("/create/with-body")
     public ResponseEntity<HttpStatus> createWithBody(@RequestBody CreateNoteWithBodyRequest request) {
         if(request.getTitle().contains("\"")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //because of JSON. todo show on website
-        return noteService.createNote(request.getTitle(), request.getBody(), SecurityContextHolder.getContext().getAuthentication().getName());
+        HttpStatus status = noteService.createNote(request.getTitle(), request.getBody(), SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/note/{title}/raw")
@@ -97,17 +99,20 @@ public class NoteController {
 
     @DeleteMapping("/user/{username}/note/{noteName}")
     public ResponseEntity<HttpStatus> deleteNoteOfUsernameByName(@PathVariable("username") String username, @PathVariable("noteName") String noteName) throws NotFoundException {
-        return noteService.deleteNote(noteName, username);
+        HttpStatus status = noteService.deleteNote(noteName, username);
+        return new ResponseEntity<>(status);
     }
 
     @DeleteMapping("/principal/note/{noteName}")
     public ResponseEntity<HttpStatus> deleteNoteOfPrincipalByName(@PathVariable("noteName") String noteName) throws NotFoundException {
-        return noteService.deleteNote(noteName, SecurityContextHolder.getContext().getAuthentication().getName());
+        HttpStatus status = noteService.deleteNote(noteName, SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<>(status);
     }
 
     @PatchMapping("/note/{title}/rename/{newTitle}")
     public ResponseEntity<HttpStatus> renameNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) throws NotFoundException {
-         return noteService.renameNote(oldTitle, newTitle, SecurityContextHolder.getContext().getAuthentication().getName());
+         HttpStatus status = noteService.renameNote(oldTitle, newTitle, SecurityContextHolder.getContext().getAuthentication().getName());
+         return new ResponseEntity<>(status);
     }
 
     @GetMapping("/count")

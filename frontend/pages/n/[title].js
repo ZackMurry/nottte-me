@@ -5,6 +5,7 @@ import Head from 'next/head'
 import Cookie from 'js-cookie'
 import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
 import { debounce } from 'lodash'
+import Link from 'next/link'
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
@@ -314,18 +315,37 @@ function Note() {
             <Head>
                 <title>{title ? title + ' | ' : ''}nottte.me</title>
             </Head>
-            <Typography variant='h1' color='primary'>
-                {title}
-            </Typography>
-            <Editor
-                editorState={editorState}
-                handleKeyCommand={handleKeyCommand}
-                onChange={onChange}
-                keyBindingFn={keyBindingFn}
-                customStyleMap={styleMap}
-                editorKey='editor' //this fixes a 'props did not match' error
-                blockStyleFn={getBlockStyle}
-            />
+            <Link href='/'>
+                <Typography variant='h2' color='primary' style={{margin: '1vh 1vw', cursor: 'pointer'}}>
+                    nottte.me
+                </Typography>
+            </Link>
+            
+            <div style={{width: '55%', margin: '10vh auto'}}>
+                <div style={{display: 'inline-flex', width: '100%'}}>
+                    <Typography variant='h4' color='primary' style={{width: '50%', fontWeight: 300}}>
+                        {title}
+                    </Typography>
+                    {/* not using next/link because you can't open it in a new tab (kind of defeats the point of next/link, anyways) */}
+                    <a href='/shortcuts' style={{width: '50%'}}>
+                        <Typography variant='h4' style={{fontWeight: 300, textAlign: 'right', color: '#d9d9d9', cursor: 'pointer'}}>
+                            shortcuts
+                        </Typography>
+                    </a>
+                    
+                </div>
+                
+                <Editor
+                    editorState={editorState}
+                    handleKeyCommand={handleKeyCommand}
+                    onChange={onChange}
+                    keyBindingFn={keyBindingFn}
+                    customStyleMap={styleMap}
+                    editorKey='editor' //this fixes a 'props did not match' error
+                    blockStyleFn={getBlockStyle}
+                />
+            </div>
+            
         </div>
         
     )

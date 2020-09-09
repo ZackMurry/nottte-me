@@ -27,13 +27,14 @@ a {
 }
   
 div.DraftEditor-root {
-    margin: 30px auto;
+    margin: 0px auto;
     background-color: white;
-    width: 55%;
+    width: 100%;
     min-height: 75vh;
     overflow: visible;
     padding: 1.5vh 1.5vw;
     font-size: 24px;
+    border-radius: 25px;
 }
 
 textarea:focus, input:focus {

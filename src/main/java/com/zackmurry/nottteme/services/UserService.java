@@ -6,7 +6,6 @@ import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class UserService {
         return userDao.getUserByUsername(username);
     }
 
-    public ResponseEntity<HttpStatus> addTextShortcut(String username, String name, String text, String key) {
+    public HttpStatus addTextShortcut(String username, String name, String text, String key) {
         return userDao.addTextShortcut(username, name, text, key);
     }
 
@@ -42,11 +41,11 @@ public class UserService {
         return userDao.getTextShortcutsByUsernameOrderedByName(username);
     }
 
-    public ResponseEntity<HttpStatus> deleteTextShortcutByName(String username, String shortcutName) {
+    public HttpStatus deleteTextShortcutByName(String username, String shortcutName) {
         return userDao.deleteTextShortcutByName(username, shortcutName);
     }
 
-    public ResponseEntity<HttpStatus> updateTextShortcutByName(String username, String shortcutName, TextShortcut updatedTextShortcut) {
+    public HttpStatus updateTextShortcutByName(String username, String shortcutName, TextShortcut updatedTextShortcut) {
         return userDao.updateTextShortcutByName(username, shortcutName, updatedTextShortcut);
     }
 
@@ -54,19 +53,28 @@ public class UserService {
         return userDao.getStyleShortcutsByUsername(username);
     }
 
-    public ResponseEntity<HttpStatus> addStyleShortcut(String username, String name, String key, String attribute, String value) {
+    public HttpStatus addStyleShortcut(String username, String name, String key, String attribute, String value) {
         return userDao.addStyleShortcut(username, name, key, attribute, value);
     }
 
-    public ResponseEntity<HttpStatus> deleteStyleShortcutByName(String username, String shortcutName) {
+    public HttpStatus deleteStyleShortcutByName(String username, String shortcutName) {
         return userDao.deleteStyleShortcutByName(username, shortcutName);
     }
 
-    public ResponseEntity<HttpStatus> updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
+    public HttpStatus updateStyleShortcutByName(String username, String shortcutName, StyleShortcut updatedStyleShortcut) {
         return userDao.updateStyleShortcutByName(username, shortcutName, updatedStyleShortcut);
     }
 
     public List<StyleShortcut> getStyleShortcutsByUsernameOrderedByName(String username) {
         return userDao.getStyleShortcutsByUsernameOrderedByName(username);
+    }
+
+    /**
+     * deletes account from users table -- *notably* keeps notes
+     * @param username username of account to delete
+     * @return response status
+     */
+    public HttpStatus deleteAccount(String username) {
+        return userDao.deleteAccount(username);
     }
 }

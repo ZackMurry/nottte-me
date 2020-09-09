@@ -5,7 +5,6 @@ import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -27,7 +26,7 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> updateNote(String title, String author, String content) {
+    public HttpStatus updateNote(String title, String author, String content) {
         String sql = "UPDATE notes SET body = ? WHERE title=? AND author=?";
         try {
             jdbcTemplate.execute(
@@ -36,11 +35,11 @@ public final class NoteDataAccessService implements NoteDao {
                     title,
                     author
             );
-            return new ResponseEntity<>(HttpStatus.OK);
+            return HttpStatus.OK;
         } catch (SQLException e) {
             //this shouldn't really happen
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return HttpStatus.BAD_REQUEST;
         }
     }
 
@@ -82,9 +81,9 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> createNote(String title, String body, String author) {
+    public HttpStatus createNote(String title, String body, String author) {
         if(userHasNote(title, author)) {
-            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
+            return HttpStatus.PRECONDITION_FAILED;
         }
 
         String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
@@ -95,10 +94,10 @@ public final class NoteDataAccessService implements NoteDao {
                     title,
                     body
             );
-            return new ResponseEntity<>(HttpStatus.OK);
+            return HttpStatus.OK;
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return HttpStatus.BAD_REQUEST;
         }
 
     }
@@ -191,7 +190,7 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> deleteNote(String title, String username) throws NotFoundException {
+    public HttpStatus deleteNote(String title, String username) throws NotFoundException {
         String sql = "DELETE FROM notes WHERE title=? AND author=?";
 
         if(!userHasNote(title, username)) {
@@ -204,16 +203,16 @@ public final class NoteDataAccessService implements NoteDao {
                     title,
                     username
             );
-            return new ResponseEntity<>(HttpStatus.OK);
+            return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return HttpStatus.BAD_REQUEST;
         }
 
     }
 
     @Override
-    public ResponseEntity<HttpStatus> renameNote(String oldTitle, String newTitle, String username) throws NotFoundException {
+    public HttpStatus renameNote(String oldTitle, String newTitle, String username) throws NotFoundException {
         //checking if user has a note with that name
         if(!userHasNote(oldTitle, username)) {
             throw new NotFoundException("Cannot find note with title " + oldTitle + " by user " + username + ".");
@@ -228,10 +227,10 @@ public final class NoteDataAccessService implements NoteDao {
                     oldTitle,
                     username
             );
-            return new ResponseEntity<>(HttpStatus.OK);
+            return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return HttpStatus.BAD_REQUEST;
         }
 
     }
@@ -252,5 +251,21 @@ public final class NoteDataAccessService implements NoteDao {
 
     }
 
+    @Override
+    public HttpStatus deleteNotesByAuthor(String author) {
+        String sql = "DELETE FROM notes WHERE author=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    author
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
 
 }
