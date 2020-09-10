@@ -6,6 +6,15 @@ import Cookie from 'js-cookie'
 import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
 import { debounce } from 'lodash'
 import Link from 'next/link'
+import StateToPdfMake from '../../components/StateToPdfMake'
+import pdfMake from 'pdfmake/build/pdfmake'
+
+
+pdfMake.fonts = {
+    Roboto: {
+        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf'
+    }
+}
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
@@ -230,11 +239,17 @@ function Note() {
         if(editorResponse === '') {
             setEditorState(EditorState.createEmpty())
         } else {
-            console.log(editorText)
             const parsedText = JSON.parse(editorText)
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
+
+            //todo move into a function, add a button, and add support for styling
+            var stateToPdfMake = new StateToPdfMake(parsedText)
+            var pdfMakeContents = stateToPdfMake.generate()
+            
+            pdfMake.createPdf(pdfMakeContents).download()
+
         }
 
         //getting shortcuts
