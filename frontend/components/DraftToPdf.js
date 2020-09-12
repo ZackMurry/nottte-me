@@ -1,11 +1,18 @@
 import { stateToHTML } from "draft-js-export-html"
 import jsPDF from "jspdf"
+import pdfMake from 'pdfmake/build/pdfmake'
+import htmlToPdfmake from 'html-to-pdfmake'
+import PdfPrinter from "pdfmake"
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 //todo word wrap not working
 export default function draftToPdf(contentState, styleMap, title) {
 
     //converting to html
 
+    
     let exportHtmlStyles = {}
     for(var child of Object.entries(styleMap)) {
         const attr = child[1]
@@ -29,21 +36,9 @@ export default function draftToPdf(contentState, styleMap, title) {
     }
     //todo block styles
     let html = stateToHTML(contentState, exportHtmlOptions)
-    html = `<div style="white-space: nowrap;">` + html + '</div>'
-    console.log(html)
 
     //converting to pdf
-    var pdf = new jsPDF('p', 'pt', 'a4')
-    
-    pdf.html(
-        html,
-        {
-            callback: function (pdf) {
-                pdf.save(title);
-            },
-            x: 30,
-            y: 25
-        }
-    )
-
+    var pdfMakeInput = htmlToPdfmake(html)
+    pdfMakeInput = {content: [pdfMakeInput]}
+    pdfMake.createPdf(pdfMakeInput).download()
 }
