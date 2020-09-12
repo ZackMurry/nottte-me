@@ -1,8 +1,6 @@
 import { stateToHTML } from "draft-js-export-html"
-import jsPDF from "jspdf"
 import pdfMake from 'pdfmake/build/pdfmake'
 import htmlToPdfmake from 'html-to-pdfmake'
-import PdfPrinter from "pdfmake"
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -11,8 +9,6 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs
 export default function draftToPdf(contentState, styleMap, title) {
 
     //converting to html
-
-    
     let exportHtmlStyles = {}
     for(var child of Object.entries(styleMap)) {
         const attr = child[1]
@@ -32,13 +28,29 @@ export default function draftToPdf(contentState, styleMap, title) {
     let exportHtmlOptions = {
         inlineStyles: {
             ...exportHtmlStyles
+        },
+        blockStyleFn: (block) => {
+            const type = block.getType()
+            if(type === 'right') {
+                return {
+                    style: {
+                        textAlign: 'right'
+                    }
+                }
+            } else if(type === 'center') {
+                return {
+                    style: {
+                        textAlign: 'center'
+                    }
+                }
+            }
         }
     }
-    //todo block styles
     let html = stateToHTML(contentState, exportHtmlOptions)
 
     //converting to pdf
     var pdfMakeInput = htmlToPdfmake(html)
     pdfMakeInput = {content: [pdfMakeInput]}
-    pdfMake.createPdf(pdfMakeInput).download()
+    pdfMake.createPdf(pdfMakeInput).download(title)
+    
 }
