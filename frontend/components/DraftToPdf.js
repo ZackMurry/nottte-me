@@ -14,7 +14,7 @@ pdfMake.fonts = {
     }
 }
 
-export default function draftToPdf(contentState, styleMap, title) {
+export default function draftToPdf(contentState, styleMap, title, doc) {
 
     //converting to html
 
@@ -30,7 +30,7 @@ export default function draftToPdf(contentState, styleMap, title) {
             ...exportHtmlStyles, 
             [childName]: {
                 style: {
-                    [key]: val
+                    [key]: val,
                 }
             }
         }
@@ -65,12 +65,21 @@ export default function draftToPdf(contentState, styleMap, title) {
     //putting it into a content object so that it's actually pdfmake compatible
     pdfMakeInput = {content: [pdfMakeInput]}
     
-    //converting to Courier so that google docs can read it better (maybe add option to disable)
+    //optional converting to Courier so that google docs can read it better (maybe add option to disable)
     //google docs has trouble reading ligatures in Courier, but a main goal of this is to be
     //compatible with docs
-    pdfMakeInput.defaultStyle = {
-        font: 'Courier'
+    if(doc) {
+        pdfMakeInput.defaultStyle = {
+            font: 'Courier',
+            fontSize: 12
+        }
+    } else {
+        //set default font size
+        pdfMakeInput.defaultStyle = {
+            fontSize: 12
+        }
     }
+    
 
     //downloading
     pdfMake.createPdf(pdfMakeInput).download(title)

@@ -6,7 +6,7 @@ import Cookie from 'js-cookie'
 import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
 import { debounce } from 'lodash'
 import Link from 'next/link'
-import draftToPdf from '../../components/DraftToPdf'
+import draftToPdf from '../../../components/DraftToPdf'
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
@@ -235,9 +235,6 @@ function Note() {
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
-
-            //todo move into a function, add a button, and add support for styling
-            draftToPdf(textEditorState.getCurrentContent(), newStyleMap, title)
         }
 
         //getting shortcuts
@@ -256,8 +253,6 @@ function Note() {
         textShortcutText = textShortcutText.replaceAll("\\\\n", "\\n").replaceAll("\\\\t", "\\t")
 
         setTextShortcuts(JSON.parse(textShortcutText))
-
-        
     }
     
     //e is a SyntheticKeyboardEvent. imagine being weakly typed
@@ -330,9 +325,9 @@ function Note() {
                         {title}
                     </Typography>
                     {/* not using next/link because you can't open it in a new tab (kind of defeats the point of next/link, anyways) */}
-                    <a href='/shortcuts' style={{width: '50%'}}>
+                    <a href={'/n/' + encodeURI(title) + '/settings'} style={{width: '50%'}}>
                         <Typography variant='h4' style={{fontWeight: 300, textAlign: 'right', color: '#d9d9d9', cursor: 'pointer'}}>
-                            shortcuts
+                            settings
                         </Typography>
                     </a>
                     

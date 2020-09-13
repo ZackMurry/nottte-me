@@ -9,6 +9,7 @@ import '../styles/globals.css'
 //from https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js
 //adds mui theme
 //todo add error page (404)
+//change 'display papers' to have a minWidth of 500 so that they become bigger on smaller screens
 export default function MyApp(props) {
   const { Component, pageProps } = props;
 
