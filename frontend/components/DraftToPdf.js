@@ -2,6 +2,7 @@ import { stateToHTML } from "draft-js-export-html"
 import pdfMake from 'pdfmake/build/pdfmake'
 import htmlToPdfmake from 'html-to-pdfmake'
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import draftToHtml from "./draftToHtml";
 
 //declaring fonts
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -15,50 +16,7 @@ pdfMake.fonts = {
 }
 
 export default function draftToPdf(contentState, styleMap, title, doc) {
-
-    //converting to html
-
-    let exportHtmlStyles = {}
-
-    //reformatting style map so that it's compatible with draft-js-export-html
-    for(var child of Object.entries(styleMap)) {
-        const attr = child[1]
-        const key = Object.keys(attr)[0]
-        const val = Object.values(attr)[0]
-        const childName = child[0]
-        exportHtmlStyles = {
-            ...exportHtmlStyles, 
-            [childName]: {
-                style: {
-                    [key]: val,
-                }
-            }
-        }
-    }
-
-    let exportHtmlOptions = {
-        inlineStyles: {
-            ...exportHtmlStyles
-        },
-        //used for block styles (text aligning)
-        blockStyleFn: (block) => {
-            const type = block.getType()
-            if(type === 'right') {
-                return {
-                    style: {
-                        textAlign: 'right'
-                    }
-                }
-            } else if(type === 'center') {
-                return {
-                    style: {
-                        textAlign: 'center'
-                    }
-                }
-            }
-        }
-    }
-    let html = stateToHTML(contentState, exportHtmlOptions)
+    let html = draftToHtml(contentState, styleMap)
     
     //converting html to pdfmake compatible input
     var pdfMakeInput = htmlToPdfmake(html)
@@ -80,7 +38,6 @@ export default function draftToPdf(contentState, styleMap, title, doc) {
         }
     }
     
-
     //downloading
     pdfMake.createPdf(pdfMakeInput).download(title)
     

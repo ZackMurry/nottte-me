@@ -7,8 +7,9 @@ import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import { convertFromRaw, EditorState } from 'draft-js'
 import DownloadWithPreview from '../../../../components/DownloadWithPreview'
-import draftToPdf from '../../../../components/DraftToPdf'
+import draftToPdf from '../../../../components/draftToPdf'
 import openInNewTab from '../../../../components/openInNewTab'
+import draftToHtml from '../../../../components/draftToHtml'
 
 function Export() {
 
@@ -18,6 +19,7 @@ function Export() {
 
     const [ editorState, setEditorState ] = useState('')
     const [ styleMap, setStyleMap ] = useState('')
+    const [ html, setHtml ] = useState('')
 
     useEffect(() => {
         if(title && jwt) {
@@ -81,7 +83,10 @@ function Export() {
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
+            setHtml(draftToHtml(textEditorState.getCurrentContent(), newStyleMap))
         }
+
+        
 
     }
 
@@ -218,6 +223,25 @@ function Export() {
                     />
 
                 </div>
+
+                <div id='html' style={{width: '80%', margin: '15vh auto'}}>
+                    <Typography variant='h4' style={{textAlign: 'center', margin: '2vh 0'}}>
+                        Export as HTML
+                    </Typography>
+                    
+                    <Typography>
+                        Below is the raw HTML of your note. You can use this to add it to your website
+                        or export it to an unsupported program.
+                    </Typography>
+
+                    <Paper elevation={0} style={{margin: '3vh auto'}}>
+                        <Typography style={{fontWeight: 300}}>
+                            {html}
+                        </Typography>
+                    </Paper>
+
+                </div>
+
             </Paper>
         </div>
         

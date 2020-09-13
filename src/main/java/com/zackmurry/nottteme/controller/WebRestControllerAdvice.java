@@ -98,4 +98,10 @@ public class WebRestControllerAdvice {
         }
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleIllegalArgumentException(IllegalArgumentException exception) {
+        return exception.getMessage();
+    }
+
 }

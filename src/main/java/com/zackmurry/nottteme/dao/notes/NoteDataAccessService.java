@@ -212,10 +212,13 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public HttpStatus renameNote(String oldTitle, String newTitle, String username) throws NotFoundException {
+    public HttpStatus renameNote(String oldTitle, String newTitle, String username) throws NotFoundException, IllegalArgumentException {
         //checking if user has a note with that name
         if(!userHasNote(oldTitle, username)) {
             throw new NotFoundException("Cannot find note with title " + oldTitle + " by user " + username + ".");
+        }
+        if(userHasNote(newTitle, username)) {
+            throw new IllegalArgumentException("User already has a note with title " + newTitle + ".");
         }
 
         String sql = "UPDATE notes SET title=? WHERE title=? AND author=?";
