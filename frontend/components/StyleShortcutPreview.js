@@ -1,26 +1,29 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Grid, Typography, IconButton, TextField, Grow } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 
 //todo deleting
-export default function StyleShortcutPreview({ name, button, attribute, value, update, jwt, onError, showError }) {
+export default function StyleShortcutPreview({ name, button, attributes, update, jwt, onError, showError }) {
 
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button)
-    const [ editedAttribute, setEditedAttribute ] = useState(attribute)
-    const [ editedValue, setEditedValue ] = useState(value)
+    const [ editedAttributes, setEditedAttributes ] = useState(attributes)
 
     const handleKeyDown = (e) => {
         setEditedKey(e.key)
         e.preventDefault()
     }
 
+    useEffect(() => {
+        setEditedAttributes(attributes)
+    }, [ attributes ])
+
     const handleDone = async () => {
         setEditMode(false)
-
+        
         //checking if anything has been changed
-        if(editedKey == button && editedAttribute == attribute && editedValue == value) return
+        if(editedKey == button && editedAttributes == attributes) return
         
         
         
@@ -31,8 +34,7 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
             body: JSON.stringify({
                 name: name,
                 key: editedKey,
-                attribute: editedAttribute,
-                value: editedValue
+                attributes: editedAttributes
             })
         }
 
@@ -45,7 +47,7 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
         }
 
         //sends to parent
-        update(name, editedKey, editedAttribute, editedValue)
+        update(name, editedKey, editedAttributes)
     }
 
     //automatically finishes editing when enter is pressed on text field
@@ -56,7 +58,7 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
     }
 
     return (
-        <>
+        <div>
             {
                 editMode
                 ?
@@ -75,7 +77,52 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
                             onKeyDown={handleKeyDown}
                         />
                         </Grid>
-                        <Grid item xs={12} lg={3} style={{paddingTop: 0, paddingBottom: 0}}>
+                        {
+                            editedAttributes && editedAttributes.map((editedAttribute, i) => (
+                                <React.Fragment key={i}>
+                                    {
+                                        i >= 1 && <Grid item xs={12} lg={5}></Grid>
+                                    }
+                                    <Grid item xs={12} lg={3}>
+                                        <TextField 
+                                            value={editedAttribute.attribute}
+                                            onKeyDown={e => handleEnterDetection(e)}
+                                            onChange={e => {
+                                                let tempAttrs = editedAttributes.slice()
+                                                tempAttrs[i] = {...tempAttrs[i], attribute: e.target.value}
+                                                setEditedAttributes(tempAttrs)
+                                            }}
+                                            style={{padding: 0, width: '100%'}}
+                                            error={editedAttribute.attribute.length <= 0}
+                                            helperText={editedAttribute.attribute.length <= 0 ? 'attribute should not be empty' : ''}
+                                            rowsMax={3}
+                                            multiline
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} lg={3}>
+                                        <TextField
+                                            value={editedAttribute.value}
+                                            onKeyDown={e => handleEnterDetection(e)}
+                                            onChange={e => {
+                                                let tempAttrs = editedAttributes.slice()
+                                                tempAttrs[i] = {...tempAttrs[i], value: e.target.value}
+                                                setEditedAttributes(tempAttrs)
+                                            }}
+                                            style={{padding: 0, width: '100%'}}
+                                            error={editedAttribute.value.length <= 0}
+                                            helperText={editedAttribute.value.length <= 0 ? 'value should not be empty' : ''}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} lg={1}>
+                                        <IconButton onClick={handleDone} style={{padding: 0}}>
+                                            <DoneIcon color='secondary' />
+                                        </IconButton>
+                                    </Grid>
+                                    
+                                </React.Fragment>
+                            ))
+                        }
+                        {/* <Grid item xs={12} lg={3} style={{paddingTop: 0, paddingBottom: 0}}>
                             <TextField 
                                 value={editedAttribute}
                                 onKeyDown={e => handleEnterDetection(e)}
@@ -96,15 +143,11 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
                                 error={editedValue.length <= 0}
                                 helperText={editedValue.length <= 0 ? 'value should not be empty' : ''}
                             />
-                        </Grid>
-                        <Grid item xs={12} lg={1}>
-                            <IconButton onClick={handleDone} style={{padding: 0}}>
-                                <DoneIcon color='secondary' />
-                            </IconButton>
-                        </Grid>
+                        </Grid> */}
+                        
 
                         {/* preview */}
-                        <Grid item xs={12} style={{padding: 0}}>
+                        {/* <Grid item xs={12} style={{padding: 0}}>
                             <Grow in timeout={1000}>
                                 <div style={{textAlign: 'center'}}>
                                     <Typography variant='h4' style={{
@@ -114,8 +157,7 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
                                     </Typography>
                                 </div>
                             </Grow>
-                            
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                 )
                 :
@@ -127,12 +169,24 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
                         <Grid item xs={12} lg={2}>
                             <Typography style={{fontWeight: 500}}>CTRL + { button }</Typography>
                         </Grid>
-                        <Grid item xs={12} lg={3}>
-                            <Typography>{ attribute }</Typography>
-                        </Grid>
-                        <Grid item xs={12} lg={3}>
-                            <Typography>{ value }</Typography>
-                        </Grid>
+                        {
+                            attributes && attributes.map(({attribute, value}, i) => (
+                                <React.Fragment key={i}>
+                                    {
+                                        i !== 0 && (
+                                            <Grid item xs={1} lg={5}></Grid>
+                                        )
+                                    }
+                                    <Grid item xs={12} lg={3}>
+                                        <Typography>{ attribute }</Typography>
+                                    </Grid>
+                                    <Grid item xs={12} lg={3}>
+                                        <Typography>{ value }</Typography>
+                                    </Grid>
+                                </React.Fragment>
+                            ))
+                            
+                        }
                         <Grid item xs={12} lg={1}>
                             <IconButton onClick={() => setEditMode(true)} style={{padding: 0}}>
                                 <EditIcon color='secondary' />
@@ -141,7 +195,7 @@ export default function StyleShortcutPreview({ name, button, attribute, value, u
                     </Grid>
                 )
             }
-        </>
+        </div>
         
     )
 

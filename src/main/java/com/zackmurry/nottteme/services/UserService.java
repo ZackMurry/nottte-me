@@ -5,6 +5,7 @@ import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -87,4 +88,15 @@ public class UserService {
         return userDao.removeCSSAttributeFromStyleShortcut(username, shortcutName, attributeName);
     }
 
+    public CSSAttribute getCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName) throws NotFoundException {
+        return userDao.getCSSAttributeFromStyleShortcut(username, shortcutName, attributeName);
+    }
+
+    public StyleShortcut getStyleShortcutByUsername(String username, String shortcutName) throws NotFoundException {
+        return userDao.getStyleShortcutByUsername(username, shortcutName);
+    }
+
+    public List<CSSAttribute> getCSSAttributesFromStyleShortcut(String username, String shortcutName) throws NotFoundException {
+        return userDao.getCSSAttributesFromStyleShortcut(username, shortcutName);
+    }
 }

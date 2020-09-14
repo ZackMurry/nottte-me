@@ -42,8 +42,10 @@ export default function CreateStyleShortcut({ jwt }) {
             body: JSON.stringify({
                 name: name,
                 key: key,
-                attribute: attribute,
-                value: value
+                attributes: [{
+                    attribute: attribute,
+                    value: value
+                }]
             })
         }
 

@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.controller.shortcuts;
 import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.services.UserService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,13 +79,18 @@ public class StyleShortcutController {
         return new ResponseEntity<>(status);
     }
 
-    @PatchMapping("/user/{username}/preferences/shortcuts/style/{shortcutName}/add")
+    @GetMapping("/user/{username}/preferences/shortcuts/style/{shortcutName}")
+    public StyleShortcut getUserStyleShortcut(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) throws NotFoundException {
+        return userService.getStyleShortcutByUsername(username, shortcutName);
+    }
+
+    @PostMapping("/user/{username}/preferences/shortcuts/style/{shortcutName}/attributes")
     public ResponseEntity<HttpStatus> addCSSAttributeToUserStyleShortcut(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName, @RequestBody CSSAttribute attribute) {
         HttpStatus status = userService.addCSSAttributeToStyleShortcut(username, shortcutName, attribute);
         return new ResponseEntity<>(status);
     }
 
-    @PatchMapping("/principal/preferences/shortcuts/style/{shortcutName}/add")
+    @PostMapping("/principal/preferences/shortcuts/style/{shortcutName}/attributes")
     public ResponseEntity<HttpStatus> addCSSAttributeToPrincipalStyleShortcut(@PathVariable("shortcutName") String shortcutName, @RequestBody CSSAttribute attribute) {
         HttpStatus status = userService.addCSSAttributeToStyleShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName, attribute);
         return new ResponseEntity<>(status);
@@ -103,5 +109,27 @@ public class StyleShortcutController {
     }
 
     //todo add endpoints for editing and getting CSS attributes from a style shortcut
+    @GetMapping("/user/{username}/preferences/shortcuts/style/{shortcutName}/attribute/{attributeName}")
+    public CSSAttribute getCSSAttributeFromUserStyleShortcut(
+            @PathVariable("username") String username,
+            @PathVariable("shortcutName") String shortcutName,
+            @PathVariable("attributeName") String attributeName) throws NotFoundException {
+        return userService.getCSSAttributeFromStyleShortcut(username, shortcutName, attributeName);
+    }
+
+    @GetMapping("/principal/preferences/shortcuts/style/{shortcutName}/attribute/{attributeName}")
+    public CSSAttribute getCSSAttributeFromPrincipalStyleShortcut(@PathVariable("shortcutName") String shortcutName, @PathVariable("attributeName") String attributeName) throws NotFoundException {
+        return userService.getCSSAttributeFromStyleShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName, attributeName);
+    }
+
+    @GetMapping("/user/{username}/preferences/shortcuts/style/{shortcutName}/attributes")
+    public List<CSSAttribute> getCSSAttributesFromUserStyleShortcut(@PathVariable("username") String username, @PathVariable("shortcutName") String shortcutName) throws NotFoundException {
+        return userService.getCSSAttributesFromStyleShortcut(username, shortcutName);
+    }
+
+    @GetMapping("/principal/preferences/shortcuts/style/{shortcutName}/attributes")
+    public List<CSSAttribute> getCSSAttributesFromPrincipalStyleShortcut(@PathVariable("shortcutName") String shortcutName) throws NotFoundException {
+        return userService.getCSSAttributesFromStyleShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), shortcutName);
+    }
 
 }

@@ -28,7 +28,7 @@ function Shortcuts() {
     const [ jwt, setJwt ] = useState(Cookie.get('jwt'))
 
     const [ textShortcuts, setTextShortcuts ] = useState([])
-    const [ styleShortcuts, setStyleShortcuts ] = useState([])
+    const [ styleShortcuts, setStyleShortcuts ] = useState([{attributes:[{attribute:'', value: ''}]}])
     const [ error, setError ] = useState('')
     const [ showError, setShowError ] = useState(false)
 
@@ -93,14 +93,13 @@ function Shortcuts() {
         setTextShortcuts(updatedTextShortcuts)
     }
 
-    const updateStyleShortcut = (name, key, attribute, value) => {
+    const updateStyleShortcut = (name, key, attributes) => {
         let index = binarySearchShortcuts(styleShortcuts, name)
         let updatedStyleShortcuts = styleShortcuts.slice()
         updatedStyleShortcuts.splice(index, 1, {
             name: name,
             key: key,
-            attribute: attribute,
-            value: value
+            attributes: attributes
         })
         setStyleShortcuts(updatedStyleShortcuts)
     }
@@ -227,7 +226,8 @@ function Shortcuts() {
                             width: '80%', 
                             marginLeft: 'auto', 
                             marginRight: 'auto', 
-                            marginBottom: '3vh'}}
+                            marginBottom: '3vh'
+                        }}
                     >
                         Style shortcuts change CSS attributes when you activate them.<br/>
                         Changing these will also change their past usages 
@@ -265,15 +265,14 @@ function Shortcuts() {
                             )
                         }
                         {
-                            styleShortcuts && styleShortcuts.map(styleShortcut => {
+                            styleShortcuts && styleShortcuts.map((styleShortcut, i) => {
                                 console.log(JSON.stringify(styleShortcut))
                                 return (
-                                    <Grid item xs={12} key={styleShortcut.name}>
+                                    <Grid item xs={12} key={i}>
                                         <StyleShortcutPreview
                                             name={styleShortcut.name} 
                                             button={styleShortcut.key} 
-                                            attribute={styleShortcut.attributes[0].attribute} 
-                                            value={styleShortcut.attributes[0].value} 
+                                            attributes={styleShortcut.attributes} 
                                             update={(name, key, attribute, value) => updateStyleShortcut(name, key, attribute, value)}
                                             jwt={jwt}
                                             onError={err => setError(err)}

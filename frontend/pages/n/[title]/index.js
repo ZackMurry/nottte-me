@@ -200,20 +200,27 @@ function Note() {
         
         const parsedStyleShortcuts = JSON.parse(styleShortcutText)
         await setStyleShortcuts(parsedStyleShortcuts)
+        console.log(styleShortcutText)
 
         let newStyleMap = {}
         for(var i = 0; i < parsedStyleShortcuts.length; i++) {
             let styleShortcut = parsedStyleShortcuts[i]
-            let name = styleShortcut.name, attribute = styleShortcut.attribute, value = styleShortcut.value
+            let name = styleShortcut.name
 
-            //updating styleMap object with new info
-            newStyleMap = {
-                ...newStyleMap,
-                [name]: {
-                    [attribute]: value
+            for(var j = 0; j < styleShortcut.attributes.length; j++) {
+                let attribute = styleShortcut.attributes[j].attribute
+                let value = styleShortcut.attributes[j].value
+                let existingAttributes = newStyleMap[name]
+                newStyleMap = {
+                    ...newStyleMap,
+                    [name]: {
+                        ...existingAttributes,
+                        [attribute]: value
+                    }
                 }
             }
         }
+        console.log('map: ' + JSON.stringify(newStyleMap))
         await setStyleMap(newStyleMap)
         
         //getting editor state

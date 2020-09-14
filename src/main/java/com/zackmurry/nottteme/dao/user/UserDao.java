@@ -4,6 +4,7 @@ import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
+import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -46,5 +47,11 @@ public interface UserDao {
     HttpStatus addCSSAttributeToStyleShortcut(String username, String shortcutName, CSSAttribute attribute);
 
     HttpStatus removeCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName);
+
+    CSSAttribute getCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName) throws NotFoundException;
+
+    StyleShortcut getStyleShortcutByUsername(String username, String shortcutName) throws NotFoundException;
+
+    List<CSSAttribute> getCSSAttributesFromStyleShortcut(String username, String shortcutName) throws NotFoundException;
 
 }

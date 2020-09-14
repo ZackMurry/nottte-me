@@ -5,6 +5,7 @@ import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
+import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -339,7 +340,6 @@ public final class UserDataAccessService implements UserDao {
         List<CSSAttribute> attributes = shortcut.getAttributes();
         attributes.add(attribute);
         shortcut.setAttributes(attributes);
-        System.out.println(styleShortcuts);
         setStyleShortcutsByName(username, styleShortcuts);
         return HttpStatus.OK;
     }
@@ -361,6 +361,37 @@ public final class UserDataAccessService implements UserDao {
         StyleShortcut shortcut = styleShortcutsWithMatchingName.get(0);
         shortcut.setAttributes(shortcut.getAttributes().stream().filter(attribute -> !attribute.getAttribute().equals(attributeName)).collect(Collectors.toList()));
         return setStyleShortcutsByName(username, styleShortcuts);
+    }
+
+    @Override
+    public CSSAttribute getCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName) throws NotFoundException {
+        if(!accountExists(username)) throw new NotFoundException("Cannot find user with name " + username + ".");
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
+        Optional<StyleShortcut> optionalShortcut = styleShortcuts.stream().filter(styleShortcut -> styleShortcut.getName().equals(shortcutName)).findFirst();
+
+        if(optionalShortcut.isEmpty()) throw new NotFoundException("Cannot find shortcut with name " + shortcutName + " of user " + username + ".");
+        StyleShortcut shortcut = optionalShortcut.get();
+        Optional<CSSAttribute> optionalCSSAttribute = shortcut.getAttributes().stream().filter(attribute -> attribute.getAttribute().equals(attributeName)).findFirst();
+        if(optionalCSSAttribute.isEmpty()) throw new NotFoundException("Cannot find CSS attribute with attribute " + attributeName + " in shortcut " + shortcutName + " of user " + username + ".");
+        return optionalCSSAttribute.get();
+    }
+
+    @Override
+    public StyleShortcut getStyleShortcutByUsername(String username, String shortcutName) throws NotFoundException {
+        if(!accountExists(username)) throw new NotFoundException("Cannot find user with name " + username + ".");
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
+        Optional<StyleShortcut> optionalShortcut = styleShortcuts.stream().filter(styleShortcut -> styleShortcut.getName().equals(shortcutName)).findFirst();
+        if(optionalShortcut.isEmpty()) throw new NotFoundException("Cannot find style shortcut with name " + shortcutName + " of user " + username + ".");
+        return optionalShortcut.get();
+    }
+
+    @Override
+    public List<CSSAttribute> getCSSAttributesFromStyleShortcut(String username, String shortcutName) throws NotFoundException {
+        if(!accountExists(username)) throw new NotFoundException("Cannot find user with name " + username + ".");
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
+        Optional<StyleShortcut> optionalShortcut = styleShortcuts.stream().filter(styleShortcut -> styleShortcut.getName().equals(shortcutName)).findFirst();
+        if(optionalShortcut.isEmpty()) throw new NotFoundException("Cannot find style shortcut with name " + shortcutName + " of user " + username + ".");
+        return optionalShortcut.get().getAttributes();
     }
 
 }
