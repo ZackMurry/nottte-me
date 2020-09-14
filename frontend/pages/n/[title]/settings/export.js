@@ -121,7 +121,7 @@ function Export() {
             </div>
 
             {/* main login */}
-            <Paper style={{margin: '20vh auto 15vh auto', padding: '10vh 0 25vh 0', marginTop: '20vh', width: '50%', borderRadius: 40, boxShadow: '5px 5px 10px black', minWidth: 500}} >
+            <Paper style={{margin: '20vh auto 15vh auto', padding: '5vh 0 25vh 0', marginTop: '20vh', width: '50%', borderRadius: 40, boxShadow: '5px 5px 10px black', minWidth: 500}} >
                 <Typography variant='h1' style={{textAlign: 'center', padding: '2vh 0'}}>
                     Export note
                 </Typography>
@@ -230,7 +230,7 @@ function Export() {
                     </Typography>
                     
                     <Typography>
-                        Below is the raw HTML of your note. You can use this to add it to your website
+                        Below is the raw HTML of your note. You can use this to add your note to your website
                         or export it to an unsupported program.
                     </Typography>
 

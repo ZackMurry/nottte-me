@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.user.UserDao;
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,8 @@ public class UserService {
         return userDao.getStyleShortcutsByUsername(username);
     }
 
-    public HttpStatus addStyleShortcut(String username, String name, String key, String attribute, String value) {
-        return userDao.addStyleShortcut(username, name, key, attribute, value);
+    public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes) {
+        return userDao.addStyleShortcut(username, name, key, attributes);
     }
 
     public HttpStatus deleteStyleShortcutByName(String username, String shortcutName) {
@@ -77,4 +78,13 @@ public class UserService {
     public HttpStatus deleteAccount(String username) {
         return userDao.deleteAccount(username);
     }
+
+    public HttpStatus addCSSAttributeToStyleShortcut(String username, String shortcutName, CSSAttribute attribute) {
+        return userDao.addCSSAttributeToStyleShortcut(username, shortcutName, attribute);
+    }
+
+    public HttpStatus removeCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName) {
+        return userDao.removeCSSAttributeFromStyleShortcut(username, shortcutName, attributeName);
+    }
+
 }

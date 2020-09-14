@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.dao.user;
 
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 import org.springframework.http.HttpStatus;
@@ -28,10 +29,9 @@ public interface UserDao {
 
     HttpStatus setTextShortcutsByName(String username, List<TextShortcut> updatedTextShortcuts);
 
-
     List<StyleShortcut> getStyleShortcutsByUsername(String username);
 
-    HttpStatus addStyleShortcut(String username, String name, String key, String style, String value);
+    HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes);
 
     HttpStatus setStyleShortcutsByName(String username, List<StyleShortcut> updatedStyleShortcuts);
 
@@ -42,5 +42,9 @@ public interface UserDao {
     List<StyleShortcut> getStyleShortcutsByUsernameOrderedByName(String username);
 
     HttpStatus deleteAccount(String username);
+
+    HttpStatus addCSSAttributeToStyleShortcut(String username, String shortcutName, CSSAttribute attribute);
+
+    HttpStatus removeCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName);
 
 }

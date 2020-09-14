@@ -57,6 +57,7 @@ function Shortcuts() {
         //getting style shortcuts
         const styleResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style-sorted', requestOptions)
         const styleText = await styleResponse.text()
+        console.log(styleText)
         setStyleShortcuts(JSON.parse(styleText))
     }
 
@@ -265,13 +266,14 @@ function Shortcuts() {
                         }
                         {
                             styleShortcuts && styleShortcuts.map(styleShortcut => {
+                                console.log(JSON.stringify(styleShortcut))
                                 return (
                                     <Grid item xs={12} key={styleShortcut.name}>
                                         <StyleShortcutPreview
                                             name={styleShortcut.name} 
                                             button={styleShortcut.key} 
-                                            attribute={styleShortcut.attribute} 
-                                            value={styleShortcut.value} 
+                                            attribute={styleShortcut.attributes[0].attribute} 
+                                            value={styleShortcut.attributes[0].value} 
                                             update={(name, key, attribute, value) => updateStyleShortcut(name, key, attribute, value)}
                                             jwt={jwt}
                                             onError={err => setError(err)}

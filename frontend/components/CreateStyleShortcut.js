@@ -71,7 +71,7 @@ export default function CreateStyleShortcut({ jwt }) {
                     onChange={e => setName(e.target.value)} 
                     style={{width: '100%'}} 
                     helperText={name.length < 4 ? 'the name must be more than three characters' : (createError ? createError : 'name of your new shortcut')}
-                    error={name.length < 4 || createError}
+                    error={name.length < 4 || !!createError}
                     spellCheck='false'
                 />
             </Grid>

@@ -1,21 +1,21 @@
 package com.zackmurry.nottteme.models;
 
+import java.util.List;
+
 public class StyleShortcut implements Shortcut {
 
     private String name;
     private String key;
-    private String attribute; //css attribute
-    private String value; //css value
+    private List<CSSAttribute> attributes;
 
     public StyleShortcut() {
 
     }
 
-    public StyleShortcut(String name, String key, String attribute, String value) {
+    public StyleShortcut(String name, String key, List<CSSAttribute> attributes) {
         this.name = name;
         this.key = key;
-        this.attribute = attribute;
-        this.value = value;
+        this.attributes = attributes;
     }
 
     public String getName() {
@@ -34,19 +34,11 @@ public class StyleShortcut implements Shortcut {
         this.key = key;
     }
 
-    public String getAttribute() {
-        return attribute;
+    public List<CSSAttribute> getAttributes() {
+        return attributes;
     }
 
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public void setAttributes(List<CSSAttribute> attributes) {
+        this.attributes = attributes;
     }
 }

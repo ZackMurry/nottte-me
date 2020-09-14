@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.dao.user;
 
 import com.google.gson.Gson;
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 /**
  * used for accessing and updating data about users and their preferences
  * todo maybe move shortcuts into their own table and thus their own class for services et al
+ * todo only allow one attribute of each attribute type per shortcut (literally doesn't make sense to override itself and makes it easier to index)
  */
 @Service
 public final class UserDataAccessService implements UserDao {
@@ -220,7 +222,7 @@ public final class UserDataAccessService implements UserDao {
 
     //todo not allow two shortcuts with the same key (only one would get activated because of returning)
     @Override
-    public HttpStatus addStyleShortcut(String username, String name, String key, String attribute, String value) {
+    public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes) {
         List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
 
         //checking if any existing style shortcuts have the same name as the new shortcut's name
@@ -228,13 +230,14 @@ public final class UserDataAccessService implements UserDao {
             return HttpStatus.PRECONDITION_FAILED;
         }
 
+
         //checking for text shortcuts with the same name
         List<TextShortcut> textShortcuts = getTextShortcutsByUsername(username);
-        if(textShortcuts.stream().anyMatch(textShortcut -> textShortcut.getName().equals(name))) {
+        if(!textShortcuts.isEmpty() && textShortcuts.stream().anyMatch(textShortcut -> textShortcut.getName().equals(name))) {
             return HttpStatus.PRECONDITION_FAILED;
         }
 
-        styleShortcuts.add(new StyleShortcut(name, key, attribute, value));
+        styleShortcuts.add(new StyleShortcut(name, key, attributes));
         return setStyleShortcutsByName(username, styleShortcuts);
     }
 
@@ -317,5 +320,47 @@ public final class UserDataAccessService implements UserDao {
 
     }
 
+    @Override
+    public HttpStatus addCSSAttributeToStyleShortcut(String username, String shortcutName, CSSAttribute attribute) {
+        if(!accountExists(username)) return HttpStatus.NOT_FOUND;
+
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
+
+        List<StyleShortcut> styleShortcutsWithMatchingName = styleShortcuts.stream().filter(styleShortcut -> styleShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
+        if(styleShortcutsWithMatchingName.isEmpty()) {
+            return HttpStatus.NOT_FOUND;
+        }
+
+        if(styleShortcutsWithMatchingName.size() > 1) {
+            return HttpStatus.PRECONDITION_FAILED;
+        }
+
+        StyleShortcut shortcut = styleShortcutsWithMatchingName.get(0);
+        List<CSSAttribute> attributes = shortcut.getAttributes();
+        attributes.add(attribute);
+        shortcut.setAttributes(attributes);
+        System.out.println(styleShortcuts);
+        setStyleShortcutsByName(username, styleShortcuts);
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus removeCSSAttributeFromStyleShortcut(String username, String shortcutName, String attributeName) {
+        if(!accountExists(username)) return HttpStatus.NOT_FOUND;
+
+        List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
+        List<StyleShortcut> styleShortcutsWithMatchingName = styleShortcuts.stream().filter(styleShortcut -> styleShortcut.getName().equals(shortcutName)).collect(Collectors.toList());
+
+        if(styleShortcutsWithMatchingName.isEmpty()) {
+            return HttpStatus.NOT_FOUND;
+        }
+        if(styleShortcutsWithMatchingName.size() > 1) {
+            return HttpStatus.PRECONDITION_FAILED;
+        }
+
+        StyleShortcut shortcut = styleShortcutsWithMatchingName.get(0);
+        shortcut.setAttributes(shortcut.getAttributes().stream().filter(attribute -> !attribute.getAttribute().equals(attributeName)).collect(Collectors.toList()));
+        return setStyleShortcutsByName(username, styleShortcuts);
+    }
 
 }

@@ -14,7 +14,7 @@ export default function draftToHtml(contentState, styleMap) {
             ...exportHtmlStyles, 
             [childName]: {
                 style: {
-                    [key]: val,
+                    [key]: val
                 }
             }
         }
@@ -42,6 +42,6 @@ export default function draftToHtml(contentState, styleMap) {
             }
         }
     }
-    
+
     return stateToHTML(contentState, exportHtmlOptions)
 }
