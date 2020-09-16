@@ -27,6 +27,7 @@ jobs:
       name: Set up JDK 11
       with:
         java-version: '11.0.7'
+    - name: Test Java version
+      run: java -version
     - name: Build with Maven
-      run: 
-        mvn -X -B package --file pom.xml
+      run: mvn -X -B package --file pom.xml
