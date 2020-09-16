@@ -13,6 +13,7 @@ public class NottteMeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NottteMeApplication.class, args);
+		System.out.println(System.getenv("NOTTTE_JWT_SECRET_KEY"));
 	}
 
 }
