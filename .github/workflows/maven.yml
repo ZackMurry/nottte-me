@@ -1,0 +1,31 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Postgres
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '11'
+        postgresql db: 'nottte'
+        postgresql user: postgres
+        postgresql password: greSQLdb
+    - uses: actions/checkout@v2
+    - uses: AdoptOpenJDK/install-jdk@v1
+      with:
+        version: '11'
+        architecture: x64
+    - name: Test Java version
+      run: java -version
+    - name: Build with Maven
+      run: mvn -X -B package --file pom.xml
