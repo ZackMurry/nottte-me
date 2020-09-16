@@ -39,7 +39,9 @@ jobs:
       with:
         node-version: '12.18.3'
     - name: Install packages
+      working-directory: ${{env.working-directory}}
       run: npm install
     - name: Test build
+      working-directory: ${{env.working-directory}}
       run: npm run-script build
       
