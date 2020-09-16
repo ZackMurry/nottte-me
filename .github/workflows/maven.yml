@@ -17,6 +17,7 @@ jobs:
       uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
+        postgresql db: 'nottte'
     - uses: actions/checkout@v2
     - uses: AdoptOpenJDK/install-jdk@v1
       with:
