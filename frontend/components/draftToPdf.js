@@ -1,4 +1,3 @@
-import { stateToHTML } from "draft-js-export-html"
 import pdfMake from 'pdfmake/build/pdfmake'
 import htmlToPdfmake from 'html-to-pdfmake'
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
