@@ -41,6 +41,8 @@ jobs:
     - name: Install packages
       working-directory: ${{env.working-directory}}
       run: npm install
+    - name: Run tree command
+      run: tree
     - name: Test build
       working-directory: ${{env.working-directory}}
       run: npm run-script build
