@@ -41,10 +41,6 @@ jobs:
     - name: Install packages
       working-directory: ${{env.working-directory}}
       run: npm install
-    - name: Install tree command
-      run: sudo apt-get install tree
-    - name: Run tree command
-      run: tree
     - name: Test build
       working-directory: ${{env.working-directory}}
       run: npm run-script build
