@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Continuous Integration
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs: 
-  build:
+  build-backend:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Postgres
@@ -29,3 +29,19 @@ jobs:
       run: java -version
     - name: Build with Maven
       run: mvn -X -B package --file pom.xml
+  build-frontend:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./frontend
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.18.3'
+    - name: Install packages
+      working-directory: ${{env.working-directory}}
+      run: npm install
+    - name: Test build
+      working-directory: ${{env.working-directory}}
+      run: npm run-script build
+      
