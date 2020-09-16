@@ -18,6 +18,8 @@ jobs:
       with:
         postgresql version: '11'
         postgresql db: 'nottte'
+        postgresql user: postgres
+        postgresql password: greSQLdb
     - uses: actions/checkout@v2
     - uses: AdoptOpenJDK/install-jdk@v1
       with:
