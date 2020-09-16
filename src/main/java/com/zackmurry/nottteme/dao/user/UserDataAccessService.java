@@ -359,6 +359,9 @@ public final class UserDataAccessService implements UserDao {
         }
 
         StyleShortcut shortcut = styleShortcutsWithMatchingName.get(0);
+        if(shortcut.getAttributes().stream().noneMatch(attribute -> attribute.getAttribute().equals(attributeName))) {
+            return HttpStatus.NOT_FOUND;
+        }
         shortcut.setAttributes(shortcut.getAttributes().stream().filter(attribute -> !attribute.getAttribute().equals(attributeName)).collect(Collectors.toList()));
         return setStyleShortcutsByName(username, styleShortcuts);
     }
