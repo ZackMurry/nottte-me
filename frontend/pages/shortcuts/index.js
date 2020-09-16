@@ -111,6 +111,13 @@ function Shortcuts() {
         setStyleShortcuts(updatedStyleShortcuts)
     }
 
+    const deleteTextShortcut = (name) => {
+        let index = binarySearchShortcuts(textShortcuts, name)
+        let updatedTextShortcuts = textShortcuts.slice()
+        updatedTextShortcuts.splice(index, 1)
+        setTextShortcuts(updatedTextShortcuts)
+    }
+
     return (
         <div>
             <Head>
@@ -197,6 +204,7 @@ function Shortcuts() {
                                             jwt={jwt}
                                             onError={err => setError(err)}
                                             showError={show => setShowError(show)}
+                                            deleteSelf={() => deleteTextShortcut(textShortcut.name)}
                                         />
                                     </Grid>
                                 )
@@ -273,8 +281,6 @@ function Shortcuts() {
                         }
                         {
                             styleShortcuts && styleShortcuts.map((styleShortcut, i) => {
-                                console.log(JSON.stringify(styleShortcut))
-                                console.log(styleShortcut.key)
                                 return (
                                     <Grid item xs={12} key={i}>
                                         <StyleShortcutPreview

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Typography, Grid, IconButton, TextField } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
-
+import DeleteIcon from '@material-ui/icons/Delete';
+import PlainTooltip from './PlainTooltip';
 
 //todo deleting
-export default function TextShortcutPreview({ name, button, text, update, jwt, onError, showError }) {
+export default function TextShortcutPreview({ name, button, text, update, jwt, onError, showError, deleteSelf }) {
 
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button)
@@ -52,6 +53,20 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
         }
     }
 
+    const handleDelete = async () => {
+        //sending to server
+        const requestOptions = {
+            method: 'DELETE', 
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        }
+        const response = await fetch(`http://localhost:8080/api/v1/users/principal/preferences/shortcuts/text/${name}`, requestOptions)
+        console.log(response.status)
+
+        if(response.status == 200) {
+            deleteSelf()
+        }
+    }
+
     return (
         <div>
             {
@@ -72,7 +87,7 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
                             onKeyDown={handleKeyDown}
                         />
                         </Grid>
-                        <Grid item xs={12} lg={5} style={{paddingTop: 0, paddingBottom: 0}}>
+                        <Grid item xs={12} lg={4} style={{paddingTop: 0, paddingBottom: 0}}>
                             <TextField 
                                 value={editedText}
                                 onKeyDown={e => handleEnterDetection(e)}
@@ -83,6 +98,13 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
                                 rowsMax={10}
                                 multiline
                             />
+                        </Grid>
+                        <Grid item xs={3} lg={1}>
+                            <PlainTooltip title='Delete text shortcut'>
+                                <IconButton onClick={handleDelete} style={{padding: 0}}>
+                                    <DeleteIcon color='secondary' />
+                                </IconButton>
+                            </PlainTooltip>
                         </Grid>
                         <Grid item xs={12} lg={1}>
                             <IconButton onClick={handleDone} style={{padding: 0}}>
@@ -110,10 +132,7 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
                         </Grid>
                     </Grid>
                 )
-            }
-            
-                
-                
+            }  
         </div>
 
         

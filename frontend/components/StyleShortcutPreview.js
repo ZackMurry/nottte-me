@@ -9,13 +9,12 @@ import RemoveIcon from '@material-ui/icons/Remove';
 
 export default function StyleShortcutPreview({ name, button, attributes, update, jwt, onError, showError, deleteSelf }) {
 
-    console.log('key: ' + button)
-
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button + '')
     const [ editedAttributes, setEditedAttributes ] = useState(attributes)
     const [ addingAttribute, setAddingAttribute ] = useState(false)
     const [ currentAddingAttribute, setCurrentAddingAttribute ] = useState({attribute: '', value: ''}) //attribute that user is currently adding
+    const [ previewStyles, setPreviewStyles ] = useState({})
 
     const handleKeyDown = (e) => {
         setEditedKey(e.key)
@@ -25,6 +24,15 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
     useEffect(() => {
         setEditedAttributes(attributes)
     }, [ attributes ])
+
+    //updates previewStyles on change of editedAttributes
+    useEffect(() => {
+        let newPreviewStyles = {}
+        for(var i = 0; i < editedAttributes.length; i++) {
+            newPreviewStyles[editedAttributes[i].attribute] = editedAttributes[i].value
+        }
+        setPreviewStyles(newPreviewStyles)
+    }, [ editedAttributes ])
 
     const handleDone = async () => {
         setEditMode(false)
@@ -284,6 +292,16 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
                                 </>
                             )
                         }
+                        {/* preview */}
+                        <Grid item xs={12}>
+                            <div style={{textAlign: 'center', marginTop: '3%'}}>
+                                <Typography variant='h4' style={{
+                                    ...previewStyles
+                                }}>
+                                    Preview
+                                </Typography>
+                            </div>
+                        </Grid>
                     </Grid>
                 )
                 :
