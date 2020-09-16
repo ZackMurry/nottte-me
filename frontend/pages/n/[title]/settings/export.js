@@ -1,7 +1,7 @@
 import { Paper, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Router, useRouter, withRouter } from 'next/router'
+import { useRouter, withRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'

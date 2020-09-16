@@ -6,7 +6,6 @@ import Cookie from 'js-cookie'
 import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
 import { debounce } from 'lodash'
 import Link from 'next/link'
-import draftToPdf from '../../../components/draftToPdf'
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
