@@ -52,5 +52,9 @@ jobs:
     needs: [build-backend]
     runs-on: ubuntu-latest
     steps:
-      - name: Run unit tests
-        run: mvn test -X --file pom.xml
+    - name: Install tree command
+      run: sudo apt-get install tree
+    - name: Run tree command
+      run: tree
+    - name: Run unit tests
+      run: mvn test -X --file pom.xml
