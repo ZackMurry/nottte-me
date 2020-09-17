@@ -53,4 +53,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run unit tests
-        run: mvn test
+        run: mvn test -e
