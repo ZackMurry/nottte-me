@@ -33,6 +33,8 @@ jobs:
         NOTTTE_JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}      
     - name: Build with Maven
       run: mvn -X -B package --file pom.xml -DskipTests
+    - name: Run unit tests
+      run: mvn test -X
   build-frontend:
     runs-on: ubuntu-latest
     env:
@@ -48,15 +50,3 @@ jobs:
     - name: Test build
       working-directory: ${{env.working-directory}}
       run: npm run-script build
-  run-backend-tests:
-    needs: [build-backend]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Install tree command
-      run: sudo apt-get install tree
-    - name: Run tree command
-      run: tree
-    - name: Run ls
-      run: ls
-    - name: Run unit tests
-      run: mvn test -X --file pom.xml
