@@ -34,7 +34,7 @@ jobs:
     - name: Build with Maven
       run: mvn -X -B package --file pom.xml -DskipTests
     - name: Run unit tests
-      run: mvn test -X
+      run: mvn test
   build-frontend:
     runs-on: ubuntu-latest
     env:
