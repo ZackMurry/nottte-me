@@ -56,5 +56,7 @@ jobs:
       run: sudo apt-get install tree
     - name: Run tree command
       run: tree
+    - name: Run ls
+      run: ls
     - name: Run unit tests
       run: mvn test -X --file pom.xml
