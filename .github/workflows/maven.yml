@@ -27,6 +27,10 @@ jobs:
         architecture: x64
     - name: Test Java version
       run: java -version
+    - name: Set environment variables
+      uses: allenevans/set-env@v1.0.0
+      with:
+        NOTTTE_JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}      
     - name: Build with Maven
       run: mvn -X -B package --file pom.xml
   build-frontend:
