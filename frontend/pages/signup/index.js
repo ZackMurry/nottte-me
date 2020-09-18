@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import { Typography, Paper, Button } from '@material-ui/core'
 import Cookie from 'js-cookie'
-import { useRouter, withRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 //todo show errors as snackbars (username taken as error on form) and do some elementary password security
-function SignUpPage() {
+export default function SignUpPage() {
 
     const router = useRouter()
 
@@ -117,5 +117,3 @@ function SignUpPage() {
     )
 
 }
-
-export default withRouter(SignUpPage)

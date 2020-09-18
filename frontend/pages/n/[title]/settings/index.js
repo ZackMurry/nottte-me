@@ -1,11 +1,11 @@
 import { Paper, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useRouter, withRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import React from 'react'
 import Navbar from '../../../../components/Navbar'
 
-function Settings() {
+export default function Settings() {
 
     const router = useRouter()
     const { title } = router.query
@@ -36,5 +36,3 @@ function Settings() {
     )
 
 }
-
-export default withRouter(Settings)

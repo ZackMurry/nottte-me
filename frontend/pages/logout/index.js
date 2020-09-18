@@ -3,7 +3,7 @@ import Navbar from '../../components/Navbar'
 import Cookie from 'js-cookie'
 import { useRouter, withRouter } from 'next/router'
 
-function Logout() {
+export default function Logout() {
 
     const router = useRouter()
 
@@ -20,5 +20,3 @@ function Logout() {
         
     )
 }
-
-export default withRouter(Logout)

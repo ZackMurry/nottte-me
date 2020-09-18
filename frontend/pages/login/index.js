@@ -5,7 +5,7 @@ import { Paper, Typography, Button } from '@material-ui/core'
 import { useRouter, withRouter } from 'next/router'
 import Link from 'next/link'
 
-function Login() {
+export default function Login() {
     
     const router = useRouter()
 
@@ -104,5 +104,3 @@ function Login() {
     )
 
 }
-
-export default withRouter(Login)

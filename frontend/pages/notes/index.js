@@ -5,10 +5,10 @@ import { Grid, Paper, withStyles, IconButton, Typography, Fab } from '@material-
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
-import { useRouter, withRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 //todo display user's actual notes
-function Notes() {
+export default function Notes() {
 
     const router = useRouter()
 
@@ -51,7 +51,7 @@ function Notes() {
                             {
                                 notes.map(note => (
                                     <Grid item xs={12} sm={6} md={4} lg={3} key={note.id}>
-                                        <NotePreview name={note.title} editorState={note.body} />
+                                        <NotePreview name={note.title} editorState={note.body} jwt={jwt} />
                                     </Grid>
                                 ))
                                 
@@ -86,5 +86,3 @@ function Notes() {
     )
 
 }
-
-export default withRouter(Notes)

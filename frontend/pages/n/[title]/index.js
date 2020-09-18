@@ -24,7 +24,7 @@ const emptyContentState = convertFromRaw({
 //used for writing notes
 //todo visual saving indicator
 //todo collapse selection on shortcut (or preferably replace selected text)
-function Note() {
+export default function Note() {
     
     const { hasCommandModifier } = KeyBindingUtil
 
@@ -355,5 +355,3 @@ function Note() {
     )
 
 }
-
-export default withRouter(Note)

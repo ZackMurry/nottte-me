@@ -1,7 +1,7 @@
 import { Paper, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useRouter, withRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
@@ -11,7 +11,7 @@ import draftToPdf from '../../../../components/draftToPdf'
 import openInNewTab from '../../../../components/openInNewTab'
 import draftToHtml from '../../../../components/draftToHtml'
 
-function Export() {
+export default function Export() {
 
     const router = useRouter()
     const { title } = router.query
@@ -248,5 +248,3 @@ function Export() {
     )
 
 }
-
-export default withRouter(Export)
