@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Paper, Typography, Card, CardContent, CardActions, IconButton, Popper, Fade, Grow, ClickAwayListener, Button } from '@material-ui/core'
+import { Paper, Typography, Card, CardContent, CardActions, IconButton, Popper, Grow, ClickAwayListener, Button, TextField } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import { EditorState, convertFromRaw } from 'draft-js'
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import YesNoDialog from './YesNoDialog';
+import DoneIcon from '@material-ui/icons/Done';
 
-export default function NotePreview({ name, editorState, jwt }) {
+export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
 
     const [ rawText, setRawText] = useState('')
     const [ showingMore, setShowingMore ] = useState(false)
     const [ anchorElement, setAnchorElement ] = useState(null)
 
     const [ showDeleteDialog, setShowDeleteDialog ] = useState(false)
+    const [ editingName, setEditingName ] = useState(false)
+    const [ editedName, setEditedName ] = useState(name)
 
     const router = useRouter()
 
@@ -27,6 +30,10 @@ export default function NotePreview({ name, editorState, jwt }) {
             setRawText(plainText)
         }
     }, [ editorState ])
+
+    useEffect(() => {
+        setEditedName(name)
+    }, [ name ])
 
     const goToNotePage = () => {
         router.push('/n/' + encodeURI(name))
@@ -52,6 +59,27 @@ export default function NotePreview({ name, editorState, jwt }) {
         router.reload()
     }
 
+    const handleDoneRenaming = async e => {
+        e.stopPropagation()
+        setEditingName(false)
+
+        if(name == editedName) return
+
+        const requestOptions = {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        }
+
+        const response = await fetch(`http://localhost:8080/api/v1/notes/principal/note/${name}/rename/${editedName}`, requestOptions)
+
+        if(response.status == 200) {
+            onNoteRename(editedName)
+        } else {
+            console.log(response.status)
+        }
+
+    }
+    
     return (
         <React.Fragment>
             <Popper open={showingMore} anchorEl={anchorElement} placement={'right'}>
@@ -72,11 +100,11 @@ export default function NotePreview({ name, editorState, jwt }) {
                                 color='primary'
                                 startIcon={<EditIcon color='secondary' fontSize='large'/>}
                                 style={{textTransform: 'none', width: '100%', maxWidth: '12.5vw'}}
+                                onClick={() => {setEditingName(true); setShowingMore(false)}}
                             >
                                 <Typography color='secondary'> 
                                     Rename note
                                 </Typography>
-
                             </Button>
                         </Paper>
                     </Grow>
@@ -94,13 +122,29 @@ export default function NotePreview({ name, editorState, jwt }) {
                         </div>
                     </CardContent>
                     <CardActions>
-                        <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
-                            <Typography variant='h4' style={{marginLeft: 10}}>{ name }</Typography>
-                            <IconButton onClick={onShowMore}>
-                                <MoreVertIcon color='secondary' />
-                            </IconButton>
-                            
-                        </div>
+                        {
+                            editingName
+                            ?
+                            <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}} onClick={e => e.stopPropagation()}>
+                                <TextField
+                                    value={editedName}
+                                    onChange={e => setEditedName(e.target.value)}
+                                    onClick={e => e.stopPropagation()}
+                                    style={{marginLeft: 10, width: '85%', marginRight: 10}}
+                                    InputProps={{style: {fontSize: 28}}}
+                                />
+                                <IconButton onClick={handleDoneRenaming}>
+                                    <DoneIcon color='secondary' />
+                                </IconButton>
+                            </div>
+                            :
+                            <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                                <Typography variant='h4' style={{marginLeft: 10}}>{ name }</Typography>
+                                <IconButton onClick={onShowMore}>
+                                    <MoreVertIcon color='secondary' />
+                                </IconButton>
+                            </div>
+                        }
                         
                     </CardActions>
                     

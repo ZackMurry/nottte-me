@@ -37,6 +37,12 @@ export default function Notes() {
         setMenuOpen(!menuOpen)
     }
 
+    const handleNoteRename = (index, newName) => {
+        let newNotes = notes.slice()
+        newNotes[index].title = newName
+        setNotes(newNotes)
+    }
+
     return (
         <div>
             <div style={{marginTop: '10vh'}} >
@@ -49,9 +55,9 @@ export default function Notes() {
                     <div style={{margin: 0}}>
                         <Grid container spacing={3} style={{margin: 0, width: '100%'}}>
                             {
-                                notes.map(note => (
+                                notes.map((note, i) => (
                                     <Grid item xs={12} sm={6} md={4} lg={3} key={note.id}>
-                                        <NotePreview name={note.title} editorState={note.body} jwt={jwt} />
+                                        <NotePreview name={note.title} editorState={note.body} jwt={jwt} onNoteRename={(newName) => handleNoteRename(i, newName)} />
                                     </Grid>
                                 ))
                                 

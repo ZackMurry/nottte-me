@@ -109,10 +109,16 @@ public class NoteController {
         return new ResponseEntity<>(status);
     }
 
-    @PatchMapping("/note/{title}/rename/{newTitle}")
-    public ResponseEntity<HttpStatus> renameNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) throws NotFoundException {
+    @PatchMapping("/principal/note/{title}/rename/{newTitle}")
+    public ResponseEntity<HttpStatus> renamePrincipalNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) throws NotFoundException {
          HttpStatus status = noteService.renameNote(oldTitle, newTitle, SecurityContextHolder.getContext().getAuthentication().getName());
          return new ResponseEntity<>(status);
+    }
+
+    @PatchMapping("/user/{username}/note/{title}/rename/{newTitle}")
+    public ResponseEntity<HttpStatus> renameUserNote(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("newTitle") String newTitle) throws NotFoundException {
+        HttpStatus status = noteService.renameNote(title, newTitle, username);
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/count")
