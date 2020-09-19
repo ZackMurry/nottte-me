@@ -7,15 +7,17 @@ public class StyleShortcut implements Shortcut {
     private String name;
     private String key;
     private List<CSSAttribute> attributes;
+    private boolean alt;
 
     public StyleShortcut() {
 
     }
 
-    public StyleShortcut(String name, String key, List<CSSAttribute> attributes) {
+    public StyleShortcut(String name, String key, List<CSSAttribute> attributes, boolean alt) {
         this.name = name;
         this.key = key;
         this.attributes = attributes;
+        this.alt = alt;
     }
 
     public String getName() {
@@ -40,5 +42,13 @@ public class StyleShortcut implements Shortcut {
 
     public void setAttributes(List<CSSAttribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public boolean getAlt() {
+        return alt;
+    }
+
+    public void setAlt(boolean alt) {
+        this.alt = alt;
     }
 }

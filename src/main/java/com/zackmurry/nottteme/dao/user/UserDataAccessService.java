@@ -223,7 +223,7 @@ public final class UserDataAccessService implements UserDao {
 
     //todo not allow two shortcuts with the same key (only one would get activated because of returning)
     @Override
-    public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes) {
+    public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes, boolean alt) {
         List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);
 
         //checking if any existing style shortcuts have the same name as the new shortcut's name
@@ -238,7 +238,7 @@ public final class UserDataAccessService implements UserDao {
             return HttpStatus.PRECONDITION_FAILED;
         }
 
-        styleShortcuts.add(new StyleShortcut(name, key, attributes));
+        styleShortcuts.add(new StyleShortcut(name, key, attributes, alt));
         return setStyleShortcutsByName(username, styleShortcuts);
     }
 

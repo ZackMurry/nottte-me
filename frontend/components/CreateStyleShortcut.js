@@ -21,12 +21,14 @@ export default function CreateStyleShortcut({ jwt }) {
     const [ key, setKey ] = useState(defaultKey)
     const [ attribute, setAttribute ] = useState(defaultAttribute)
     const [ value, setValue ] = useState(defaultValue)
+    const [ alt, setAlt ] = useState(false)
 
     const [ createError, setCreateError ] = useState('')
     const [ hoveringOverCreateButton, setHoveringOverCreateButton ] = useState(false) //used for tooltip
 
     const handleKeyDown = (e) => {
         setKey(e.key)
+        setAlt(e.altKey)
         e.preventDefault()
     }
 
@@ -45,7 +47,8 @@ export default function CreateStyleShortcut({ jwt }) {
                 attributes: [{
                     attribute: attribute,
                     value: value
-                }]
+                }],
+                alt: alt
             })
         }
 
@@ -79,7 +82,7 @@ export default function CreateStyleShortcut({ jwt }) {
             </Grid>
             <Grid item xs={2}>
                 <TextField 
-                    value={key} 
+                    value={(alt ? 'ALT+' : '') + key} 
                     style={{width: '100%', caretColor: 'transparent'}} 
                     helperText='key to use with control. just click and hit a key' 
                     error={key == defaultKey && (name != defaultName || attribute != defaultAttribute)}

@@ -62,6 +62,7 @@ export default function Shortcuts() {
     }
 
     //find current index of shortcut
+    //binary searching because it's alphabetically sorted
     const binarySearchShortcuts = (array, name) => {
         let start = 0
         let stop = array.length-1
@@ -94,13 +95,14 @@ export default function Shortcuts() {
         setTextShortcuts(updatedTextShortcuts)
     }
 
-    const updateStyleShortcut = (name, key, attributes) => {
+    const updateStyleShortcut = (name, key, attributes, alt) => {
         let index = binarySearchShortcuts(styleShortcuts, name)
         let updatedStyleShortcuts = styleShortcuts.slice()
         updatedStyleShortcuts.splice(index, 1, {
             name: name,
             key: key,
-            attributes: attributes
+            attributes: attributes,
+            alt: alt
         })
         setStyleShortcuts(updatedStyleShortcuts)
     }
@@ -289,8 +291,9 @@ export default function Shortcuts() {
                                         <StyleShortcutPreview
                                             name={styleShortcut.name} 
                                             button={styleShortcut.key} 
-                                            attributes={styleShortcut.attributes} 
-                                            update={(name, key, attribute, value) => updateStyleShortcut(name, key, attribute, value)}
+                                            attributes={styleShortcut.attributes}
+                                            alt={styleShortcut.alt} 
+                                            update={(name, key, attributes, alt) => updateStyleShortcut(name, key, attributes, alt)}
                                             jwt={jwt}
                                             onError={err => setError(err)}
                                             showError={show => setShowError(show)}

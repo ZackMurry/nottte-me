@@ -55,8 +55,8 @@ public class UserService {
         return userDao.getStyleShortcutsByUsername(username);
     }
 
-    public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes) {
-        return userDao.addStyleShortcut(username, name, key, attributes);
+    public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes, boolean alt) {
+        return userDao.addStyleShortcut(username, name, key, attributes, alt);
     }
 
     public HttpStatus deleteStyleShortcutByName(String username, String shortcutName) {

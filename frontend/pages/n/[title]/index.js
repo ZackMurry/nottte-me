@@ -286,7 +286,7 @@ export default function Note() {
         }
         for(var i = 0; i < styleShortcuts.length; i++) {
             let shortcut = styleShortcuts[i]
-            if(e.key == shortcut.key) {
+            if(e.key == shortcut.key && e.altKey == shortcut.alt) {
                 console.log('ran: ' + shortcut.name)
                 e.preventDefault()
                 return shortcut.name

@@ -35,13 +35,13 @@ public class StyleShortcutController {
 
     @PostMapping("/user/{username}/preferences/shortcuts/style")
     public ResponseEntity<HttpStatus> addStyleShortcut(@PathVariable String username, @RequestBody StyleShortcut styleShortcut) {
-        HttpStatus status = userService.addStyleShortcut(username, styleShortcut.getName(), styleShortcut.getKey(), styleShortcut.getAttributes());
+        HttpStatus status = userService.addStyleShortcut(username, styleShortcut.getName(), styleShortcut.getKey(), styleShortcut.getAttributes(), styleShortcut.getAlt());
         return new ResponseEntity<>(status);
     }
 
     @PostMapping("/principal/preferences/shortcuts/style")
     public ResponseEntity<HttpStatus> addStyleShortcutToPrincipal(@RequestBody StyleShortcut styleShortcut) {
-        HttpStatus status = userService.addStyleShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), styleShortcut.getName(), styleShortcut.getKey(), styleShortcut.getAttributes());
+        HttpStatus status = userService.addStyleShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), styleShortcut.getName(), styleShortcut.getKey(), styleShortcut.getAttributes(), styleShortcut.getAlt());
         return new ResponseEntity<>(status);
     }
 

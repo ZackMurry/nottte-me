@@ -7,17 +7,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
-export default function StyleShortcutPreview({ name, button, attributes, update, jwt, onError, showError, deleteSelf }) {
+export default function StyleShortcutPreview({ name, button, attributes, alt, update, jwt, onError, showError, deleteSelf }) {
 
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button + '')
     const [ editedAttributes, setEditedAttributes ] = useState(attributes)
+    const [ editedAlt, setEditedAlt ] = useState(alt)
+
     const [ addingAttribute, setAddingAttribute ] = useState(false)
     const [ currentAddingAttribute, setCurrentAddingAttribute ] = useState({attribute: '', value: ''}) //attribute that user is currently adding
     const [ previewStyles, setPreviewStyles ] = useState({})
 
     const handleKeyDown = (e) => {
         setEditedKey(e.key)
+        setEditedAlt(e.altKey)
         e.preventDefault()
     }
 
@@ -38,7 +41,7 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
         setEditMode(false)
         
         //checking if anything has been changed
-        if(editedKey == button && editedAttributes == attributes) return
+        if(editedKey == button && editedAttributes == attributes && editedAlt == alt) return
         
         
         
@@ -49,7 +52,8 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
             body: JSON.stringify({
                 name: name,
                 key: editedKey,
-                attributes: editedAttributes
+                attributes: editedAttributes,
+                alt: editedAlt
             })
         }
 
@@ -62,7 +66,7 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
         }
 
         //sends to parent
-        update(name, editedKey, editedAttributes)
+        update(name, editedKey, editedAttributes, editedAlt)
     }
 
     //automatically finishes editing when enter is pressed on text field
@@ -144,7 +148,7 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
                         </Grid>
                         <Grid item xs={12} lg={2}>
                             <TextField 
-                                value={editedKey} 
+                                value={(editedAlt ? 'ALT+' : '') + editedKey} 
                                 style={{width: '100%', caretColor: 'transparent'}} 
                                 spellCheck='false'
                                 onKeyDown={handleKeyDown}
@@ -311,7 +315,7 @@ export default function StyleShortcutPreview({ name, button, attributes, update,
                             <Typography>{ name }</Typography>
                         </Grid>
                         <Grid item xs={12} lg={2}>
-                            <Typography style={{fontWeight: 500}}>CTRL+{ button }</Typography>
+                            <Typography style={{fontWeight: 500}}>CTRL+{alt ? 'ALT+' : ''}{ button }</Typography>
                         </Grid>
                         {
                             attributes && attributes.map(({attribute, value}, i) => (

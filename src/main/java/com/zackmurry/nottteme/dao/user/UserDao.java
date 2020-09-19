@@ -32,7 +32,7 @@ public interface UserDao {
 
     List<StyleShortcut> getStyleShortcutsByUsername(String username);
 
-    HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes);
+    HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes, boolean alt);
 
     HttpStatus setStyleShortcutsByName(String username, List<StyleShortcut> updatedStyleShortcuts);
 
