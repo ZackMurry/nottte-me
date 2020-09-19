@@ -1,7 +1,7 @@
 import React from 'react'
 import { Snackbar, IconButton, SnackbarContent } from "@material-ui/core";
-import green from '@material-ui/core/colors/green';
 import CloseIcon from '@material-ui/icons/Close';
+import theme from './theme'
 
 export default function PlainSnackbar ({ message, duration, value, onClose }) {
 
@@ -15,6 +15,7 @@ export default function PlainSnackbar ({ message, duration, value, onClose }) {
                 horizontal: 'left'
             }}
             color='secondary'
+            bodyStyle={{ backgroundColor: theme.palette.secondary.main}}
         >
             <SnackbarContent style={{backgroundColor: 'secondary'}} message={message} 
                 action={

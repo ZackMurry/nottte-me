@@ -7,6 +7,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import YesNoDialog from './YesNoDialog';
 import DoneIcon from '@material-ui/icons/Done';
+import PlainSnackbar from './PlainSnackbar'
 
 export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
 
@@ -15,6 +16,8 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
     const [ anchorElement, setAnchorElement ] = useState(null)
 
     const [ showDeleteDialog, setShowDeleteDialog ] = useState(false)
+    const [ showRenameSnackbar, setShowRenameSnackbar ] = useState(false)
+
     const [ editingName, setEditingName ] = useState(false)
     const [ editedName, setEditedName ] = useState(name)
 
@@ -70,11 +73,15 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
         }
 
-        const response = await fetch(`http://localhost:8080/api/v1/notes/principal/note/${name}/rename/${editedName}`, requestOptions)
-
+        const response = await fetch(`http://localhost:8080/api/v1/notes/principal/note/${name}/rename/${editedName}`, requestOptions).catch(() => setShowRenameSnackbar(true))
+        setEditedName(name)
+        if(!response) {
+            return
+        }
         if(response.status == 200) {
             onNoteRename(editedName)
         } else {
+            setShowRenameSnackbar(true)
             console.log(response.status)
         }
 
@@ -159,6 +166,13 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
                 onClose={() => setShowDeleteDialog(false)}
                 open={showDeleteDialog}
                 onResponse={val => val ? handleDelete() : setShowDeleteDialog(false)}
+            />
+
+            <PlainSnackbar
+                message='Error renaming note. Please try again.'
+                duration={3000}
+                value={showRenameSnackbar}
+                onClose={() => setShowRenameSnackbar(false)}
             />
         </React.Fragment>
         

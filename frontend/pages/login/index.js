@@ -12,6 +12,9 @@ export default function Login() {
     const [ username, setUsername ] = useState('')
     const [ password, setPassword ] = useState('')
 
+    const redirectTo = router.query.redirect
+
+    console.log(JSON.stringify(router.query))
     const handleSubmit = async (e) => {
         e.preventDefault()
         
@@ -29,7 +32,11 @@ export default function Login() {
         Cookie.set('jwt', JSON.parse(text).jwt)
 
         if(response.status == 200) {
-            router.push('/notes')
+            if(redirectTo) {
+                router.push(redirectTo)
+            } else {
+                router.push('/notes')
+            }
         }
 
     }
@@ -88,9 +95,9 @@ export default function Login() {
                         <Typography style={{color: 'black'}}>
                             Don't have an account?
                             <Link href='/signup'>
-                                <div style={{display: 'inline-flex', margin: '0 5px', cursor: 'pointer', textDecoration: 'underline'}}>
+                                <span style={{display: 'inline-flex', margin: '0 5px', cursor: 'pointer', textDecoration: 'underline'}}>
                                     Sign up.
-                                </div>
+                                </span>
                             </Link>
                         </Typography>
                     </div>

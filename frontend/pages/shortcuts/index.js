@@ -136,7 +136,8 @@ export default function Shortcuts() {
                     minHeight: '120vh', 
                     paddingBottom: '10vh',
                     borderRadius: 40, 
-                    boxShadow: '5px 5px 10px black'
+                    boxShadow: '5px 5px 10px black',
+                    minWidth: 750
                 }} 
             >
                 <Typography variant='h2' style={{textAlign: 'center', paddingTop: '2.5vh', marginBottom: '2.5vh'}}>
