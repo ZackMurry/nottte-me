@@ -8,15 +8,17 @@ public class TextShortcut implements Shortcut {
     private String name;
     private String key;
     private String text;
+    private boolean alt;
 
     public TextShortcut() {
 
     }
 
-    public TextShortcut(String name, String text, String key) {
+    public TextShortcut(String name, String text, String key, boolean alt) {
         this.name = name;
         this.key = key;
         this.text = text;
+        this.alt = alt;
     }
 
     public String getName() {
@@ -43,4 +45,11 @@ public class TextShortcut implements Shortcut {
         this.text = text;
     }
 
+    public boolean getAlt() {
+        return alt;
+    }
+
+    public void setAlt(boolean alt) {
+        this.alt = alt;
+    }
 }

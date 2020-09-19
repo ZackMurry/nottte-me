@@ -82,13 +82,14 @@ export default function Shortcuts() {
         return (array[middle].name != name) ? -1 : middle
     }
 
-    const updateTextShortcut = (name, key, text) => {
+    const updateTextShortcut = (name, key, text, alt) => {
         let index = binarySearchShortcuts(textShortcuts, name)
         let updatedTextShortcuts = textShortcuts.slice()
         updatedTextShortcuts.splice(index, 1, {
             name: name,
             key: key,
-            text: text
+            text: text,
+            alt: alt
         })
         setTextShortcuts(updatedTextShortcuts)
     }
@@ -201,7 +202,8 @@ export default function Shortcuts() {
                                             button={textShortcut.key} 
                                             text={textShortcut.text} 
                                             key={textShortcut.name}
-                                            update={(name, key, text) => updateTextShortcut(name, key, text)}
+                                            alt={textShortcut.alt}
+                                            update={(name, key, text, alt) => updateTextShortcut(name, key, text, alt)}
                                             jwt={jwt}
                                             onError={err => setError(err)}
                                             showError={show => setShowError(show)}

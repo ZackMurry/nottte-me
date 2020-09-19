@@ -99,5 +99,7 @@ public class UserDataAccessServiceTest {
         assertThrows(SignatureException.class, () -> Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(JwtSecretKey.getSecretKey() + "ADDED_VALUE")).parseClaimsJws(jwt), "JWT should be rejected if private key is changed.");
         assertDoesNotThrow(() -> Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(JwtSecretKey.getSecretKey())).parseClaimsJws(jwt), "JWT should not be rejected if it is not altered.");
     }
+
+    //todo add tests for shortcuts
     
 }

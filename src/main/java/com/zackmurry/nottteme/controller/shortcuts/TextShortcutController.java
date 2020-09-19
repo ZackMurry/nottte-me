@@ -22,13 +22,13 @@ public class TextShortcutController {
 
     @PostMapping("/user/{username}/preferences/shortcuts/text")
     public ResponseEntity<HttpStatus> addTextShortcut(@PathVariable String username, @RequestBody TextShortcut textShortcut) {
-        HttpStatus status = userService.addTextShortcut(username, textShortcut.getName(), textShortcut.getText(), textShortcut.getKey());
+        HttpStatus status = userService.addTextShortcut(username, textShortcut.getName(), textShortcut.getText(), textShortcut.getKey(), textShortcut.getAlt());
         return new ResponseEntity<>(status);
     }
 
     @PostMapping("/principal/preferences/shortcuts/text")
     public ResponseEntity<HttpStatus> addTextShortcutToPrincipal(@RequestBody TextShortcut textShortcut) {
-        HttpStatus status = userService.addTextShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), textShortcut.getName(), textShortcut.getText(), textShortcut.getKey());
+        HttpStatus status = userService.addTextShortcut(SecurityContextHolder.getContext().getAuthentication().getName(), textShortcut.getName(), textShortcut.getText(), textShortcut.getKey(), textShortcut.getAlt());
         return new ResponseEntity<>(status);
     }
 

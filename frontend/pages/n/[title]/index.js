@@ -1,4 +1,4 @@
-import { useRouter, withRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import React, { useState, useEffect, useCallback } from 'react'
 import { Typography } from '@material-ui/core'
 import Head from 'next/head'
@@ -25,8 +25,6 @@ const emptyContentState = convertFromRaw({
 //todo visual saving indicator
 //todo collapse selection on shortcut (or preferably replace selected text)
 export default function Note() {
-    
-    const { hasCommandModifier } = KeyBindingUtil
 
     const router = useRouter()
     const { title } = router.query
@@ -114,8 +112,6 @@ export default function Note() {
             return 'handled'
         } 
 
-        //todo block styles
-        console.log(command)
         //user can set shortcut name to __BLOCK-CLASS__ to enable some special block types
         if(command == '__center__') {
             setEditorState(RichUtils.toggleBlockType(editorState, 'center'))
@@ -257,7 +253,7 @@ export default function Note() {
         //todo maybe make custom replaceall function so that it can scan for all of the replaces in O(n) instead
         //of O(n*checks). can use a HashMap for that (or whatever it is in javascript)
         textShortcutText = textShortcutText.replaceAll("\\\\n", "\\n").replaceAll("\\\\t", "\\t")
-
+        
         setTextShortcuts(JSON.parse(textShortcutText))
     }
     
@@ -269,10 +265,9 @@ export default function Note() {
         }
 
         //used for clarity and non-shortcut efficiency
-        if(!hasCommandModifier(e)) {
+        if(!e.ctrlKey) {
             return getDefaultKeyBinding(e);
         }
-
 
         //todo prevent users from making CTRL + S shortcuts
         //saving note with shortcut
@@ -283,7 +278,7 @@ export default function Note() {
 
         for(var i = 0; i < textShortcuts.length; i++) {
             let shortcut = textShortcuts[i]
-            if(e.key == shortcut.key) {
+            if(e.key == shortcut.key && e.altKey == shortcut.alt) {
                 console.log('ran: ' + shortcut.name)
                 e.preventDefault()
                 return shortcut.name
@@ -325,7 +320,7 @@ export default function Note() {
                 </Typography>
             </Link>
             
-            <div style={{width: '55%', margin: '10vh auto'}}>
+            <div style={{width: '55%', minWidth: 750, margin: '10vh auto'}}>
                 <div style={{display: 'inline-flex', width: '100%'}}>
                     <Typography variant='h4' color='primary' style={{width: '50%', fontWeight: 300}}>
                         {title}

@@ -138,7 +138,7 @@ public final class UserDataAccessService implements UserDao {
      * @return http response describing success/fail
      */
     @Override
-    public HttpStatus addTextShortcut(String username, String name, String text, String key) {
+    public HttpStatus addTextShortcut(String username, String name, String text, String key, boolean alt) {
         List<TextShortcut> textShortcuts = getTextShortcutsByUsername(username);
 
         //checking if any existing text shortcuts have the same name
@@ -152,7 +152,7 @@ public final class UserDataAccessService implements UserDao {
             return HttpStatus.PRECONDITION_FAILED;
         }
 
-        textShortcuts.add(new TextShortcut(name, text, key));
+        textShortcuts.add(new TextShortcut(name, text, key, alt));
         return setTextShortcutsByName(username, textShortcuts);
     }
 

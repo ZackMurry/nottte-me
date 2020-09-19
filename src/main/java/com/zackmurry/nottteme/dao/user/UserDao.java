@@ -22,7 +22,7 @@ public interface UserDao {
 
     List<TextShortcut> getTextShortcutsByUsernameOrderedByName(String username);
 
-    HttpStatus addTextShortcut(String username, String name, String text, String keyCode);
+    HttpStatus addTextShortcut(String username, String name, String text, String key, boolean alt);
 
     HttpStatus deleteTextShortcutByName(String username, String shortcutName);
 

@@ -31,8 +31,8 @@ public class UserService {
         return userDao.getUserByUsername(username);
     }
 
-    public HttpStatus addTextShortcut(String username, String name, String text, String key) {
-        return userDao.addTextShortcut(username, name, text, key);
+    public HttpStatus addTextShortcut(String username, String name, String text, String key, boolean alt) {
+        return userDao.addTextShortcut(username, name, text, key, alt);
     }
 
     public List<TextShortcut> getTextShortcutsByUsername(String username) {

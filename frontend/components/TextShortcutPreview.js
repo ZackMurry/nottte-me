@@ -6,17 +6,18 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import PlainTooltip from './PlainTooltip';
 
 //todo deleting
-export default function TextShortcutPreview({ name, button, text, update, jwt, onError, showError, deleteSelf }) {
+export default function TextShortcutPreview({ name, button, text, alt, update, jwt, onError, showError, deleteSelf }) {
 
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button)
     const [ editedText, setEditedText ] = useState(text)
+    const [ editedAlt, setEditedAlt ] = useState(alt)
 
     const handleDone = async () => {
         setEditMode(false)
 
         //checking if anything has been changed
-        if(editedKey == button && editedText == text) return
+        if(editedKey == button && editedText == text && editedAlt == alt) return
         
         //sending to server
         const requestOptions = {
@@ -25,7 +26,8 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
             body: JSON.stringify({
                 name: name,
                 key: editedKey,
-                text: editedText
+                text: editedText,
+                alt: editedAlt
             })
         }
 
@@ -38,11 +40,12 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
             return
         }
 
-        update(name, editedKey, editedText)
+        update(name, editedKey, editedText, editedAlt)
     }
 
     const handleKeyDown = (e) => {
         setEditedKey(e.key)
+        setEditedAlt(e.altKey)
         e.preventDefault()
     }
 
@@ -81,7 +84,7 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
                         </Grid>
                         <Grid item xs={12} lg={2} style={{paddingTop: 0, paddingBottom: 0}}>
                         <TextField 
-                            value={editedKey} 
+                            value={(editedAlt ? 'ALT+' : '') + editedKey} 
                             style={{width: '100%', caretColor: 'transparent'}} 
                             spellCheck='false'
                             onKeyDown={handleKeyDown}
@@ -120,7 +123,7 @@ export default function TextShortcutPreview({ name, button, text, update, jwt, o
                             <Typography>{ name }</Typography>
                         </Grid>
                         <Grid item xs={12} lg={2}>
-                            <Typography style={{fontWeight: 500}}>CTRL + { button }</Typography>
+                            <Typography style={{fontWeight: 500}}>CTRL+{alt ? 'ALT+' : ''}{ button }</Typography>
                         </Grid>
                         <Grid item xs={12} lg={5}>
                             <Typography>{ text.replaceAll('\\n', '\n').replaceAll('\\t', '\t') }</Typography>
