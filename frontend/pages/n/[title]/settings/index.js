@@ -6,8 +6,8 @@ import React, { useEffect } from 'react'
 import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import RenameNoteField from '../../../../components/RenameNoteField'
+import DeleteNoteInSettings from '../../../../components/DeleteNoteInSettings'
 
-//todo this is showing a warning of "Unknown key passed via urlObject into url.format: searchParams"
 export default function Settings() {
 
     const router = useRouter()
@@ -42,6 +42,8 @@ export default function Settings() {
         return await response.text()
     }
 
+
+
     return (
         <div>
             <Head>
@@ -70,7 +72,7 @@ export default function Settings() {
                 </Typography>
                 <div id='table-of-contents' style={{marginTop: '5vh'}}>
                     <Typography variant='h4' style={{textAlign: 'center'}}>
-                        <Link href={`/n/${encodeURI(title)}/settings`}>
+                        <Link href={`/n/${title ? title : 'error'}/settings`} as={`/n/${title ? title : 'error'}/settings`}>
                             General
                         </Link>
                     </Typography>
@@ -100,6 +102,12 @@ export default function Settings() {
                             </Typography>
                             <RenameNoteField name={router.query.title} jwt={jwt} />
                         </div>
+                    </div>
+                    <div id='delete'>
+                        <Typography variant='h3' style={{textAlign: 'center'}}>
+                            Delete note
+                        </Typography>
+                        <DeleteNoteInSettings jwt={jwt} title={title} />
                     </div>
                 </div>
 

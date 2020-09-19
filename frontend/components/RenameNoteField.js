@@ -6,7 +6,7 @@ export default function RenameNoteField({ name, jwt }) {
 
     const router = useRouter()
 
-    const [ editedName, setEditedName ] = useState(name)
+    const [ editedName, setEditedName ] = useState(name ? name : router.query.name)
 
     useEffect(() => {
         setEditedName(name)
@@ -29,9 +29,10 @@ export default function RenameNoteField({ name, jwt }) {
     return (
         <div style={{margin: 10}}>
             <TextField
-                value={editedName}
+                value={editedName ? editedName : ''}
                 onChange={e => setEditedName(e.target.value)}
                 style={{margin: 5}}
+
             />
             <Button color='secondary' variant='contained' onClick={handleRename} style={{margin: 5}}>
                 Rename note

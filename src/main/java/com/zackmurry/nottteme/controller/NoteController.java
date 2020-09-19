@@ -134,8 +134,6 @@ public class NoteController {
 
     @GetMapping("/principal/has/{title}")
     public boolean principalHasNote(@PathVariable("title") String title) {
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getName() + "; " + title);
-
         return noteService.userHasNote(title, SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
