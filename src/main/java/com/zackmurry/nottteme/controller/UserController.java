@@ -35,7 +35,8 @@ public class UserController {
         //encoder automatically salts it
         String encodedPassword = encoder.encode(user.getPassword());
 
-        boolean create = userService.createUserAccount(user.getUsername(), encodedPassword);
+        System.out.println(user.getEmail());
+        boolean create = userService.createUserAccount(user.getUsername(), encodedPassword, user.getEmail());
         if(create) return new ResponseEntity<>(HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
@@ -47,6 +48,12 @@ public class UserController {
 
     @GetMapping("/user/{username}")
     public Optional<User> getUserByName(@PathVariable String username) {
+        return userService.getUserByUsername(username);
+    }
+
+    @GetMapping("/principal")
+    public Optional<User> getPrincipalObject() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.getUserByUsername(username);
     }
 
@@ -67,6 +74,18 @@ public class UserController {
         //deleting all the user's notes
         HttpStatus deleteNotesStatus = noteService.deleteNotesByAuthor(username);
         return new ResponseEntity<>(deleteNotesStatus);
+    }
+
+    @PostMapping("/user/{username}/email")
+    public ResponseEntity<HttpStatus> updateUserAccountEmail(@PathVariable("username") String username, @RequestBody String email) {
+        HttpStatus status = userService.updateEmail(username, email);
+        return new ResponseEntity<>(status);
+    }
+
+    @PostMapping("/principal/email")
+    public ResponseEntity<HttpStatus> updatePrincipalAccountEmail(@RequestBody String email) {
+        HttpStatus status = userService.updateEmail(SecurityContextHolder.getContext().getAuthentication().getName(), email);
+        return new ResponseEntity<>(status);
     }
 
 }

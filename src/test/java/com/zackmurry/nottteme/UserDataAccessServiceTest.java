@@ -62,7 +62,7 @@ public class UserDataAccessServiceTest {
             createTestUser();
         } else {
             testPassword = RandomStringUtils.randomAlphanumeric(12);
-            assertTrue(userDao.createUserAccount(testUsername, encoder.encode(testPassword)));
+            assertTrue(userDao.createUserAccount(testUsername, encoder.encode(testPassword), ""));
         }
 
     }

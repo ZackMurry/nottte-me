@@ -13,6 +13,8 @@ export default function SignUpPage() {
     const [ username, setUsername ] = useState('')
     const [ password, setPassword ] = useState('')
 
+    const [ email, setEmail ] = useState('')
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         
@@ -21,10 +23,11 @@ export default function SignUpPage() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 username: username,
-                password: password
+                password: password,
+                email: email
             })
         }
-
+        
         const createResponse = await fetch('http://localhost:8080/api/v1/users/create', requestOptions)
         
         if(createResponse.status !== 200) {
@@ -85,11 +88,24 @@ export default function SignUpPage() {
                     </div>
                     <div>
                         <input 
+                            aria-label='password'
                             type='password'
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             style={{border: 'none', fontSize: 24, textAlign: 'center', fontColor: 'black', padding: 10}}
                             placeholder='password'
+                            onKeyPress={(event) => handleEnter(event)}
+                        />
+                    </div>
+                    <div>
+                        <input
+                            aria-label='email'
+                            type='email'
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            style={{border: 'none', fontSize: 24, textAlign: 'center', fontColor: 'black', padding: 10}}
+                            placeholder='email (optional)'
+                            required={false}
                         />
                     </div>
                     <div>

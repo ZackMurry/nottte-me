@@ -94,6 +94,7 @@ export default function Login() {
                             style={{border: 'none', fontSize: 24, textAlign: 'center', fontColor: 'black', padding: 10}}
                             placeholder='username'
                             onKeyPress={(event) => handleEnter(event)}
+                            autoComplete='username'
                         />
                     </div>
                     <div>
@@ -103,6 +104,7 @@ export default function Login() {
                             onChange={e => setPassword(e.target.value)}
                             style={{border: 'none', fontSize: 24, textAlign: 'center', fontColor: 'black', padding: 10}}
                             placeholder='password'
+                            autoComplete='password'
                         />
                     </div>
 
@@ -128,8 +130,7 @@ export default function Login() {
             </Paper>
             
             
-        </div>
-
+        </div> 
         
     )
 

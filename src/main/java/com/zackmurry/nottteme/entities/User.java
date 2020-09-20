@@ -16,13 +16,17 @@ public class User {
     @Column
     private String password;
 
+    @Column
+    private String email; //can be empty string
+
     public User() {
 
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
+        this.email = email;
     }
 
     public String getUsername() {
@@ -41,4 +45,12 @@ public class User {
         this.password = password;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
 }

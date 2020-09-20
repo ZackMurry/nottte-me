@@ -1,6 +1,5 @@
 package com.zackmurry.nottteme.dao.user;
 
-import com.google.gson.Gson;
 import com.zackmurry.nottteme.entities.User;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,6 @@ import java.util.Optional;
 @Service
 public final class UserDataAccessService implements UserDao {
 
-
-    private final Gson gson = new Gson();
-
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -32,10 +28,11 @@ public final class UserDataAccessService implements UserDao {
 
 
     @Override
-    public boolean createUserAccount(String username, String password) {
+    public boolean createUserAccount(String username, String password, String email) {
         if(accountExists(username)) return false;
+        if(email == null) email = "";
 
-        String userSql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        String userSql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
         //not sure if the best strategy is to run this in here,
         //but it abstracts all the logic into this method so it is what it is
@@ -45,7 +42,8 @@ public final class UserDataAccessService implements UserDao {
             jdbcTemplate.execute(
                     userSql,
                     username,
-                    password
+                    password,
+                    email
             );
 
             //initializing shortcuts
@@ -86,7 +84,8 @@ public final class UserDataAccessService implements UserDao {
                     sql,
                     resultSet -> new User(
                             resultSet.getString(1), //username
-                            resultSet.getString(2) //password
+                            "secured", //password hidden because it's pretty useless when it's encrypted
+                            resultSet.getString(3) //email
                             ),
                     username
             );
@@ -118,6 +117,27 @@ public final class UserDataAccessService implements UserDao {
 
     }
 
+    @Override
+    public HttpStatus updateEmail(String username, String email) {
+        if(!accountExists(username)) {
+            return HttpStatus.NOT_FOUND;
+        }
+
+        String sql = "UPDATE users SET email = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    email,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
 
 
 }

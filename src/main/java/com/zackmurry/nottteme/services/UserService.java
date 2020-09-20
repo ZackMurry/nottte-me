@@ -14,8 +14,8 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    public boolean createUserAccount(String username, String password) {
-        return userDao.createUserAccount(username, password);
+    public boolean createUserAccount(String username, String password, String email) {
+        return userDao.createUserAccount(username, password, email);
     }
 
     public boolean usernameExists(String username) {
@@ -35,4 +35,7 @@ public class UserService {
         return userDao.deleteAccount(username);
     }
 
+    public HttpStatus updateEmail(String username, String email) {
+        return userDao.updateEmail(username, email);
+    }
 }
