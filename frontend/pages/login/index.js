@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import Cookie from 'js-cookie'
 import Navbar from '../../components/Navbar'
 import { Paper, Typography, Button } from '@material-ui/core'
-import { useRouter, withRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
+
+const authenticationError = 'Invalid username/password'
 
 export default function Login() {
     
@@ -11,6 +13,8 @@ export default function Login() {
 
     const [ username, setUsername ] = useState('')
     const [ password, setPassword ] = useState('')
+
+    const [ error, setError ] = useState('')
 
     const redirectTo = router.query.redirect
 
@@ -32,11 +36,14 @@ export default function Login() {
         Cookie.set('jwt', JSON.parse(text).jwt)
 
         if(response.status == 200) {
+            setError('')
             if(redirectTo) {
                 router.push(redirectTo)
             } else {
                 router.push('/notes')
             }
+        } else if(response.status == 403) {
+            setError(authenticationError)
         }
 
     }
@@ -98,6 +105,10 @@ export default function Login() {
                             placeholder='password'
                         />
                     </div>
+
+                    {/* errors */}
+                    <Typography style={{color: 'red', fontWeight: 500}}>{error}</Typography>
+
                     <div>
                         <Button type='submit' style={{backgroundColor: '#2d323e', color: '#fff', padding: '7.5px 15px', margin: 10}}>
                             Sign in

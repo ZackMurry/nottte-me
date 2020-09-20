@@ -1,5 +1,6 @@
 package com.zackmurry.nottteme;
 
+import com.zackmurry.nottteme.dao.shortcuts.ShortcutDao;
 import com.zackmurry.nottteme.dao.user.UserDao;
 import com.zackmurry.nottteme.entities.User;
 import com.zackmurry.nottteme.jwt.JwtUtil;
@@ -34,6 +35,9 @@ public class UserDataAccessServiceTest {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private ShortcutDao shortcutDao;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -122,25 +126,25 @@ public class UserDataAccessServiceTest {
             key = RandomStringUtils.randomAlphanumeric(5);
             text = RandomStringUtils.randomAlphanumeric(10, 60);
             alt = true;
-            userDao.addTextShortcut(testUsername, name, text, key, alt);
+            shortcutDao.addTextShortcut(testUsername, name, text, key, alt);
         }
 
         @AfterAll
         public void deleteTextShortcut() {
-            userDao.deleteTextShortcutByName(testUsername, name);
-            assertEquals(0, userDao.getTextShortcutsByUsername(testUsername).size());
+            shortcutDao.deleteTextShortcutByName(testUsername, name);
+            assertEquals(0, shortcutDao.getTextShortcutsByUsername(testUsername).size());
         }
 
         @DisplayName("Test exists")
         @Test
         public void testShortcutCreation() {
-            assertTrue(userDao.getTextShortcutsByUsername(testUsername).stream().anyMatch(textShortcut -> textShortcut.getName().equals(name)));
+            assertTrue(shortcutDao.getTextShortcutsByUsername(testUsername).stream().anyMatch(textShortcut -> textShortcut.getName().equals(name)));
         }
 
         @DisplayName("Test values are correct")
         @Test
         public void testTextShortcutValues() {
-            List<TextShortcut> textShortcuts = userDao.getTextShortcutsByUsername(testUsername);
+            List<TextShortcut> textShortcuts = shortcutDao.getTextShortcutsByUsername(testUsername);
             assertEquals(1, textShortcuts.size());
             TextShortcut providedTextShortcut = textShortcuts.get(0);
             assertEquals(name, providedTextShortcut.getName());
@@ -156,10 +160,10 @@ public class UserDataAccessServiceTest {
             String newKey = RandomStringUtils.randomAlphanumeric(5);
             String newText = RandomStringUtils.randomAlphanumeric(10, 60);
             boolean newAlt = !alt;
-            userDao.updateTextShortcutByName(testUsername, name, new TextShortcut(newName, newText, newKey, newAlt));
+            shortcutDao.updateTextShortcutByName(testUsername, name, new TextShortcut(newName, newText, newKey, newAlt));
 
             //testing that they changed correctly
-            List<TextShortcut> textShortcuts = userDao.getTextShortcutsByUsername(testUsername);
+            List<TextShortcut> textShortcuts = shortcutDao.getTextShortcutsByUsername(testUsername);
             assertEquals(1, textShortcuts.size());
             TextShortcut updatedTextShortcut = textShortcuts.get(0);
             assertEquals(newName, updatedTextShortcut.getName());
@@ -168,8 +172,8 @@ public class UserDataAccessServiceTest {
             assertEquals(newAlt, updatedTextShortcut.getAlt());
 
             //changing text shortcut back
-            userDao.updateTextShortcutByName(testUsername, newName, new TextShortcut(name, text, key, alt));
-            textShortcuts = userDao.getTextShortcutsByUsername(testUsername);
+            shortcutDao.updateTextShortcutByName(testUsername, newName, new TextShortcut(name, text, key, alt));
+            textShortcuts = shortcutDao.getTextShortcutsByUsername(testUsername);
             assertEquals(1, textShortcuts.size());
             updatedTextShortcut = textShortcuts.get(0);
             assertEquals(name, updatedTextShortcut.getName());
@@ -198,25 +202,25 @@ public class UserDataAccessServiceTest {
             attributes = new ArrayList<>();
             attributes.add(attribute);
             alt = true;
-            userDao.addStyleShortcut(testUsername, name, key, attributes, alt);
+            shortcutDao.addStyleShortcut(testUsername, name, key, attributes, alt);
         }
 
         @AfterAll
         public void deleteStyleShortcut() {
-            userDao.deleteStyleShortcutByName(testUsername, name);
-            assertEquals(0, userDao.getStyleShortcutsByUsername(testUsername).size());
+            shortcutDao.deleteStyleShortcutByName(testUsername, name);
+            assertEquals(0, shortcutDao.getStyleShortcutsByUsername(testUsername).size());
         }
 
         @DisplayName("Test exists")
         @Test
         public void testShortcutCreation() {
-            assertTrue(userDao.getStyleShortcutsByUsername(testUsername).stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name)));
+            assertTrue(shortcutDao.getStyleShortcutsByUsername(testUsername).stream().anyMatch(styleShortcut -> styleShortcut.getName().equals(name)));
         }
 
         @DisplayName("Test values are correct")
         @Test
         public void testShortcutValues() {
-            List<StyleShortcut> styleShortcuts = userDao.getStyleShortcutsByUsername(testUsername);
+            List<StyleShortcut> styleShortcuts = shortcutDao.getStyleShortcutsByUsername(testUsername);
             assertEquals(1, styleShortcuts.size());
             StyleShortcut providedStyleShortcut = styleShortcuts.get(0);
             assertEquals(name, providedStyleShortcut.getName());
@@ -239,10 +243,10 @@ public class UserDataAccessServiceTest {
             boolean newAlt = !alt;
             List<CSSAttribute> newAttributes = new ArrayList<>();
             newAttributes.add(newCSSAttribute);
-            userDao.updateStyleShortcutByName(testUsername, name, new StyleShortcut(newName, newKey, newAttributes, newAlt));
+            shortcutDao.updateStyleShortcutByName(testUsername, name, new StyleShortcut(newName, newKey, newAttributes, newAlt));
 
             //testing that the values changed correctly
-            List<StyleShortcut> styleShortcuts = userDao.getStyleShortcutsByUsername(testUsername);
+            List<StyleShortcut> styleShortcuts = shortcutDao.getStyleShortcutsByUsername(testUsername);
             assertEquals(1, styleShortcuts.size());
             StyleShortcut styleShortcut = styleShortcuts.get(0);
             assertEquals(newName, styleShortcut.getName());
@@ -255,8 +259,8 @@ public class UserDataAccessServiceTest {
             assertEquals(newCSSAttribute.getValue(), providedAttribute.getValue());
 
             //changing shortcut back
-            userDao.updateStyleShortcutByName(testUsername, newName, new StyleShortcut(name, key, attributes, alt));
-            styleShortcuts = userDao.getStyleShortcutsByUsername(testUsername);
+            shortcutDao.updateStyleShortcutByName(testUsername, newName, new StyleShortcut(name, key, attributes, alt));
+            styleShortcuts = shortcutDao.getStyleShortcutsByUsername(testUsername);
             assertEquals(1, styleShortcuts.size());
             styleShortcut = styleShortcuts.get(0);
             assertEquals(name, styleShortcut.getName());

@@ -1,10 +1,6 @@
---todo separate shortcuts into another table
 CREATE TABLE users (
     username VARCHAR(32) NOT NULL PRIMARY KEY,
-    password VARCHAR(64) NOT NULL,
-    text_shortcuts TEXT DEFAULT '[]',
-    style_shortcuts TEXT DEFAULT '[]'
---    maybe change password to 60 bc bcrypt produces 60 char long outputs
+    password VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE notes (
@@ -12,4 +8,10 @@ CREATE TABLE notes (
     author VARCHAR(32) NOT NULL,
     title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
     body TEXT DEFAULT '' --draft js content
+);
+
+CREATE TABLE shortcuts (
+    username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE PRIMARY KEY,
+    text_shortcuts TEXT DEFAULT '[]',
+    style_shortcuts TEXT DEFAULT '[]'
 );
