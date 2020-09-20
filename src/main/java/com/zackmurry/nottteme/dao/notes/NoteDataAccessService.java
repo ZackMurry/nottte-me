@@ -57,23 +57,18 @@ public final class NoteDataAccessService implements NoteDao {
         String sql = "SELECT id FROM notes WHERE title=? AND author=?";
 
         try {
-            List<Note> notes = jdbcTemplate.query(
+            List<Long> ids = jdbcTemplate.query(
                     sql,
-                    resultSet -> new Note(
-                            resultSet.getLong(1), //id
-                            resultSet.getString(2), //author
-                            resultSet.getString(3), //title
-                            resultSet.getString(4) //body
-                    ),
+                    resultSet -> resultSet.getLong(1),
                     title,
                     author
             );
-            if(notes.size() < 1) {
+            if(ids.size() < 1) {
                 throw new IllegalStateException("There should be a note with the given title and author; title: " + title + ", author: " + author);
-            } else if(notes.size() > 1) {
+            } else if(ids.size() > 1) {
                 throw new IllegalStateException("There should never be two notes with the same titles and authors; titles: " + title + ", authors: " + author);
             }
-            return notes.get(0).getId();
+            return ids.get(0);
         } catch (SQLException e) {
             throw new IllegalArgumentException("Unable to perform SQL query", e);
         }
