@@ -18,4 +18,6 @@ public interface ShareDao {
 
     HttpStatus unshareNoteWithUser(String username, String title, String recipient) throws NotFoundException;
 
+    List<Long> getNoteIdsSharedWithUser(String username);
+
 }

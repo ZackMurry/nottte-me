@@ -1,7 +1,9 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.models.StyleShortcut;
+import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.ShareService;
 import com.zackmurry.nottteme.services.ShortcutService;
 import javassist.NotFoundException;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +30,9 @@ public class ShareController {
 
     @Autowired
     private ShortcutService shortcutService;
+
+    @Autowired
+    private NoteService noteService;
 
     @PostMapping("/principal/share/{title}/{recipientUsername}")
     public ResponseEntity<HttpStatus> shareNoteWithUser(@PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
@@ -113,6 +119,21 @@ public class ShareController {
     public List<String> getSharesOfNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
         if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
         return shareService.getSharesOfNote(author, title);
+    }
+
+    @GetMapping("/principal/shared-notes")
+    public List<String> getNotesSharedWithPrincipal() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Long> noteIds = shareService.getNoteIdsSharedWithUser(username);
+        if(noteIds.size() == 0) return new ArrayList<>();
+        return noteService.getRawNotesByIdList(noteIds);
+    }
+
+    @GetMapping("/user/{username}/shared-notes")
+    public List<Note> getNotesSharedWithPrincipal(@PathVariable("username") String username) {
+        List<Long> noteIds = shareService.getNoteIdsSharedWithUser(username);
+        if(noteIds.size() == 0) return new ArrayList<>();
+        return noteService.getNotesByIdList(noteIds);
     }
 
 

@@ -30,4 +30,8 @@ public interface NoteDao {
 
     HttpStatus deleteNotesByAuthor(String author);
 
+    List<String> getRawNotesByIdList(List<Long> noteIds);
+
+    List<Note> getNotesByIdList(List<Long> noteIds);
+
 }

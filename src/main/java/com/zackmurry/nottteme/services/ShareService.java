@@ -34,4 +34,8 @@ public class ShareService {
     public HttpStatus unshareNoteWithUser(String username, String title, String recipient) throws NotFoundException {
         return shareDao.unshareNoteWithUser(username, title, recipient);
     }
+
+    public List<Long> getNoteIdsSharedWithUser(String username) {
+        return shareDao.getNoteIdsSharedWithUser(username);
+    }
 }

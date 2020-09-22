@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import NotePreview from '../../components/NotePreview'
-import { Grid, Paper, withStyles, IconButton, Typography, Fab } from '@material-ui/core'
+import { Grid, Typography, Fab } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
@@ -57,7 +57,12 @@ export default function Notes() {
                             {
                                 notes.map((note, i) => (
                                     <Grid item xs={12} sm={6} md={4} lg={3} key={note.id}>
-                                        <NotePreview name={note.title} editorState={note.body} jwt={jwt} onNoteRename={(newName) => handleNoteRename(i, newName)} />
+                                        <NotePreview 
+                                            name={note.title} 
+                                            editorState={note.body} 
+                                            jwt={jwt} 
+                                            onNoteRename={(newName) => handleNoteRename(i, newName)} 
+                                        />
                                     </Grid>
                                 ))
                                 

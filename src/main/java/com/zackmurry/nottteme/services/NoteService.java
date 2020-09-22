@@ -54,4 +54,12 @@ public class NoteService {
     public HttpStatus deleteNotesByAuthor(String author) {
         return noteDao.deleteNotesByAuthor(author);
     }
+
+    public List<String> getRawNotesByIdList(List<Long> noteIds) {
+        return noteDao.getRawNotesByIdList(noteIds);
+    }
+
+    public List<Note> getNotesByIdList(List<Long> noteIds) {
+        return noteDao.getNotesByIdList(noteIds);
+    }
 }

@@ -8,8 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -264,6 +267,61 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.BAD_REQUEST;
         }
 
+    }
+
+    @Override
+    public List<String> getRawNotesByIdList(List<Long> noteIds) {
+        String questionMarks = String.join(",", Collections.nCopies(noteIds.size(), "?"));
+
+        String sql = String.format("SELECT body FROM notes WHERE id IN (%s)", questionMarks);
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            for (int i = 1; i <= noteIds.size(); i++) {
+                preparedStatement.setLong(i, noteIds.get(i-1));
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<String> bodies = new ArrayList<>();
+            int index = 0;
+            while(resultSet.next()) {
+                bodies.add(resultSet.getString(++index));
+            }
+            return bodies;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+
+    @Override
+    public List<Note> getNotesByIdList(List<Long> noteIds) {
+        String questionMarks = String.join(",", Collections.nCopies(noteIds.size(), "?"));
+
+        String sql = String.format("SELECT * FROM notes WHERE id IN (%s)", questionMarks);
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            for (int i = 1; i <= noteIds.size(); i++) {
+                preparedStatement.setLong(i, noteIds.get(i-1));
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Note> notes = new ArrayList<>();
+            while(resultSet.next()) {
+                notes.add(
+                        new Note(
+                              resultSet.getLong(1), //id
+                              resultSet.getString(2), //author
+                              resultSet.getString(3), //title
+                              resultSet.getString(4) //body
+                        )
+                );
+            }
+            return notes;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 }

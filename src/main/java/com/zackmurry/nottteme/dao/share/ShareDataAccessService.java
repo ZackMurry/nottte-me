@@ -155,4 +155,24 @@ public class ShareDataAccessService implements ShareDao {
         }
 
     }
+
+    @Override
+    public List<Long> getNoteIdsSharedWithUser(String username) {
+
+        String sql = "SELECT note_id FROM shares WHERE shared_username=?";
+
+        try {
+            return jdbcTemplate.query(
+                    sql,
+                    resultSet -> resultSet.getLong(1),
+                    username
+            );
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+
+
 }

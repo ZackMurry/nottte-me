@@ -142,5 +142,4 @@ public class NoteController {
         return noteService.userHasNote(title, username);
     }
 
-
 }
