@@ -1,9 +1,12 @@
 import { Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+import PlainTooltip from './PlainTooltip'
 import YesNoDialog from './YesNoDialog'
 
-export default function DeleteNoteInSettings({ title, jwt }) {
+export default function DeleteNoteInSettings({ title, jwt, shared }) {
+
+    if(shared == null) shared = false
 
     const router = useRouter()
 
@@ -31,14 +34,20 @@ export default function DeleteNoteInSettings({ title, jwt }) {
 
     return (
         <div style={{margin: '25px 0', width: '100%', display: 'flex', justifyContent: 'space-around'}}>
-            <Button
-                variant='contained'
-                color='secondary'
-                onClick={() => setShowConfirmDialog(true)}
-                style={{margin: '0 auto'}}
-            >
-                Delete Note
-            </Button>
+            <PlainTooltip title='You cannot delete a shared note'>
+                <div>
+                    <Button
+                        variant='contained'
+                        color='secondary'
+                        onClick={() => setShowConfirmDialog(true)}
+                        style={{margin: '0 auto'}}
+                        disabled={shared ? true : undefined}
+                    >
+                        Delete Note
+                    </Button>
+                </div>
+            </PlainTooltip>
+            
 
             <YesNoDialog 
                 title={`Are you sure you want to delete ${title}?`}

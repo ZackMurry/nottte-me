@@ -1,7 +1,9 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.services.ShareService;
+import com.zackmurry.nottteme.services.ShortcutService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +25,13 @@ public class ShareController {
     @Autowired
     private ShareService shareService;
 
+    @Autowired
+    private ShortcutService shortcutService;
+
     @PostMapping("/principal/share/{title}/{recipientUsername}")
     public ResponseEntity<HttpStatus> shareNoteWithUser(@PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         HttpStatus status = shareService.shareNoteWithUser(username, title, recipient);
-        System.out.println(username + ", " + title + ", " + recipient);
         return new ResponseEntity<>(status);
     }
 
@@ -73,15 +77,43 @@ public class ShareController {
         return shareService.noteIsSharedWithUser(title, author, username);
     }
 
-    @GetMapping("/user/{username}/note/{author}/{title}")
+    @GetMapping("/user/{username}/note/{author}/{title}/raw")
     public String getRawContentsOfSharedNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("author") String author) throws NotFoundException, UnauthorizedException {
+        System.out.println("caught");
         return shareService.getSharedNote(title, author, username);
     }
 
-    @GetMapping("/principal/note/{author}/{title}")
+    @GetMapping("/principal/note/{author}/{title}/raw")
     public String getRawContentsOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws NotFoundException, UnauthorizedException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return shareService.getSharedNote(title, author, username);
     }
+
+    @GetMapping("/principal/note/{author}/{title}/shortcuts/style")
+    public List<StyleShortcut> getStyleShortcutsOfAuthorOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
+        return shortcutService.getStyleShortcutsByUsername(author);
+    }
+
+    @GetMapping("/user/{username}/note/{author}/{title}/shortcuts/style")
+    public List<StyleShortcut> getStyleShortcutsOfAuthorOfNoteSharedWithPrincipal(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
+        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
+        return shortcutService.getStyleShortcutsByUsername(author);
+    }
+
+    @GetMapping("/principal/note/{author}/{title}/shares")
+    public List<String> getSharesOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
+        return shareService.getSharesOfNote(author, title);
+    }
+
+    @GetMapping("/user/{username}/note/{author}/{title}/shares")
+    public List<String> getSharesOfNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
+        return shareService.getSharesOfNote(author, title);
+    }
+
 
 }

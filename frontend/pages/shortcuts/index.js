@@ -134,6 +134,7 @@ export default function Shortcuts() {
                 style={{
                     margin: '0 auto', 
                     marginTop: '20vh', 
+                    // todo just do margin: '20vh auto' in all of the papers like this
                     marginBottom: '20vh', 
                     width: '50%', 
                     minHeight: '120vh', 

@@ -1,8 +1,11 @@
 import { Button, TextField } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import PlainTooltip from './PlainTooltip'
 
-export default function RenameNoteField({ name, jwt }) {
+export default function RenameNoteField({ name, jwt, shared }) {
+
+    if(shared == null) shared = false
 
     const router = useRouter()
 
@@ -32,11 +35,22 @@ export default function RenameNoteField({ name, jwt }) {
                 value={editedName ? editedName : ''}
                 onChange={e => setEditedName(e.target.value)}
                 style={{margin: 5}}
-
             />
-            <Button color='secondary' variant='contained' onClick={handleRename} style={{margin: 5}}>
-                Rename note
-            </Button>
+            <PlainTooltip title='You cannot rename a shared note' hidden={!shared} >
+                <div style={{display: 'inline-flex'}}>
+                    <Button 
+                        color='secondary' 
+                        variant='contained' 
+                        onClick={handleRename} 
+                        style={{margin: 5}} 
+                        disabled={shared ? true : undefined} 
+                    >
+                        Rename note
+                    </Button>
+                </div>
+                
+            </PlainTooltip>
+            
         </div>
         
     )

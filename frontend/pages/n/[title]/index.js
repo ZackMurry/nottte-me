@@ -16,10 +16,10 @@ const emptyContentState = convertFromRaw({
         text: '',
         key: 'nottte',
         type: 'unstyled',
-        entityRanges: [],
-      },
-    ],
-  });
+        entityRanges: []
+      }
+    ]
+})
 
 //used for writing notes
 //todo visual saving indicator

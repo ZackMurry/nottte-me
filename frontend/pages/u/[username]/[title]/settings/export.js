@@ -3,18 +3,18 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import Navbar from '../../../../components/Navbar'
+import Navbar from '../../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import { convertFromRaw, EditorState } from 'draft-js'
-import DownloadWithPreview from '../../../../components/DownloadWithPreview'
-import draftToPdf from '../../../../components/draftToPdf'
-import openInNewTab from '../../../../components/openInNewTab'
-import draftToHtml from '../../../../components/draftToHtml'
+import DownloadWithPreview from '../../../../../components/DownloadWithPreview'
+import draftToPdf from '../../../../../components/draftToPdf'
+import openInNewTab from '../../../../../components/openInNewTab'
+import draftToHtml from '../../../../../components/draftToHtml'
 
 export default function Export() {
 
     const router = useRouter()
-    const { title } = router.query
+    const { username, title } = router.query
     const jwt = Cookie.get('jwt')
 
     const [ editorState, setEditorState ] = useState('')
@@ -39,7 +39,7 @@ export default function Export() {
         //ideally, you'd want to get the editorState first so that it could load faster for the user
         //but without a stylemap, provided by the style shortcuts, the editor state gets loaded before stylemaps are applied,
         //and it isn't updated until a new style shortcut is applied :(
-        const styleMapResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style', requestOptions)
+        const styleMapResponse = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${username}/${title}/shortcuts/style`, requestOptions)
         const styleMapText = await styleMapResponse.text()
         
         if(styleMapResponse.status === 401) return;
@@ -47,11 +47,31 @@ export default function Export() {
         if(styleMapResponse.status === 404) return;
         
         const parsedStyleMap = JSON.parse(styleMapText)
-        await setStyleMap(parsedStyleMap)
         
+        let newStyleMap = {}
+        for(var i = 0; i < parsedStyleMap.length; i++) {
+            let styleShortcut = parsedStyleMap[i]
+            let name = styleShortcut.name
+
+            for(var j = 0; j < styleShortcut.attributes.length; j++) {
+                let attribute = styleShortcut.attributes[j].attribute
+                let value = styleShortcut.attributes[j].value
+                let existingAttributes = newStyleMap[name]
+                newStyleMap = {
+                    ...newStyleMap,
+                    [name]: {
+                        ...existingAttributes,
+                        [attribute]: value
+                    }
+                }
+            }
+        }
+        console.log('map: ' + JSON.stringify(newStyleMap))
+        await setStyleMap(newStyleMap)
+
         //getting editor state
 
-        const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + encodeURI(title) + '/raw', requestOptions)
+        const editorResponse = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(username)}/${encodeURI(title)}/raw`, requestOptions)
         const editorText = await editorResponse.text()
         console.log(editorResponse.status)
 
@@ -106,24 +126,34 @@ export default function Export() {
             </div>
 
             {/* main login */}
-            <Paper style={{margin: '20vh auto 15vh auto', padding: '5vh 0 25vh 0', marginTop: '20vh', width: '50%', borderRadius: 40, boxShadow: '5px 5px 10px black', minWidth: 500}} >
+            <Paper 
+                style={{
+                    margin: '20vh auto', 
+                    width: '50%', 
+                    minHeight: '120vh', 
+                    paddingBottom: '10vh',
+                    borderRadius: 40, 
+                    boxShadow: '5px 5px 10px black',
+                    minWidth: 750
+                }} 
+            >
                 <Typography variant='h1' style={{textAlign: 'center', padding: '2vh 0'}}>
                     Export note
                 </Typography>
 
                 {/* table of contents */}
                 <div style={{width: '60%', margin: '0 auto'}}>
-                    <Link href={'/n/' + title + '/settings/export#pdf'}>
+                    <Link href={`/u/${username}/${title}/settings/export#pdf`}>
                         <Typography variant='h5' style={{textAlign: 'center', cursor: 'pointer'}}>
                             Export as PDF
                         </Typography>
                     </Link>
-                    <Link href={'/n/' + title + '/settings/export#docs'}>
+                    <Link href={`/u/${username}/${title}/settings/export#docs`}>
                         <Typography variant='h5' style={{textAlign: 'center', cursor: 'pointer'}}>
                             Export to Google Docs
                         </Typography>
                     </Link>
-                    <Link href={'/n/' + title + '/settings/export#html'}>
+                    <Link href={`/u/${username}/${title}/settings/export#html`}>
                         <Typography variant='h5' style={{textAlign: 'center', cursor: 'pointer'}}>
                             Export as HTML
                         </Typography>

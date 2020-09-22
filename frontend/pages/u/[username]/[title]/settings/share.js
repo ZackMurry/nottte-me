@@ -2,17 +2,17 @@ import { Button, Paper, Popover, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import Navbar from '../../../../components/Navbar'
+import Navbar from '../../../../../components/Navbar'
 import Cookie from 'js-cookie'
-import theme from '../../../../components/theme'
+import theme from '../../../../../components/theme'
 import { CloudUpload } from '@material-ui/icons'
-import SharedWithTable from '../../../../components/SharedWithTable'
+import SharedWithTable from '../../../../../components/SharedWithTable'
 
-//todo list shared users
+//todo allow shared users to edit sharing with a permission
 export default function share() {
 
     const router = useRouter()
-    const { title } = router.query
+    const { username, title } = router.query
 
     const jwt = Cookie.get('jwt')
 
@@ -37,7 +37,7 @@ export default function share() {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
         }
 
-        const response = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(title)}/shares`, requestOptions)
+        const response = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(username)}/${encodeURI(title)}/shares`, requestOptions)
         if(response.status !== 200) {
             console.log(response.status)
             return
