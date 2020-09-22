@@ -25,6 +25,7 @@ public class ShareController {
     public ResponseEntity<HttpStatus> shareNoteWithUser(@PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         HttpStatus status = shareService.shareNoteWithUser(username, title, recipient);
+        System.out.println(username + ", " + title + ", " + recipient);
         return new ResponseEntity<>(status);
     }
 

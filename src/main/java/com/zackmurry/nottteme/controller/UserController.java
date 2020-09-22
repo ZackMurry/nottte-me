@@ -41,6 +41,9 @@ public class UserController {
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * needs to be open to all authenticated because of sharing
+     */
     @GetMapping("/exists/{username}")
     public boolean usernameExists(@PathVariable String username) {
         return userService.usernameExists(username);

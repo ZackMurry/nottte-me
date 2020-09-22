@@ -36,7 +36,7 @@ public class ShareDataAccessService implements ShareDao {
 
     @Override
     public HttpStatus shareNoteWithUser(String author, String title, String recipient) {
-        if(!noteDao.userHasNote(author, title)) return HttpStatus.NOT_FOUND;
+        if(!noteDao.userHasNote(title, author)) return HttpStatus.NOT_FOUND;
         if(!userDao.accountExists(author) || !userDao.accountExists(recipient)) return HttpStatus.NOT_ACCEPTABLE;
 
         long noteId = noteDao.getIdByTitleAndAuthor(title, author);
@@ -47,11 +47,10 @@ public class ShareDataAccessService implements ShareDao {
         String sql = "INSERT INTO shares (note_id, shared_username) VALUES (?, ?)";
 
         try {
-            jdbcTemplate.execute(
-                    sql,
-                    noteId,
-                    recipient
-            );
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setLong(1, noteId);
+            preparedStatement.setString(2, recipient);
+            preparedStatement.execute();
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();

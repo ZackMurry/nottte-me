@@ -86,6 +86,11 @@ export default function Settings() {
                             Export
                         </Link>
                     </Typography>
+                    <Typography variant='h4' style={{textAlign: 'center'}}>
+                        <Link href={`/n/${encodeURI(title)}/settings/share`}>
+                            Share
+                        </Link>
+                    </Typography>
                 </div>
                 
                 
