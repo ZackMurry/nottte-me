@@ -13,6 +13,8 @@ import java.util.List;
 
 /**
  * for now, sharing will only work with view access for recipients
+ * todo change GET /principal/note/{title}/shares return type to list of NoteShares
+ * setting another user as owner of a note
  */
 @RequestMapping("/api/v1/shares")
 @RestController

@@ -1,11 +1,12 @@
 import { Button, Collapse, Grow, Paper, Popover, Typography } from '@material-ui/core'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import theme from '../../../../components/theme'
 import { CloudUpload } from '@material-ui/icons'
+import SharedWithTable from '../../../../components/SharedWithTable'
 
 //todo list shared users
 export default function share() {
@@ -19,6 +20,32 @@ export default function share() {
     const [ showMoreSharing, setShowMoreSharing ] = useState(false)
     const [ showMoreAnchorEl, setShowMoreAnchorEl ] = useState(null)
     const [ targetAccountExists, setTargetAccountExists] = useState('Loading...')
+
+    const [ sharedWith, setSharedWith ] = useState([])
+
+    useEffect(() => {
+        if(title) {
+            getData()
+        }
+    }, [ title ])
+
+    const getData = async () => {
+        //getting who this note is shared with
+        if(!jwt) return
+
+        const requestOptions = {
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        }
+
+        const response = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(title)}/shares`, requestOptions)
+        if(response.status !== 200) {
+            console.log(response.status)
+            return
+        }
+        const text = await response.text()
+        console.log(text)
+        setSharedWith(JSON.parse(text))
+    }
 
     const handleShareWithUser = async () => {
         setShowMoreSharing(false)
@@ -47,6 +74,17 @@ export default function share() {
             const text = await response.text()
             setTargetAccountExists(text == 'true' ? "This users account exists. You're good to go!" : "We couldn't find a user with this username. Double-check the username.")
         }
+    }
+
+    const removeShareFromArray = (removedUsername) => {
+        let updatedSharedWith = sharedWith.slice()
+        const index = updatedSharedWith.indexOf(removedUsername)
+        if(index == -1) {
+            console.log('index should not be -1.')
+            return
+        }
+        updatedSharedWith.splice(index, 1)
+        setSharedWith(updatedSharedWith)
     }
 
     return (
@@ -92,10 +130,12 @@ export default function share() {
                             Share by username
                         </Typography>
 
-                        {/* todo add a description here */}
+                        <Typography style={{fontSize: 18}}>
+                            Just type in your friend's username and hit enter
+                        </Typography>
 
                         <div style={{display: 'inline-flex'}}>
-                            <Typography style={{fontSize: 24, alignSelf: 'center', cursor: 'default'}}>
+                            <Typography style={{fontSize: 20, alignSelf: 'center', cursor: 'default'}}>
                                 Share with
                             </Typography>
                             <input 
@@ -103,7 +143,7 @@ export default function share() {
                                 type='text'
                                 value={targetUsername}
                                 onChange={e => setTargetUsername(e.target.value)}
-                                style={{border: 'none', fontSize: 24, padding: 10, paddingLeft: 5, textDecoration: 'underline', width: '12.5vw'}}
+                                style={{border: 'none', fontSize: 20, padding: 10, paddingLeft: 5, textDecoration: 'underline', width: '12.5vw'}}
                                 placeholder='username'
                                 onKeyPress={(event) => handleEnter(event)}
                                 autoCorrect='false'
@@ -159,8 +199,16 @@ export default function share() {
                         
                     </div>
                 </div>
+                <div style={{width: '60%', margin: '3vh auto'}}>
+                    <SharedWithTable 
+                        sharedWith={sharedWith} 
+                        jwt={jwt} 
+                        title={title} 
+                        onUnshare={username => removeShareFromArray(username)}
+                    />
+                </div>
             </Paper>         
-
+            
         </div>
         
     )

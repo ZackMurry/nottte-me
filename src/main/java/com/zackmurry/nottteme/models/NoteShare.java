@@ -1,5 +1,6 @@
 package com.zackmurry.nottteme.models;
 
+//todo add permissions for letting non-owners share notes
 public class NoteShare {
 
     private long id;
