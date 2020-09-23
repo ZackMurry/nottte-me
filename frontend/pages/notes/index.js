@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import NotePreview from '../../components/NotePreview'
-import { Grid, Typography, Fab, Button, Popper, Grow, Paper, ClickAwayListener, MenuList, MenuItem, Popover } from '@material-ui/core'
+import { Grid, Typography, Fab, Button, Paper, MenuList, MenuItem, Popover } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router';
 import SortIcon from '@material-ui/icons/Sort';
 import SwapVertIcon from '@material-ui/icons/SwapVert';
+import SearchNotes from '../../components/SearchNotes';
 
 //todo display user's actual notes
 export default function Notes() {
@@ -25,6 +26,8 @@ export default function Notes() {
     const [ orderDesc, setOrderDesc ] = useState(true)
 
     const [ principalUsername, setPrincipalUsername ] = useState('nottte-loading') //todo don't let people make nottte-loading their name lol
+
+    const [ backupNotes, setBackupNotes ] = useState([]) //used for reverting after search
 
     const jwt = Cookie.get('jwt')
 
@@ -66,7 +69,7 @@ export default function Notes() {
         let combinedNotes = [...userNotesParsed, ...sharedNotesParsed]
 
         //sorting by last modified and that assigns 'notes' to the new value
-        orderNotesByLastModified(combinedNotes)
+        setBackupNotes(orderNotesByLastModified(combinedNotes))
     }
 
     const orderNotesByLastModified = (currentNotes = notes, desc = true) => {
@@ -76,6 +79,7 @@ export default function Notes() {
             currentNotes.sort((a, b) => new Date(a.lastModified) - new Date(b.lastModified))
         }
         setNotes(currentNotes)
+        return currentNotes
     }
 
     const orderNotesByTitle = (currentNotes = notes, desc = true) => {
@@ -111,6 +115,12 @@ export default function Notes() {
         setNotes(notes.reverse())
     }
 
+    const handleSearch = value => {
+        let notesCopy = backupNotes.slice()
+        value = value + ''
+        setNotes(notesCopy.filter(note => (note.title+'').toLowerCase().includes(value.toLowerCase())))
+    }
+
     return (
         <div>
             <div style={{marginTop: '10vh'}} >
@@ -118,6 +128,12 @@ export default function Notes() {
                 <div style={{backgroundColor: 'white', margin: '0 auto', width: '100%', minHeight: '90vh'}}>
                     <div style={{display: 'inline-flex', justifyContent: 'flex-end', margin: '0 auto', marginTop: 10, width: '97.5%'}}>
                         <div style={{display: 'inline-flex', cursor: 'pointer'}} >
+                            
+                            <SearchNotes 
+                                handleSearch={value => handleSearch(value)}
+                                style={{marginRight: 10}}
+                            />
+
                             <Button
                                 startIcon={<SortIcon />}
                                 onClick={e => {
@@ -154,7 +170,6 @@ export default function Notes() {
                             <Button
                                 startIcon={<SwapVertIcon className={orderDesc ? 'rotate' : 'unrotate'} />}
                                 onClick={handleOrderSwap}
-                                
                             >
                                 {orderDesc ? 'Descending' : 'Ascending'}
                             </Button>
