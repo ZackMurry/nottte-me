@@ -34,4 +34,6 @@ public interface NoteDao {
 
     List<Note> getNotesByIdList(List<Long> noteIds);
 
+    HttpStatus updateLastModified(String title, String author);
+
 }

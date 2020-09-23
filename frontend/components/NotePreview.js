@@ -8,8 +8,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import YesNoDialog from './YesNoDialog';
 import DoneIcon from '@material-ui/icons/Done';
 import PlainSnackbar from './PlainSnackbar'
+import PeopleIcon from '@material-ui/icons/People'
 
-export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
+//todo don't let people rename or delete shared notes from here
+export default function NotePreview({ name, editorState, jwt, onNoteRename, shared }) {
 
     const [ rawText, setRawText] = useState('')
     const [ showingMore, setShowingMore ] = useState(false)
@@ -121,6 +123,15 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename }) {
                 <Card>
                     <CardContent>
                         <div style={{backgroundColor: '#2d323e', width: '100%', height: '25vh', borderRadius: 10, margin: 0, padding: 0, display: 'flex'}}>
+                            {
+                                shared && (
+                                    <div style={{position: 'relative', top: 0, left: '87.5%', width: 0}}>
+                                        <div style={{position: 'absolute', left: 0, top: 17.5, zIndex: 5, display: 'flex', justifyContent: 'flex-end'}}>
+                                            <PeopleIcon color='primary' />
+                                        </div>
+                                    </div>
+                                )
+                            }
                             <Paper elevation={0} style={{width: '60%', marginLeft: 'auto', marginRight: 'auto', marginBottom: 0, height: '60%', verticalAlign: 'bottom', alignSelf: 'flex-end', borderRadius: '10px 10px 0 0', overflow: 'hidden'}}>
                                 <Typography style={{margin: 10, width: '100%', height: '92.5%', overflowY: 'scroll', paddingRight: 3, boxSizing: 'content-box'}}>
                                     { rawText }

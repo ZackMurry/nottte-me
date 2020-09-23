@@ -8,7 +8,8 @@ CREATE TABLE notes (
     id BIGSERIAL PRIMARY KEY,
     author VARCHAR(32) NOT NULL,
     title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
-    body TEXT DEFAULT '' --draft js content
+    body TEXT DEFAULT '', --draft js content
+    last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE shortcuts (

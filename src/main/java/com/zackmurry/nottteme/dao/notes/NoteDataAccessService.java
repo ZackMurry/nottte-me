@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,7 @@ public final class NoteDataAccessService implements NoteDao {
                     title,
                     author
             );
+            updateLastModified(title, author);
             return HttpStatus.OK;
         } catch (SQLException e) {
             //this shouldn't really happen
@@ -177,7 +179,8 @@ public final class NoteDataAccessService implements NoteDao {
                             resultSet.getLong(1),
                             resultSet.getString(2),
                             resultSet.getString(3),
-                            resultSet.getString(4)
+                            resultSet.getString(4),
+                            resultSet.getTimestamp(5)
                     ),
                     username
             );
@@ -228,6 +231,7 @@ public final class NoteDataAccessService implements NoteDao {
                     oldTitle,
                     username
             );
+            updateLastModified(newTitle, username);
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
@@ -313,7 +317,8 @@ public final class NoteDataAccessService implements NoteDao {
                               resultSet.getLong(1), //id
                               resultSet.getString(2), //author
                               resultSet.getString(3), //title
-                              resultSet.getString(4) //body
+                              resultSet.getString(4), //body
+                              resultSet.getTimestamp(5) //last modified
                         )
                 );
             }
@@ -321,6 +326,25 @@ public final class NoteDataAccessService implements NoteDao {
         } catch(SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public HttpStatus updateLastModified(String title, String author) {
+        String sql = "UPDATE notes SET last_modified = ? WHERE title=? AND author=?";
+
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setTimestamp(1, currentTime);
+            preparedStatement.setString(2, title);
+            preparedStatement.setString(3, author);
+            preparedStatement.execute();
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
         }
     }
 

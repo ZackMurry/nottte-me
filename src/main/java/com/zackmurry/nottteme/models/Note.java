@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "notes")
@@ -22,15 +23,19 @@ public class Note {
     @Column
     private String body;
 
+    @Column
+    private Timestamp lastModified;
+
     public Note() {
 
     }
 
-    public Note(long id, String author, String title, String body) {
+    public Note(long id, String author, String title, String body, Timestamp lastModified) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.body = body;
+        this.lastModified = lastModified;
     }
 
     public long getId() {
@@ -64,4 +69,13 @@ public class Note {
     public void setBody(String body) {
         this.body = body;
     }
+
+    public Timestamp getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Timestamp lastModified) {
+        this.lastModified = lastModified;
+    }
+
 }

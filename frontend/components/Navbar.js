@@ -14,15 +14,15 @@ export default function Navbar() {
     }, [])
 
     return (
-        <div style={{backgroundColor: '#2d323e', width: '100%', display: 'flex', height: '7.5vh', position: 'fixed', zIndex: 1, top: 0, left: 0}}>
+        <div style={{backgroundColor: '#2d323e', width: '100%', display: 'flex', height: '10vh', position: 'fixed', zIndex: 1, top: 0, left: 0}}>
             <div>
                 <Link href="/">
-                    <Typography color='primary' style={{fontWeight: 100, paddingLeft: '7.5vw', paddingTop: 10, fontSize: 48, alignSelf: 'flex-end', cursor: 'pointer'}}>
+                    <Typography color='primary' style={{fontWeight: 100, paddingLeft: '7.5vw', paddingTop: 10, fontSize: 48, alignSelf: 'center', cursor: 'pointer'}}>
                         nottte.me
                     </Typography>
                 </Link>
             </div>
-            <div style={{display: 'flex', width: '80%', alignSelf: 'flex-end', justifySelf: 'flex-end', justifyContent: 'flex-end', height: '7.5vh', alignItems: 'flex-end'}}>
+            <div style={{display: 'flex', width: '80%', alignSelf: 'flex-start', justifySelf: 'flex-end', justifyContent: 'flex-end', height: '10vh', alignItems: 'center', paddingTop: 10}}>
                 <Link href="/notes">
                     <Typography color='primary' style={{fontSize: 36, fontWeight: 100, marginRight: '3vw', cursor: 'pointer'}}>
                         notes

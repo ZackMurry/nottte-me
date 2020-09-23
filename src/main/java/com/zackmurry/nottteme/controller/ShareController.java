@@ -122,11 +122,11 @@ public class ShareController {
     }
 
     @GetMapping("/principal/shared-notes")
-    public List<String> getNotesSharedWithPrincipal() {
+    public List<Note> getNotesSharedWithPrincipal() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Long> noteIds = shareService.getNoteIdsSharedWithUser(username);
         if(noteIds.size() == 0) return new ArrayList<>();
-        return noteService.getRawNotesByIdList(noteIds);
+        return noteService.getNotesByIdList(noteIds);
     }
 
     @GetMapping("/user/{username}/shared-notes")
