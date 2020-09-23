@@ -72,3 +72,31 @@ input:focus::placeholder {
 .align-left {
     text-align: left;
 }
+
+.rotate {
+    animation: rotate-keyframes 0.75s;
+}
+
+.unrotate {
+    animation: unrotate-keyframes 0.75s;
+}
+
+@keyframes rotate-keyframes {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg)
+    }
+}
+
+@keyframes unrotate-keyframes {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
