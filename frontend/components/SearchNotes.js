@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import SearchIcon from '@material-ui/icons/Search'
 import ClearIcon from '@material-ui/icons/Clear'
 import PlainTooltip from './PlainTooltip'
+import theme from './theme'
 
 export default function SearchNotes({ handleSearch, style }) {
 
@@ -46,7 +47,7 @@ export default function SearchNotes({ handleSearch, style }) {
 
             <PlainTooltip title='Reset search'>
                 <IconButton onClick={resetSearch}>
-                    <ClearIcon style={{margin: 5}} fontSize='small' />
+                    <ClearIcon style={{margin: 5, color: searchValue ? theme.palette.secondary.main : undefined}} fontSize='small' />
                 </IconButton>
             </PlainTooltip>
 

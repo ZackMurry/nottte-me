@@ -5,6 +5,7 @@ import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface NoteDao {
 
@@ -35,5 +36,9 @@ public interface NoteDao {
     List<Note> getNotesByIdList(List<Long> noteIds);
 
     HttpStatus updateLastModified(String title, String author);
+
+    HttpStatus duplicateNote(String title, String author);
+
+    Optional<Note> getNote(String title, String author);
 
 }

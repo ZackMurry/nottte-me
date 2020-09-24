@@ -9,6 +9,7 @@ import YesNoDialog from './YesNoDialog';
 import DoneIcon from '@material-ui/icons/Done';
 import PlainSnackbar from './PlainSnackbar'
 import PeopleIcon from '@material-ui/icons/People'
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 //todo don't let people rename or delete shared notes from here
 export default function NotePreview({ name, editorState, jwt, onNoteRename, shared }) {
@@ -88,6 +89,23 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename, shar
         }
 
     }
+
+    const handleDuplicate = async () => {
+        if(shared) return
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        }
+
+        let needsToReturn = false
+        const response = await fetch(`http://localhost:8080/api/v1/notes/principal/note/${name}/duplicate`, requestOptions).catch(() => {console.log('error duplicating note'); needsToReturn = true})
+
+        if(response.status == 200) {
+            router.reload()
+        }
+
+    }
     
     return (
         <React.Fragment>
@@ -113,6 +131,16 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename, shar
                             >
                                 <Typography color='secondary'> 
                                     Rename note
+                                </Typography>
+                            </Button>
+                            <Button
+                                color='primary'
+                                startIcon={<FileCopyIcon color='secondary' fontSize='large' />}
+                                style={{textTransform: 'none', width: '100%', maxWidth: '12.5vw'}}
+                                onClick={() => handleDuplicate()}
+                            >
+                                <Typography color='secondary'>
+                                    Duplicate note
                                 </Typography>
                             </Button>
                         </Paper>

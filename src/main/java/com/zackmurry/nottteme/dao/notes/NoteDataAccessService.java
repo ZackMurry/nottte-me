@@ -15,12 +15,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * used for accessing and updating data about notes
  */
 @Service
 public final class NoteDataAccessService implements NoteDao {
+
+    private static final String COPY_NOTE_PREFIX = "";
+    private static final String COPY_NOTE_SUFFIX = " (copy)";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -346,6 +350,50 @@ public final class NoteDataAccessService implements NoteDao {
             e.printStackTrace();
             return HttpStatus.BAD_REQUEST;
         }
+    }
+
+    @Override
+    public Optional<Note> getNote(String title, String author) {
+        String sql = "SELECT * FROM notes WHERE title=? AND author=?";
+        try {
+            List<Note> noteList = jdbcTemplate.query(
+                    sql,
+                    resultSet -> new Note(
+                            resultSet.getLong(1), //id
+                            resultSet.getString(2), //author
+                            resultSet.getString(3), //title
+                            resultSet.getString(4), //body
+                            resultSet.getTimestamp(5) //last modified
+                    ),
+                    title,
+                    author
+            );
+            if(noteList.size() != 1) {
+                if(noteList.size() > 1) {
+                    //todo logging
+                    System.out.println("There should never be more than one note with the same title and author; title: " + title + ", author: " + author + ", count: " + noteList.size());
+                } else {
+                    return Optional.empty();
+                }
+            }
+            return Optional.of(noteList.get(0));
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public HttpStatus duplicateNote(String title, String author) {
+        Optional<Note> optionalNote = getNote(title, author);
+        if(optionalNote.isEmpty()) return HttpStatus.NOT_FOUND;
+        Note note = optionalNote.get();
+        String noteTitle = COPY_NOTE_PREFIX + note.getTitle() + COPY_NOTE_SUFFIX;
+        while(userHasNote(noteTitle, author)) {
+            //could use a string builder for this, but it's pretty unlikely that this will run more than a few times
+            noteTitle += COPY_NOTE_SUFFIX;
+        }
+        return createNote(noteTitle, note.getBody(), note.getAuthor());
     }
 
 }

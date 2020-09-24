@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import NotePreview from '../../components/NotePreview'
-import { Grid, Typography, Fab, Button, Paper, MenuList, MenuItem, Popover } from '@material-ui/core'
+import { Grid, Typography, Fab, Button, Paper, MenuList, MenuItem, Popover, CircularProgress } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
 import CreateNoteMenu from '../../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
@@ -17,6 +17,8 @@ export default function Notes() {
 
     const [ menuOpen, setMenuOpen ] = useState(false)
     const [ notes, setNotes ] = useState([])
+    const [ notesLoading, setNotesLoading ] = useState('l') //l short for loading (this would actually affect performance a bit, so i'm cutting it short)
+
     const [ userNotes, setUserNotes ] = useState([])
     const [ sharedNotes, setSharedNotes ] = useState([])
 
@@ -52,16 +54,29 @@ export default function Notes() {
 
 
     const getNotesFromServer = async () => {
+        let needToReturn = false //setting it in a variable because returning in lambdas doesn't return the outer function
         const userNotesResponse = await fetch('http://localhost:8080/api/v1/notes/principal/notes', {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        }).catch(() => {
+            setNotesLoading('e')
+            needToReturn = true
         })
+        if(needToReturn) {
+            return
+        }
         const userNotesText = await userNotesResponse.text()
         const userNotesParsed = JSON.parse(userNotesText)
         setUserNotes(userNotesParsed)
 
         const sharedNotesResponse = await fetch('http://localhost:8080/api/v1/shares/principal/shared-notes', {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+        }).catch(() => {
+            setNotesLoading('e')
+            needToReturn = true
         })
+        if(needToReturn) {
+            return
+        }
         const sharedNotesText = await sharedNotesResponse.text()
         const sharedNotesParsed = JSON.parse(sharedNotesText)
         setSharedNotes(sharedNotesParsed)
@@ -70,6 +85,7 @@ export default function Notes() {
 
         //sorting by last modified and that assigns 'notes' to the new value
         setBackupNotes(orderNotesByLastModified(combinedNotes))
+        setNotesLoading('d') //short for done
     }
 
     const orderNotesByLastModified = (currentNotes = notes, desc = true) => {
@@ -196,7 +212,7 @@ export default function Notes() {
                             }
 
                             {
-                                notes.length <= 0 && (
+                                (notes.length <= 0 && notesLoading == 'd') && (
                                     <div style={{margin: '15% auto'}}>
                                         <Typography variant='h4'>
                                             You don't have any notes!
@@ -205,6 +221,28 @@ export default function Notes() {
                                     </div>
                                 )    
                             }
+
+                            {
+                                notesLoading == 'l' || notesLoading == 'e' && (
+                                    <div 
+                                        style={{
+                                            position: 'absolute', 
+                                            left: '50%',
+                                            top: '50%',
+                                            transform: 'translate(-50%, -50%)'
+                                        }}
+                                    >
+                                        {
+                                            notesLoading !== 'e'
+                                            ?
+                                            <CircularProgress color='secondary'  />
+                                            :
+                                            <Typography variant='h4'>Failed to load</Typography>
+                                        }
+                                    </div>
+                                )
+                            }
+
                         </Grid>
                     </div>
                 </div>

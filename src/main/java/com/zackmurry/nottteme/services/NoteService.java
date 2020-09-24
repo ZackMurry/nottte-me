@@ -62,4 +62,8 @@ public class NoteService {
     public List<Note> getNotesByIdList(List<Long> noteIds) {
         return noteDao.getNotesByIdList(noteIds);
     }
+
+    public HttpStatus duplicateNote(String title, String username) {
+        return noteDao.duplicateNote(title, username);
+    }
 }

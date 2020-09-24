@@ -142,4 +142,15 @@ public class NoteController {
         return noteService.userHasNote(title, username);
     }
 
+    @PostMapping("/user/{username}/note/{title}/duplicate")
+    public HttpStatus duplicateNote(@PathVariable("username") String username, @PathVariable("title") String title) {
+        return noteService.duplicateNote(title, username);
+    }
+
+    @PostMapping("/principal/note/{title}/duplicate")
+    public HttpStatus duplicateNote(@PathVariable("title") String title) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return noteService.duplicateNote(title, username);
+    }
+
 }
