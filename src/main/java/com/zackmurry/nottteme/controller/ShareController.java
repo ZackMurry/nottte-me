@@ -6,6 +6,7 @@ import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.ShareService;
 import com.zackmurry.nottteme.services.ShortcutService;
+import com.zackmurry.nottteme.utils.ShortcutUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * for now, sharing will only work with view access for recipients
@@ -85,14 +87,13 @@ public class ShareController {
 
     @GetMapping("/user/{username}/note/{author}/{title}/raw")
     public String getRawContentsOfSharedNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("author") String author) throws NotFoundException, UnauthorizedException {
-        System.out.println("caught");
-        return shareService.getSharedNote(title, author, username);
+        return shareService.getRawSharedNote(title, author, username);
     }
 
     @GetMapping("/principal/note/{author}/{title}/raw")
     public String getRawContentsOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws NotFoundException, UnauthorizedException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return shareService.getSharedNote(title, author, username);
+        return shareService.getRawSharedNote(title, author, username);
     }
 
     @GetMapping("/principal/note/{author}/{title}/shortcuts/style")
@@ -134,6 +135,87 @@ public class ShareController {
         List<Long> noteIds = shareService.getNoteIdsSharedWithUser(username);
         if(noteIds.size() == 0) return new ArrayList<>();
         return noteService.getNotesByIdList(noteIds);
+    }
+
+    //todo implement these methods for /user/{username} as well
+
+    //TODO NOT DONE. still need to convert raw styles in a note to the new names
+    @PostMapping("/principal/note/{author}/{title}/duplicate")
+    public ResponseEntity<HttpStatus> duplicateNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to note.");
+
+        //copying style shortcuts from author to user
+        List<StyleShortcut> authorStyleShortcuts = shortcutService.getStyleShortcutsByUsername(author);
+        List<String> namesOfAuthorStyleShortcuts = authorStyleShortcuts.stream().map(StyleShortcut::getName).collect(Collectors.toList());
+        List<StyleShortcut> userStyleShortcuts = shortcutService.getStyleShortcutsByUsername(username);
+        userStyleShortcuts.addAll(shortcutService.getSharedStyleShortcutsByUser(username));
+        List<String> newNamesOfAuthorStyleShortcuts = ShortcutUtils.anonymizeStyleShortcuts(authorStyleShortcuts, userStyleShortcuts, author);
+        for (int i = 0; i < authorStyleShortcuts.size(); i++) {
+            authorStyleShortcuts.get(i).setName(newNamesOfAuthorStyleShortcuts.get(i));
+        }
+
+        HttpStatus addShortcutStatus = shortcutService.addSharedStyleShortcutsToUser(username, authorStyleShortcuts);
+        if(addShortcutStatus.value() >= 400) return new ResponseEntity<>(addShortcutStatus);
+
+        //duplicating note
+        Note note = shareService.getSharedNote(title, author, username);
+
+        String body = note.getBody();
+        for (int i = 0; i < namesOfAuthorStyleShortcuts.size(); i++) {
+            String lookingFor = ",\"style\":\"" + namesOfAuthorStyleShortcuts.get(i) + "\"";
+            String replacingWith = ",\"style\":\"" + newNamesOfAuthorStyleShortcuts.get(i) + "\"";
+            //todo do this more efficiently
+            body = body.replace(lookingFor, replacingWith);
+        }
+        note.setBody(body);
+
+        HttpStatus status = noteService.copyNoteToUser(note, username);
+        return new ResponseEntity<>(status);
+    }
+
+    //todo add tests for this
+    @PostMapping("/user/{username}/note/{author}/{title}/duplicate")
+    public ResponseEntity<HttpStatus> duplicateNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to note.");
+
+        //copying style shortcuts from author to user
+        List<StyleShortcut> authorStyleShortcuts = shortcutService.getStyleShortcutsByUsername(author);
+        List<String> namesOfAuthorStyleShortcuts = authorStyleShortcuts.stream().map(StyleShortcut::getName).collect(Collectors.toList());
+        List<StyleShortcut> userStyleShortcuts = shortcutService.getStyleShortcutsByUsername(username);
+        userStyleShortcuts.addAll(shortcutService.getSharedStyleShortcutsByUser(username));
+        List<String> newNamesOfAuthorStyleShortcuts = ShortcutUtils.anonymizeStyleShortcuts(authorStyleShortcuts, userStyleShortcuts, author);
+        for (int i = 0; i < authorStyleShortcuts.size(); i++) {
+            authorStyleShortcuts.get(i).setName(newNamesOfAuthorStyleShortcuts.get(i));
+        }
+
+        HttpStatus addShortcutStatus = shortcutService.addSharedStyleShortcutsToUser(username, authorStyleShortcuts);
+        if(addShortcutStatus.value() >= 400) return new ResponseEntity<>(addShortcutStatus);
+
+        //duplicating note
+        Note note = shareService.getSharedNote(title, author, username);
+
+        String body = note.getBody();
+        for (int i = 0; i < namesOfAuthorStyleShortcuts.size(); i++) {
+            String lookingFor = ",\"style\":\"" + namesOfAuthorStyleShortcuts.get(i) + "\"";
+            String replacingWith = ",\"style\":\"" + newNamesOfAuthorStyleShortcuts.get(i) + "\"";
+            //todo do this more efficiently
+            body = body.replace(lookingFor, replacingWith);
+        }
+        note.setBody(body);
+
+        HttpStatus status = noteService.copyNoteToUser(note, username);
+        return new ResponseEntity<>(status);
+    }
+
+    @GetMapping("/principal/shortcuts")
+    public List<StyleShortcut> getSharedStyleShortcutsOfPrincipal() {
+        return shortcutService.getSharedStyleShortcutsByUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @GetMapping("/user/{username}/shortcuts")
+    public List<StyleShortcut> getSharedStyleShortcutsOfUser(@PathVariable("username") String username) {
+        return shortcutService.getSharedStyleShortcutsByUser(username);
     }
 
 

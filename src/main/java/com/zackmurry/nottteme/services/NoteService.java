@@ -66,4 +66,8 @@ public class NoteService {
     public HttpStatus duplicateNote(String title, String username) {
         return noteDao.duplicateNote(title, username);
     }
+
+    public HttpStatus copyNoteToUser(Note note, String username) {
+        return noteDao.copyNoteToUser(note, username);
+    }
 }

@@ -396,4 +396,14 @@ public final class NoteDataAccessService implements NoteDao {
         return createNote(noteTitle, note.getBody(), note.getAuthor());
     }
 
+    @Override
+    public HttpStatus copyNoteToUser(Note note, String username) {
+        String newTitle = COPY_NOTE_PREFIX + note.getTitle() + COPY_NOTE_SUFFIX;
+        while(userHasNote(newTitle, username)) {
+            //could use a string builder for this, but it's pretty unlikely that this will run more than a few times
+            newTitle += COPY_NOTE_SUFFIX;
+        }
+        return createNote(newTitle, note.getBody(), username);
+    }
+
 }

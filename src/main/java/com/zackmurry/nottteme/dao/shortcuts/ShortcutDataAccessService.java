@@ -327,4 +327,47 @@ public final class ShortcutDataAccessService implements ShortcutDao {
         return optionalShortcut.get().getAttributes();
     }
 
+    @Override
+    public List<StyleShortcut> getSharedStyleShortcutsByUser(String username) {
+
+        //todo probably edit queries to include limits where only one row will match
+        String sql = "SELECT shared_style_shortcuts FROM shortcuts WHERE username=? LIMIT 1";
+
+        try {
+            String rawSharedStyleShortcuts = jdbcTemplate.queryForString(
+                    sql,
+                    username
+            );
+            return ShortcutUtils.convertStyleShortcutStringToObjects(rawSharedStyleShortcuts);
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private HttpStatus setSharedStyleShortcutsByUser(String username, List<StyleShortcut> sharedStyleShortcuts) {
+        String shortcutString = gson.toJson(sharedStyleShortcuts);
+        String sql = "UPDATE shortcuts SET shared_style_shortcuts = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    shortcutString,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @Override
+    public HttpStatus addSharedStyleShortcutsToUser(String username, List<StyleShortcut> newStyleShortcuts) {
+        if(!accountExists(username)) return HttpStatus.NOT_FOUND;
+        List<StyleShortcut> sharedStyleShortcuts = getSharedStyleShortcutsByUser(username);
+        sharedStyleShortcuts.addAll(newStyleShortcuts);
+        return setSharedStyleShortcutsByUser(username, sharedStyleShortcuts);
+    }
+
 }

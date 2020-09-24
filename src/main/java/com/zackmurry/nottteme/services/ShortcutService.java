@@ -76,5 +76,13 @@ public class ShortcutService {
     public List<CSSAttribute> getCSSAttributesFromStyleShortcut(String username, String shortcutName) throws NotFoundException {
         return shortcutDao.getCSSAttributesFromStyleShortcut(username, shortcutName);
     }
-    
+
+    public HttpStatus addSharedStyleShortcutsToUser(String username, List<StyleShortcut> newStyleShortcuts) {
+        return shortcutDao.addSharedStyleShortcutsToUser(username, newStyleShortcuts);
+    }
+
+    public List<StyleShortcut> getSharedStyleShortcutsByUser(String username) {
+        return shortcutDao.getSharedStyleShortcutsByUser(username);
+    }
+
 }

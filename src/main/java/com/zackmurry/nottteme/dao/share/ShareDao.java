@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.dao.share;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import com.zackmurry.nottteme.models.Note;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 
@@ -14,10 +15,12 @@ public interface ShareDao {
 
     boolean noteIsSharedWithUser(String title, String author, String recipient);
 
-    String getSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException;
+    String getRawSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException;
 
     HttpStatus unshareNoteWithUser(String username, String title, String recipient) throws NotFoundException;
 
     List<Long> getNoteIdsSharedWithUser(String username);
+
+    Note getSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException;
 
 }

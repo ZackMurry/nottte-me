@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.share.ShareDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import com.zackmurry.nottteme.models.Note;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,8 @@ public class ShareService {
         return shareDao.noteIsSharedWithUser(title, author, username);
     }
 
-    public String getSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException {
-        return shareDao.getSharedNote(title, author, username);
+    public String getRawSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException {
+        return shareDao.getRawSharedNote(title, author, username);
     }
 
     public HttpStatus unshareNoteWithUser(String username, String title, String recipient) throws NotFoundException {
@@ -37,5 +38,9 @@ public class ShareService {
 
     public List<Long> getNoteIdsSharedWithUser(String username) {
         return shareDao.getNoteIdsSharedWithUser(username);
+    }
+
+    public Note getSharedNote(String title, String author, String username) throws UnauthorizedException, NotFoundException {
+        return shareDao.getSharedNote(title, author, username);
     }
 }

@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.dao.share;
 import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.dao.user.UserDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import com.zackmurry.nottteme.models.Note;
 import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShareDataAccessService implements ShareDao {
@@ -103,7 +105,7 @@ public class ShareDataAccessService implements ShareDao {
     }
 
     @Override
-    public String getSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException {
+    public String getRawSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException {
         if(!noteDao.userHasNote(title, author)) throw new NotFoundException("Unable to find note " + title + " by author " + author + ".");
 
         long noteId = noteDao.getIdByTitleAndAuthor(title, author);
@@ -174,5 +176,15 @@ public class ShareDataAccessService implements ShareDao {
 
     }
 
+    @Override
+    public Note getSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException {
+        if(!noteDao.userHasNote(title, author)) throw new NotFoundException("Unable to find note " + title + " by author " + author + ".");
 
+        long noteId = noteDao.getIdByTitleAndAuthor(title, author);
+        if(!noteIsSharedWithUser(noteId, username)) throw new UnauthorizedException(username + " does not have access to note " + title + " by author " + author + ".");
+
+        Optional<Note> optionalNote = noteDao.getNote(title, author);
+        if(optionalNote.isEmpty()) throw  new NotFoundException("Unable to find note " + title + " by author " + author + ".");
+        return optionalNote.get();
+    }
 }

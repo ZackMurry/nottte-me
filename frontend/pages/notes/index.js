@@ -204,6 +204,7 @@ export default function Notes() {
                                                 jwt={jwt} 
                                                 onNoteRename={(newName) => handleNoteRename(i, newName)} 
                                                 shared={note.author !== principalUsername && principalUsername !== 'nottte-loading'}
+                                                author={note.author}
                                             />
                                         </Grid>
                                     </React.Fragment>

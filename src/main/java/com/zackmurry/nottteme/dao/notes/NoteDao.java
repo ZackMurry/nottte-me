@@ -41,4 +41,6 @@ public interface NoteDao {
 
     Optional<Note> getNote(String title, String author);
 
+    HttpStatus copyNoteToUser(Note note, String username);
+
 }

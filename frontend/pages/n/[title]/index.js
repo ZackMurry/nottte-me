@@ -193,9 +193,22 @@ export default function Note() {
         if(styleShortcutResponse.status === 403) return;
         if(styleShortcutResponse.status === 404) return;
         
-        const parsedStyleShortcuts = JSON.parse(styleShortcutText)
+        let parsedStyleShortcuts = JSON.parse(styleShortcutText)
         await setStyleShortcuts(parsedStyleShortcuts)
         console.log(styleShortcutText)
+
+        //getting shared style shortcuts
+        const sharedShortcutResponse = await fetch('http://localhost:8080/api/v1/shares/principal/shortcuts', requestOptions)
+
+        console.log(sharedShortcutResponse.status)
+        if(sharedShortcutResponse.status === 401) return;
+        if(sharedShortcutResponse.status === 403) return;
+        if(sharedShortcutResponse.status === 404) return;
+
+        const sharedShortcutText = await sharedShortcutResponse.text()
+        const parsedSharedShortcuts = JSON.parse(sharedShortcutText)
+
+        parsedStyleShortcuts = [...parsedSharedShortcuts, ...parsedStyleShortcuts]
 
         let newStyleMap = {}
         for(var i = 0; i < parsedStyleShortcuts.length; i++) {
@@ -217,7 +230,8 @@ export default function Note() {
         }
         console.log('map: ' + JSON.stringify(newStyleMap))
         await setStyleMap(newStyleMap)
-        
+
+
         //getting editor state
 
         const editorResponse = await fetch('http://localhost:8080/api/v1/notes/note/' + encodeURI(title) + '/raw', requestOptions)

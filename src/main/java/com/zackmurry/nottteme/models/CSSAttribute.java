@@ -29,4 +29,11 @@ public final class CSSAttribute {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof CSSAttribute)) return false;
+        CSSAttribute comparing = (CSSAttribute) obj;
+        return attribute.equals(comparing.getAttribute()) && value.equals(comparing.getValue());
+    }
 }

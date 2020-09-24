@@ -45,4 +45,8 @@ public interface ShortcutDao {
 
     List<CSSAttribute> getCSSAttributesFromStyleShortcut(String username, String shortcutName) throws NotFoundException;
 
+    HttpStatus addSharedStyleShortcutsToUser(String username, List<StyleShortcut> newStyleShortcuts);
+
+    List<StyleShortcut> getSharedStyleShortcutsByUser(String username);
+
 }

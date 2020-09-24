@@ -88,7 +88,9 @@ public class NoteController {
         }
 
         //since the user has the note they're requesting, return it
-        return noteService.getRawNote(title, username);
+        String raw = noteService.getRawNote(title, username);
+        System.out.println(raw);
+        return raw;
     }
 
     @GetMapping("/principal/notes")
