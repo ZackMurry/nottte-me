@@ -18,7 +18,7 @@ public class UserService {
         return userDao.createUserAccount(username, password, email);
     }
 
-    public boolean usernameExists(String username) {
+    public boolean accountExists(String username) {
         return userDao.accountExists(username);
     }
 
@@ -38,4 +38,5 @@ public class UserService {
     public HttpStatus updateEmail(String username, String email) {
         return userDao.updateEmail(username, email);
     }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NoteService {
@@ -70,4 +71,9 @@ public class NoteService {
     public HttpStatus copyNoteToUser(Note note, String username) {
         return noteDao.copyNoteToUser(note, username);
     }
+
+    public Optional<Note> getNote(String title, String username) {
+        return noteDao.getNote(title, username);
+    }
+
 }

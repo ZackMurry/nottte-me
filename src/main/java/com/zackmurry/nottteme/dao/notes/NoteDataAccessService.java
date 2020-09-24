@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.dao.notes;
 
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.utils.NoteUtils;
 import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ import java.util.Optional;
 @Service
 public final class NoteDataAccessService implements NoteDao {
 
-    private static final String COPY_NOTE_PREFIX = "";
-    private static final String COPY_NOTE_SUFFIX = " (copy)";
+    public static final String COPY_NOTE_PREFIX = "";
+    public static final String COPY_NOTE_SUFFIX = " (copy)";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -86,9 +87,12 @@ public final class NoteDataAccessService implements NoteDao {
 
     @Override
     public HttpStatus createNote(String title, String body, String author) {
+        if(title == null || title.length() > 200) return HttpStatus.PRECONDITION_FAILED;
         if(userHasNote(title, author)) {
             return HttpStatus.PRECONDITION_FAILED;
         }
+
+        if(body == null) body = NoteUtils.getBlankNoteBody();
 
         String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
         try {
@@ -225,6 +229,7 @@ public final class NoteDataAccessService implements NoteDao {
         if(userHasNote(newTitle, username)) {
             throw new IllegalArgumentException("User already has a note with title " + newTitle + ".");
         }
+        if(newTitle == null || newTitle.length() > 200) throw new IllegalArgumentException("New title should be valid; title: " + newTitle + ".");
 
         String sql = "UPDATE notes SET title=? WHERE title=? AND author=?";
 

@@ -78,4 +78,17 @@ public class Note {
         this.lastModified = lastModified;
     }
 
+    /**
+     * ignores id and lastModified
+     * @param obj comparing object
+     * @return whether the compared fields are equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Note)) return false;
+        Note comparing = (Note) obj;
+        if(!this.title.equals(comparing.getTitle())) return false;
+        if(!this.body.equals(comparing.getBody())) return false;
+        return this.author.equals(comparing.getAuthor());
+    }
 }

@@ -5,6 +5,7 @@ import com.zackmurry.nottteme.models.CreateNoteRequest;
 import com.zackmurry.nottteme.models.CreateNoteWithBodyRequest;
 import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.services.NoteService;
+import com.zackmurry.nottteme.utils.NoteUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class NoteController {
     @PostMapping("/create")
     public ResponseEntity<HttpStatus> create(@RequestBody CreateNoteRequest request) {
         if(request.getTitle().contains("\"")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //because of JSON. todo show on website
-        HttpStatus status = noteService.createNote(request.getTitle(), "", SecurityContextHolder.getContext().getAuthentication().getName());
+        HttpStatus status = noteService.createNote(request.getTitle(), NoteUtils.getBlankNoteBody(), SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(status);
     }
 
@@ -88,9 +89,7 @@ public class NoteController {
         }
 
         //since the user has the note they're requesting, return it
-        String raw = noteService.getRawNote(title, username);
-        System.out.println(raw);
-        return raw;
+        return noteService.getRawNote(title, username);
     }
 
     @GetMapping("/principal/notes")
