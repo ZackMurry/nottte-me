@@ -2,7 +2,6 @@ package com.zackmurry.nottteme.dao.notes;
 
 import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.utils.NoteUtils;
-import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -87,7 +86,7 @@ public final class NoteDataAccessService implements NoteDao {
 
     @Override
     public HttpStatus createNote(String title, String body, String author) {
-        if(title == null || title.length() > 200) return HttpStatus.PRECONDITION_FAILED;
+        if(title == null || title.length() > 200 || author == null) return HttpStatus.PRECONDITION_FAILED;
         if(userHasNote(title, author)) {
             return HttpStatus.PRECONDITION_FAILED;
         }
@@ -199,11 +198,11 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public HttpStatus deleteNote(String title, String username) throws NotFoundException {
+    public HttpStatus deleteNote(String title, String username) {
         String sql = "DELETE FROM notes WHERE title=? AND author=?";
 
         if(!userHasNote(title, username)) {
-            throw new NotFoundException("Note " + title + " with author " + username + " not found.");
+            return HttpStatus.NOT_FOUND;
         }
 
         try {
@@ -221,15 +220,15 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public HttpStatus renameNote(String oldTitle, String newTitle, String username) throws NotFoundException, IllegalArgumentException {
+    public HttpStatus renameNote(String oldTitle, String newTitle, String username) {
         //checking if user has a note with that name
         if(!userHasNote(oldTitle, username)) {
-            throw new NotFoundException("Cannot find note with title " + oldTitle + " by user " + username + ".");
+            return HttpStatus.NOT_FOUND;
         }
         if(userHasNote(newTitle, username)) {
-            throw new IllegalArgumentException("User already has a note with title " + newTitle + ".");
+            return HttpStatus.PRECONDITION_FAILED;
         }
-        if(newTitle == null || newTitle.length() > 200) throw new IllegalArgumentException("New title should be valid; title: " + newTitle + ".");
+        if(newTitle == null || newTitle.length() > 200) return HttpStatus.LENGTH_REQUIRED;
 
         String sql = "UPDATE notes SET title=? WHERE title=? AND author=?";
 

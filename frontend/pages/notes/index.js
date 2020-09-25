@@ -144,13 +144,40 @@ export default function Notes() {
                 <div style={{backgroundColor: 'white', margin: '0 auto', width: '100%', minHeight: '90vh'}}>
                     <div style={{display: 'inline-flex', justifyContent: 'flex-end', margin: '0 auto', marginTop: 10, width: '97.5%'}}>
                         <div style={{display: 'inline-flex', cursor: 'pointer'}} >
+                            <Grid container spacing={3} alignItems="center" justify="center" >
+                                <Grid item lg={6}>
+                                    <SearchNotes 
+                                        handleSearch={value => handleSearch(value)}
+                                        style={{marginRight: 10}}
+                                    />
+                                </Grid>
+                                <Grid item lg={2}>
+                                    <Button
+                                        startIcon={<SortIcon />}
+                                        onClick={e => {
+                                            setSortMenuAchor(e.currentTarget)
+                                            setShowSortMenu(!showSortMenu)
+                                        }}
+                                        style={{marginLeft: 5, marginRight: 5}}
+                                    >
+                                        Sort
+                                    </Button>
+                                </Grid>
+                                <Grid item lg={2}>
+                                    <Button
+                                        startIcon={<SwapVertIcon className={orderDesc ? 'rotate' : 'unrotate'} />}
+                                        onClick={handleOrderSwap}
+                                    >
+                                        {orderDesc ? 'Descending' : 'Ascending'}
+                                    </Button>
+                                </Grid>
+                            </Grid>
                             
-                            <SearchNotes 
+                            {/* <SearchNotes 
                                 handleSearch={value => handleSearch(value)}
                                 style={{marginRight: 10}}
-                            />
-
-                            <Button
+                            /> */}
+                            {/* <Button
                                 startIcon={<SortIcon />}
                                 onClick={e => {
                                     setSortMenuAchor(e.currentTarget)
@@ -159,7 +186,7 @@ export default function Notes() {
                                 style={{marginLeft: 5, marginRight: 5}}
                             >
                                 Sort
-                            </Button>
+                            </Button> */}
                             
                             <Popover 
                                 open={showSortMenu} 
@@ -183,67 +210,68 @@ export default function Notes() {
                                 </Paper>
                             </Popover>
 
-                            <Button
+                            {/* <Button
                                 startIcon={<SwapVertIcon className={orderDesc ? 'rotate' : 'unrotate'} />}
                                 onClick={handleOrderSwap}
                             >
                                 {orderDesc ? 'Descending' : 'Ascending'}
-                            </Button>
+                            </Button> */}
                         </div>
                     </div>
                     {/* notes */}
                     <div style={{margin: 0}}>
                         <Grid container spacing={3} style={{margin: 0, width: '100%'}}>
-                            {
-                                notes.map((note, i) => (
-                                    <React.Fragment key={note.id}>
-                                        <Grid item xs={12} sm={6} md={4} lg={3} style={{paddingTop: 3}} >
-                                            <NotePreview 
-                                                name={note.title} 
-                                                editorState={note.body} 
-                                                jwt={jwt} 
-                                                onNoteRename={(newName) => handleNoteRename(i, newName)} 
-                                                shared={note.author !== principalUsername && principalUsername !== 'nottte-loading'}
-                                                author={note.author}
-                                            />
-                                        </Grid>
-                                    </React.Fragment>
-                                ))
-                                
-                            }
+                            <React.Fragment>
+                                {
+                                    notes.map((note, i) => (
+                                        <React.Fragment key={note.id}>
+                                            <Grid item xs={12} sm={6} md={4} lg={3} style={{paddingTop: 3}} >
+                                                <NotePreview 
+                                                    name={note.title} 
+                                                    editorState={note.body} 
+                                                    jwt={jwt} 
+                                                    onNoteRename={(newName) => handleNoteRename(i, newName)} 
+                                                    shared={note.author !== principalUsername && principalUsername !== 'nottte-loading'}
+                                                    author={note.author}
+                                                />
+                                            </Grid>
+                                        </React.Fragment>
+                                    ))
+                                    
+                                }
 
-                            {
-                                (notes.length <= 0 && notesLoading == 'd') && (
-                                    <div style={{margin: '15% auto'}}>
-                                        <Typography variant='h4'>
-                                            You don't have any notes!
-                                            Click the button in the bottom right to make some.
-                                        </Typography>
-                                    </div>
-                                )    
-                            }
+                                {
+                                    (notes.length <= 0 && notesLoading == 'd') && (
+                                        <div style={{margin: '15% auto'}}>
+                                            <Typography variant='h4'>
+                                                You don't have any notes!
+                                                Click the button in the bottom right to make some.
+                                            </Typography>
+                                        </div>
+                                    )    
+                                }
 
-                            {
-                                notesLoading == 'l' || notesLoading == 'e' && (
-                                    <div 
-                                        style={{
-                                            position: 'absolute', 
-                                            left: '50%',
-                                            top: '50%',
-                                            transform: 'translate(-50%, -50%)'
-                                        }}
-                                    >
-                                        {
-                                            notesLoading !== 'e'
-                                            ?
-                                            <CircularProgress color='secondary'  />
-                                            :
-                                            <Typography variant='h4'>Failed to load</Typography>
-                                        }
-                                    </div>
-                                )
-                            }
-
+                                {
+                                    notesLoading == 'l' || notesLoading == 'e' && (
+                                        <div 
+                                            style={{
+                                                position: 'absolute', 
+                                                left: '50%',
+                                                top: '50%',
+                                                transform: 'translate(-50%, -50%)'
+                                            }}
+                                        >
+                                            {
+                                                notesLoading !== 'e'
+                                                ?
+                                                <CircularProgress color='secondary'  />
+                                                :
+                                                <Typography variant='h4'>Failed to load</Typography>
+                                            }
+                                        </div>
+                                    )
+                                }
+                            </React.Fragment>
                         </Grid>
                     </div>
                 </div>

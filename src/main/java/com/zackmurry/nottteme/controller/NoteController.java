@@ -99,25 +99,25 @@ public class NoteController {
     }
 
     @DeleteMapping("/user/{username}/note/{noteName}")
-    public ResponseEntity<HttpStatus> deleteNoteOfUsernameByName(@PathVariable("username") String username, @PathVariable("noteName") String noteName) throws NotFoundException {
+    public ResponseEntity<HttpStatus> deleteNoteOfUsernameByName(@PathVariable("username") String username, @PathVariable("noteName") String noteName) {
         HttpStatus status = noteService.deleteNote(noteName, username);
         return new ResponseEntity<>(status);
     }
 
     @DeleteMapping("/principal/note/{noteName}")
-    public ResponseEntity<HttpStatus> deleteNoteOfPrincipalByName(@PathVariable("noteName") String noteName) throws NotFoundException {
+    public ResponseEntity<HttpStatus> deleteNoteOfPrincipalByName(@PathVariable("noteName") String noteName) {
         HttpStatus status = noteService.deleteNote(noteName, SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(status);
     }
 
     @PatchMapping("/principal/note/{title}/rename/{newTitle}")
-    public ResponseEntity<HttpStatus> renamePrincipalNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) throws NotFoundException {
+    public ResponseEntity<HttpStatus> renamePrincipalNote(@PathVariable("title") String oldTitle, @PathVariable("newTitle") String newTitle) {
          HttpStatus status = noteService.renameNote(oldTitle, newTitle, SecurityContextHolder.getContext().getAuthentication().getName());
          return new ResponseEntity<>(status);
     }
 
     @PatchMapping("/user/{username}/note/{title}/rename/{newTitle}")
-    public ResponseEntity<HttpStatus> renameUserNote(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("newTitle") String newTitle) throws NotFoundException {
+    public ResponseEntity<HttpStatus> renameUserNote(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("newTitle") String newTitle) {
         HttpStatus status = noteService.renameNote(title, newTitle, username);
         return new ResponseEntity<>(status);
     }

@@ -48,27 +48,27 @@ public class ShareController {
     }
 
     @DeleteMapping("/principal/share/{title}/{recipientUsername}")
-    public ResponseEntity<HttpStatus> unshareNoteWithUser(@PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) throws NotFoundException {
+    public ResponseEntity<HttpStatus> unshareNoteWithUser(@PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         HttpStatus status = shareService.unshareNoteWithUser(username, title, recipient);
         return new ResponseEntity<>(status);
     }
 
     @DeleteMapping("/user/{username}/share/{title}/{recipientUsername}")
-    public ResponseEntity<HttpStatus> unshareUserNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) throws NotFoundException {
+    public ResponseEntity<HttpStatus> unshareUserNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
         HttpStatus status = shareService.unshareNoteWithUser(username, title, recipient);
         return new ResponseEntity<>(status);
     }
 
 
     @GetMapping("/principal/note/{title}/shares")
-    public List<String> getSharesOfNote(@PathVariable("title") String title) throws NotFoundException {
+    public List<String> getSharesOfNote(@PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return shareService.getSharesOfNote(username, title);
     }
 
     @GetMapping("/user/{username}/note/{title}/shares")
-    public List<String> getSharesOfUserNote(@PathVariable("username") String username, @PathVariable("title") String title) throws NotFoundException {
+    public List<String> getSharesOfUserNote(@PathVariable("username") String username, @PathVariable("title") String title) {
         return shareService.getSharesOfNote(username, title);
     }
 
@@ -108,14 +108,14 @@ public class ShareController {
     }
 
     @GetMapping("/principal/note/{author}/{title}/shares")
-    public List<String> getSharesOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+    public List<String> getSharesOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
         return shareService.getSharesOfNote(author, title);
     }
 
     @GetMapping("/user/{username}/note/{author}/{title}/shares")
-    public List<String> getSharesOfNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+    public List<String> getSharesOfNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
         if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
         return shareService.getSharesOfNote(author, title);
     }
@@ -139,7 +139,7 @@ public class ShareController {
 
     //TODO NOT DONE. still need to convert raw styles in a note to the new names
     @PostMapping("/principal/note/{author}/{title}/duplicate")
-    public ResponseEntity<HttpStatus> duplicateNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+    public ResponseEntity<HttpStatus> duplicateNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         HttpStatus status = shareService.duplicateSharedNote(author, title, username);
         return new ResponseEntity<>(status);
@@ -147,7 +147,7 @@ public class ShareController {
 
     //todo add tests for this
     @PostMapping("/user/{username}/note/{author}/{title}/duplicate")
-    public ResponseEntity<HttpStatus> duplicateNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException, NotFoundException {
+    public ResponseEntity<HttpStatus> duplicateNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) {
         HttpStatus status = shareService.duplicateSharedNote(author, title, username);
         return new ResponseEntity<>(status);
     }

@@ -66,12 +66,10 @@ public class ShareDataAccessService implements ShareDao {
      * @param username author name
      * @param title title of note
      * @return list of users that it's shared with
-     * @throws NotFoundException if note not found
      */
     @Override
-    public List<String> getSharesOfNote(String username, String title) throws NotFoundException {
-        if(!noteDao.userHasNote(title, username)) throw new NotFoundException("User must have note to share it.");
-
+    public List<String> getSharesOfNote(String username, String title) {
+        if(!noteDao.userHasNote(title, username)) return new ArrayList<>();
         long noteId = noteDao.getIdByTitleAndAuthor(title, username);
 
         String sql = "SELECT shared_username FROM shares WHERE note_id=?";
@@ -138,8 +136,8 @@ public class ShareDataAccessService implements ShareDao {
     }
 
     @Override
-    public HttpStatus unshareNoteWithUser(String username, String title, String recipient) throws NotFoundException {
-        if(!noteDao.userHasNote(title, username)) throw new NotFoundException("Cannot find note " + title + " by user " + username + ".");
+    public HttpStatus unshareNoteWithUser(String username, String title, String recipient) {
+        if(!noteDao.userHasNote(title, username)) return HttpStatus.NOT_FOUND;
         long noteId = noteDao.getIdByTitleAndAuthor(title, username);
         if(!noteIsSharedWithUser(noteId, recipient)) return HttpStatus.NOT_MODIFIED;
 
@@ -177,14 +175,12 @@ public class ShareDataAccessService implements ShareDao {
     }
 
     @Override
-    public Note getSharedNote(String title, String author, String username) throws NotFoundException, UnauthorizedException {
-        if(!noteDao.userHasNote(title, author)) throw new NotFoundException("Unable to find note " + title + " by author " + author + ".");
+    public Optional<Note> getSharedNote(String title, String author, String username) throws UnauthorizedException {
+        if(!noteDao.userHasNote(title, author)) return Optional.empty();
 
         long noteId = noteDao.getIdByTitleAndAuthor(title, author);
         if(!noteIsSharedWithUser(noteId, username)) throw new UnauthorizedException(username + " does not have access to note " + title + " by author " + author + ".");
 
-        Optional<Note> optionalNote = noteDao.getNote(title, author);
-        if(optionalNote.isEmpty()) throw  new NotFoundException("Unable to find note " + title + " by author " + author + ".");
-        return optionalNote.get();
+        return noteDao.getNote(title, author);
     }
 }

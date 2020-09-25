@@ -2,7 +2,7 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.models.Note;
-import javassist.NotFoundException;
+import com.zackmurry.nottteme.utils.NoteUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,10 @@ public class NoteService {
 
     public HttpStatus createNote(String title, String body, String author) {
         return noteDao.createNote(title, body, author);
+    }
+
+    public HttpStatus createNote(String title, String author) {
+        return noteDao.createNote(title, NoteUtils.getBlankNoteBody(), author);
     }
 
     public HttpStatus saveNote(String title, String author, String body) {
@@ -40,11 +44,11 @@ public class NoteService {
         return noteDao.getNotesByUser(username);
     }
 
-    public HttpStatus deleteNote(String title, String username) throws NotFoundException {
+    public HttpStatus deleteNote(String title, String username) {
         return noteDao.deleteNote(title, username);
     }
 
-    public HttpStatus renameNote(String oldTitle, String newTitle, String username) throws NotFoundException {
+    public HttpStatus renameNote(String oldTitle, String newTitle, String username) {
         return noteDao.renameNote(oldTitle, newTitle, username);
     }
 

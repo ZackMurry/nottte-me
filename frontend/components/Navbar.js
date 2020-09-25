@@ -14,7 +14,7 @@ export default function Navbar() {
     }, [])
 
     return (
-        <div style={{backgroundColor: '#2d323e', width: '100%', display: 'flex', height: '10vh', position: 'fixed', zIndex: 1, top: 0, left: 0}}>
+        <div style={{backgroundColor: '#2d323e', width: '100%', display: 'flex', height: '10vh', position: 'fixed', zIndex: 10, top: 0, left: 0}}>
             <div>
                 <Link href="/">
                     <Typography color='primary' style={{fontWeight: 100, paddingLeft: '7.5vw', paddingTop: 10, fontSize: 48, alignSelf: 'center', cursor: 'pointer'}}>

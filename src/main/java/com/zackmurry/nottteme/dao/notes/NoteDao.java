@@ -1,7 +1,6 @@
 package com.zackmurry.nottteme.dao.notes;
 
 import com.zackmurry.nottteme.models.Note;
-import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -23,9 +22,9 @@ public interface NoteDao {
 
     List<Note> getNotesByUser(String username);
 
-    HttpStatus deleteNote(String title, String username) throws NotFoundException;
+    HttpStatus deleteNote(String title, String username);
 
-    HttpStatus renameNote(String oldTitle, String newTitle, String username) throws NotFoundException;
+    HttpStatus renameNote(String oldTitle, String newTitle, String username);
 
     int getNoteCount(String username);
 

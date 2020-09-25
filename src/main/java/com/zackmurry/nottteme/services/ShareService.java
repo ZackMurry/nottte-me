@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,7 @@ public class ShareService {
         return shareDao.shareNoteWithUser(author, title, recipient);
     }
 
-    public List<String> getSharesOfNote(String username, String title) throws NotFoundException {
+    public List<String> getSharesOfNote(String username, String title) {
         return shareDao.getSharesOfNote(username, title);
     }
 
@@ -41,7 +42,7 @@ public class ShareService {
         return shareDao.getRawSharedNote(title, author, username);
     }
 
-    public HttpStatus unshareNoteWithUser(String username, String title, String recipient) throws NotFoundException {
+    public HttpStatus unshareNoteWithUser(String username, String title, String recipient) {
         return shareDao.unshareNoteWithUser(username, title, recipient);
     }
 
@@ -49,12 +50,12 @@ public class ShareService {
         return shareDao.getNoteIdsSharedWithUser(username);
     }
 
-    public Note getSharedNote(String title, String author, String username) throws UnauthorizedException, NotFoundException {
+    public Optional<Note> getSharedNote(String title, String author, String username) throws UnauthorizedException {
         return shareDao.getSharedNote(title, author, username);
     }
 
-    public HttpStatus duplicateSharedNote(String author, String title, String username) throws UnauthorizedException, NotFoundException {
-        if(!shareDao.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to note.");
+    public HttpStatus duplicateSharedNote(String author, String title, String username) {
+        if(!shareDao.noteIsSharedWithUser(title, author, username)) return HttpStatus.UNAUTHORIZED;
 
         //copying style shortcuts from author to user
         List<StyleShortcut> authorStyleShortcuts = shortcutService.getStyleShortcutsByUsername(author);
@@ -70,7 +71,15 @@ public class ShareService {
         if(addShortcutStatus.value() >= 400) return addShortcutStatus;
 
         //duplicating note
-        Note note = getSharedNote(title, author, username);
+        Optional<Note> optionalNote;
+        try {
+            optionalNote = getSharedNote(title, author, username);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpStatus.UNAUTHORIZED;
+        }
+        if(optionalNote.isEmpty()) return HttpStatus.UNAUTHORIZED;
+        Note note = optionalNote.get();
 
         String body = note.getBody();
         for (int i = 0; i < namesOfAuthorStyleShortcuts.size(); i++) {
