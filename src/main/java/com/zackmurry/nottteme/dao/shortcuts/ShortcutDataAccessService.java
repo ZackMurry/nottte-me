@@ -370,4 +370,56 @@ public final class ShortcutDataAccessService implements ShortcutDao {
         return setSharedStyleShortcutsByUser(username, sharedStyleShortcuts);
     }
 
+    @Override
+    public HttpStatus deleteStyleShortcutsByUser(String username) {
+        if(!accountExists(username)) return HttpStatus.NOT_MODIFIED;
+        String sql = "UPDATE shortcuts SET style_shortcuts = '[]' WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @Override
+    public HttpStatus deleteSharedStyleShortcutsByUser(String username) {
+        if(!accountExists(username)) return HttpStatus.NOT_MODIFIED;
+        String sql = "UPDATE shortcuts SET shared_style_shortcuts ='[]' WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
+
+    @Override
+    public HttpStatus deleteTextShortcutsByUser(String username) {
+        if(!accountExists(username)) return HttpStatus.NOT_MODIFIED;
+        String sql = "UPDATE shortcuts SET text_shortcuts = '[]' WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
 }

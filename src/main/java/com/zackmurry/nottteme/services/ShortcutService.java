@@ -85,4 +85,16 @@ public class ShortcutService {
         return shortcutDao.getSharedStyleShortcutsByUser(username);
     }
 
+    public HttpStatus deleteStyleShortcutsByUser(String username) {
+        return shortcutDao.deleteStyleShortcutsByUser(username);
+    }
+
+    public HttpStatus deleteSharedStyleShortcutsByUser(String username) {
+        return shortcutDao.deleteSharedStyleShortcutsByUser(username);
+    }
+
+    public HttpStatus deleteTextShortcutsByUser(String username) {
+        return shortcutDao.deleteTextShortcutsByUser(username);
+    }
+
 }

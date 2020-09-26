@@ -6,7 +6,7 @@ CREATE TABLE users (
 
 CREATE TABLE notes (
     id BIGSERIAL PRIMARY KEY,
-    author VARCHAR(32) NOT NULL,
+    author VARCHAR(32) NOT NULL, --todo next time this has to be cleared, add foreign key to this
     title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
     body TEXT DEFAULT '', --draft js content
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -67,7 +67,20 @@ public class ShareService {
             authorStyleShortcuts.get(i).setName(newNamesOfAuthorStyleShortcuts.get(i));
         }
 
-        HttpStatus addShortcutStatus = shortcutService.addSharedStyleShortcutsToUser(username, authorStyleShortcuts);
+        HttpStatus addShortcutStatus = shortcutService.addSharedStyleShortcutsToUser(
+                username,
+                //in anonymizeStyleShortcuts(), copied style shortcuts that should be mapped to an already existing one are
+                //given the same name as the pre-existing one. that's why we need to remove any style shortcuts that meet this,
+                //as they already exist and don't need to be added
+                authorStyleShortcuts.stream()
+                        .filter(styleShortcut -> userStyleShortcuts.stream()
+                                .noneMatch(s -> s.getName().equals(styleShortcut.getName()))
+                        )
+                        .collect(Collectors.toList())
+        );
+
+        //the two things that we don't want this to be are 400 and 404 (only error codes that this method returns),
+        //so >= 400 achieves the same goal
         if(addShortcutStatus.value() >= 400) return addShortcutStatus;
 
         //duplicating note

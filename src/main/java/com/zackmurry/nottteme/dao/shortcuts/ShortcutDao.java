@@ -49,4 +49,10 @@ public interface ShortcutDao {
 
     List<StyleShortcut> getSharedStyleShortcutsByUser(String username);
 
+    HttpStatus deleteStyleShortcutsByUser(String username);
+
+    HttpStatus deleteSharedStyleShortcutsByUser(String username);
+
+    HttpStatus deleteTextShortcutsByUser(String username);
+
 }

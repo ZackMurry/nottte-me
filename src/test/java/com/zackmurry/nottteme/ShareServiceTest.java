@@ -1,7 +1,11 @@
 package com.zackmurry.nottteme;
 
+import com.zackmurry.nottteme.dao.notes.NoteDataAccessService;
+import com.zackmurry.nottteme.models.CSSAttribute;
+import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.ShareService;
+import com.zackmurry.nottteme.services.ShortcutService;
 import com.zackmurry.nottteme.services.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.*;
@@ -9,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +31,9 @@ public class ShareServiceTest {
 
     @Autowired
     private NoteService noteService;
+
+    @Autowired
+    private ShortcutService shortcutService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -55,6 +65,7 @@ public class ShareServiceTest {
     public void deleteTestUser() {
         assertEquals(HttpStatus.OK, userService.deleteAccount(testUsername));
         assertEquals(HttpStatus.OK, userService.deleteAccount(targetUsername));
+        assertEquals(HttpStatus.OK, noteService.deleteNotesByAuthor(testUsername));
     }
 
     @DisplayName("Test sharing note")
@@ -99,6 +110,83 @@ public class ShareServiceTest {
         assertFalse(shareService.noteIsSharedWithUser(newNoteName, testUsername, targetUsername), "Note should not be shared with user once it is deleted.");
     }
 
-    //todo add test for duplicating shared notes
+    @DisplayName("Test duplicating shared notes")
+    @Test
+    public void testDuplicateShared() {
+        final String noteName = RandomStringUtils.randomAlphabetic(10, 20);
+        assertEquals(HttpStatus.OK, noteService.createNote(noteName, testUsername));
+
+        //sharing note
+        assertEquals(HttpStatus.OK, shareService.shareNoteWithUser(testUsername, noteName, targetUsername));
+
+        //creating shortcuts on target user's side
+        List<CSSAttribute> targetAttributesList1 = new ArrayList<>();
+        targetAttributesList1.add(new CSSAttribute("color", "blue"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(targetUsername, "myFirstStyleShortcut", "O", targetAttributesList1, true));
+
+        List<CSSAttribute> targetAttributesList2 = new ArrayList<>();
+        targetAttributesList2.add(new CSSAttribute("background-color", "purple"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(targetUsername, testUsername + "-color-blue", "L", targetAttributesList2, false));
+
+        List<CSSAttribute> targetAttributeList3 = new ArrayList<>();
+        targetAttributeList3.add(new CSSAttribute("font-size", "24px"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(targetUsername, "testMergeShortcuts", "q", targetAttributeList3, false));
+
+        List<CSSAttribute> targetAttributeList4 = new ArrayList<>();
+        targetAttributeList4.add(new CSSAttribute("border", "4px black solid"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(targetUsername, "testNoMergeShortcuts", "G", targetAttributeList4, true));
+
+        //creating style shortcuts to transfer over
+        List<CSSAttribute> attribute1List = new ArrayList<>();
+        attribute1List.add(new CSSAttribute("color", "blue"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(testUsername, "myCoolStyleShortcut", "K", attribute1List, true));
+
+        List<CSSAttribute> attribute2List = new ArrayList<>();
+        attribute2List.add(new CSSAttribute("text-decoration", "underline"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(testUsername, "mySecondStyleShortcut", "U", attribute2List, true));
+
+        List<CSSAttribute> attribute3List = new ArrayList<>();
+        attribute3List.add(new CSSAttribute("font-size", "24px"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(testUsername, "myThirdStyleShortcut", "K", attribute3List, false));
+
+        List<CSSAttribute> attribute4List = new ArrayList<>();
+        attribute4List.add(new CSSAttribute("color", "blue"));
+        attribute4List.add(new CSSAttribute("border", "4px black solid"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(testUsername, "myFourthStyleShortcut", "l", attribute4List, true));
+
+        List<CSSAttribute> attribute5List = new ArrayList<>();
+        attribute5List.add(new CSSAttribute("color", "blue"));
+        attribute5List.add(new CSSAttribute("text-decoration", "underline"));
+        assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(testUsername, "testIndexing", "E", attribute5List, false));
+
+        //duplicating note
+        assertEquals(HttpStatus.OK, shareService.duplicateSharedNote(testUsername, noteName, targetUsername));
+
+        //checking values
+        List<StyleShortcut> sharedShortcuts = shortcutService.getSharedStyleShortcutsByUser(targetUsername);
+        assertEquals(3, sharedShortcuts.size(), "Matching shortcuts should eliminate two unnecessary shortcuts.");
+
+        assertEquals(testUsername + "-text-decoration-underline", sharedShortcuts.get(0).getName());
+        assertEquals("U", sharedShortcuts.get(0).getKey());
+        assertEquals(attribute2List, sharedShortcuts.get(0).getAttributes());
+        assertTrue(sharedShortcuts.get(0).getAlt());
+
+        assertEquals(testUsername + "-color-blue-1", sharedShortcuts.get(1).getName(), "A pre-existing shortcut with the target name should increase the index of the new name.");
+        assertEquals("l", sharedShortcuts.get(1).getKey());
+        assertEquals(attribute4List, sharedShortcuts.get(1).getAttributes());
+        assertTrue(sharedShortcuts.get(1).getAlt());
+
+        assertEquals(testUsername + "-color-blue-2", sharedShortcuts.get(2).getName(), "A newly added shortcut with the target name should increase the index of the new name.");
+        assertEquals("E", sharedShortcuts.get(2).getKey());
+        assertEquals(attribute5List, sharedShortcuts.get(2).getAttributes());
+        assertFalse(sharedShortcuts.get(2).getAlt());
+
+        //cleaning up
+        assertEquals(HttpStatus.OK, shortcutService.deleteStyleShortcutsByUser(testUsername));
+        assertEquals(HttpStatus.OK, shortcutService.deleteStyleShortcutsByUser(targetUsername));
+        assertEquals(HttpStatus.OK, shortcutService.deleteSharedStyleShortcutsByUser(targetUsername));
+        assertEquals(HttpStatus.OK, noteService.deleteNote(noteName, testUsername));
+        assertEquals(HttpStatus.OK, noteService.deleteNote(NoteDataAccessService.COPY_NOTE_PREFIX + noteName + NoteDataAccessService.COPY_NOTE_SUFFIX, targetUsername));
+    }
 
 }
