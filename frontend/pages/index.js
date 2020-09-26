@@ -1,54 +1,161 @@
 import Head from 'next/head'
 import '../styles/Home.module.css'
-import { Typography } from '@material-ui/core'
+import { IconButton, Typography } from '@material-ui/core'
 import Navbar from '../components/Navbar'
+import { useEffect, useRef, useState } from 'react'
+import SampleEditor from '../components/SampleEditor'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 export default function Home() {
 
-  return (
-    <div style={{margin: 0, padding: 0, overflowX: 'hidden', width: '100%'}}>
+    const [ outerDivClass, setOuterDivClass ] = useState('plain-background')
+    const [ showEditor, setShowEditor ] = useState(false)
+    const [ previewStep, setPreviewStep ] = useState(1)
 
-        {/* head */}
-        <Head>
-            <title>nottte.me</title>
-        </Head>
+    const contentEl = useRef(null)
+    const stepTwoEl = useRef(null)
+    const stepThreeEl = useRef(null)
+    const endingEl = useRef(null)
 
-        {/* slope at top of white section */}
-        <div style={{top: '50vh', left:0, backgroundColor: 'white', position: 'absolute', width: '100%', height: '25vh', clipPath: 'polygon(100% 0, 100% 100%, 0% 100%)', zIndex: -1, overflowX: 'hidden'}} ></div>
-        {/* white section */}
-        <div style={{position: 'absolute', top: '74.9vh', left: 0, backgroundColor: 'white', height: '100.2vh', width: '100%', zIndex: -1, overflowX: 'hidden'}}></div>
-        {/* slope at bottom of white section */}
-        <div style={{top: '174.95vh', left:0, backgroundColor: 'white', position: 'absolute', width: '100%', height: '25.05vh', clipPath: 'polygon(0% 0, 100% 0%, 0% 100%)', zIndex: -1, overflowX: 'hidden'}} ></div>
-        
-        <Navbar />
+    const handleScroll = () => {
+        if(window.pageYOffset < 500) {
+            if(showEditor) {
+                setShowEditor(false)
+            }
+        } else if(window.pageYOffset >= 500) {
+            if(!showEditor) {
+                setShowEditor(true)
+            }
+        }
+    }
 
-        {/* hero */}
-        <div>
-            <Typography color='primary' style={{fontSize: 128, fontFamily: 'Fjalla One', marginLeft: '7.5vw', marginTop: '10%'}}>
-                take notes.
-            </Typography>
-            <Typography color='primary' style={{fontSize: 48, marginLeft: '7.5vw', marginTop: '-2.5vh', fontWeight: 300}}>
-                the place for minimal note taking
-            </Typography>
-        </div>
+    useEffect(() => {
+        document.addEventListener('scroll', handleScroll)
+        return () => {
+            document.removeEventListener('scroll', handleScroll)
+        }
+    })
 
-        {/* white part */}
-        <div style={{marginTop: 400}}>
-            {/* header */}
+    const handleGoToContent = () => {
+        contentEl.current.scrollIntoView()
+    }
+
+    const moveToNextStep = () => {
+        if(previewStep == 1) {
+            stepTwoEl.current.scrollIntoView()
+            setPreviewStep(2)
+        } else if(previewStep == 2) {
+            stepThreeEl.current.scrollIntoView()
+            setPreviewStep(3)
+        } else if(previewStep == 3) {
+            endingEl.current.scrollIntoView()
+            setPreviewStep(4)
+        }
+    }
+
+    return (
+        <div className={outerDivClass} style={{margin: 0, padding: 0, overflowX: 'hidden', width: '100%'}} onScroll={handleScroll}>
+            {/* head */}
+            <Head>
+                <title>nottte.me</title>
+            </Head>
+            
+            <Navbar />
+
+            {/* hero */}
             <div>
-                <Typography variant='h2' style={{textAlign: 'center'}} >
-                    shortcut centered typing
+                <Typography color='primary' style={{fontSize: 128, fontFamily: 'Fjalla One', marginLeft: '7.5vw', marginTop: '10%'}}>
+                    take notes.
                 </Typography>
-            </div>
-            {/* body */}
-            <div style={{width: '100%', textAlign: 'center', marginTop: '2.5%'}}>
-                <Typography variant='h5' style={{fontWeight: 100}}>
-                    Users can create custom keyboard shortcuts to improve productivity.<br />
-                    We've eliminated all buttons on the screen in favor of an elegant and personalized command system
+                <Typography color='primary' style={{fontSize: 48, marginLeft: '7.5vw', marginTop: '-2.5vh', fontWeight: 300}}>
+                    the place for speedy writing
                 </Typography>
+                <div style={{width: '20%', margin: '0 auto', marginTop: '25vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <div>
+                        <Typography color='primary' variant='h5'>
+                            Try it out
+                        </Typography>
+                    </div>
+                    <div>
+                        <IconButton onClick={handleGoToContent}>
+                            <ArrowDownwardIcon color='primary' fontSize='large' />
+                        </IconButton>
+                    </div>
+                    
+                </div>
+
+                
             </div>
-        </div>
+
+            
+
+            <div style={{position: 'fixed', top: '50%', left: '50%', marginTop: '-30vh', marginLeft: '-10vw'}} className={showEditor ? 'transition-show' : 'transition-hide'}>
+                <SampleEditor 
+                    className='sample-editor' 
+                    step={previewStep}
+                    moveToNextStep={moveToNextStep}
+                />
+            </div>
+            <div ref={contentEl} style={{position: 'absolute', left: 0, top: '75vh'}}></div>
+            <div style={{marginTop: '25vh', height: '500vh'}}>
+                {/* step one */}
+                <div style={{width: '37.5vw'}}>
+                    <Typography variant='h3' color='primary' style={{textAlign: 'right'}}>
+                        Try changing the text
+                    </Typography>
+                    <Typography 
+                        variant='h5' 
+                        color='primary' 
+                        style={{textAlign: 'right', fontWeight: 300, marginTop: '1vh'}}
+                    >
+                        While our platform has a lot of capabilities, <br />
+                        it's nice to know that you can regularly edit text.
+                    </Typography>
+                </div>
+
+                {/* step two */}
+                <div ref={stepTwoEl} style={{marginTop: '90vh', width: '37.5vw'}}>
+                    <Typography variant='h3' color='primary' style={{paddingTop: '25vh', textAlign: 'right'}}>
+                        Try using a text shortcut
+                    </Typography>
+                    <Typography 
+                        variant='h5'
+                        color='primary'
+                        style={{textAlign: 'right', fontWeight: 300, marginTop: '1vh'}}
+                    >
+                        Text shortcuts insert text at your current position. <br />
+                        We went ahead and made one for you to try out. <br />
+                        Try pressing control and L on your keyboard
+                    </Typography>
+                </div>
+
+                {/* step three */}
+                <div ref={stepThreeEl} style={{marginTop: '90vh', width: '37.5vw'}}>
+                    <Typography variant='h3' color='primary' style={{paddingTop: '25vh', textAlign: 'right'}}>
+                        Apply a style shortcut
+                    </Typography>
+                    <Typography 
+                        variant='h5'
+                        color='primary'
+                        style={{textAlign: 'right', fontWeight: 300, marginTop: '1vh'}}
+                    >
+                        Style shortcuts apply a style to a region. <br />
+                        If you have something selected, they will apply <br />
+                        styles to the selected region. If not, they activate <br />
+                        the style, so that whatever you type will have that style. <br />
+                        You can press control and Q on your keyboard to use <br />
+                        one that we made for you.
+                    </Typography>
+                </div>
+
+                <div ref={endingEl} style={{marginTop: '90vh', width: '37.5vw'}}>
+                    <Typography variant='h1' color='primary' style={{paddingTop: '25vh', textAlign: 'right'}}>
+                        Sign up
+                    </Typography>
+                </div>
+
+            </div>
         
-    </div>
-  )
+        </div>
+    )
 }

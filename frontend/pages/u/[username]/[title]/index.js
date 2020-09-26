@@ -139,7 +139,7 @@ export default function SharedNote() {
                 </Typography>
             </Link>
             
-            <div style={{width: '55%', minWidth: 750, margin: '10vh auto'}}>
+            <div style={{width: '55%', minWidth: 750, margin: '10vh auto'}} className='note'>
                 <div style={{display: 'inline-flex', width: '100%'}}>
                     <Typography variant='h4' color='primary' style={{width: '50%', fontWeight: 300}}>
                         {title}
