@@ -105,7 +105,7 @@ export default function Settings() {
                             <Typography variant='h5' style={{fontWeight: 300}}>
                                 Current note name: {title}
                             </Typography>
-                            <RenameNoteField name={router.query.title} jwt={jwt} />
+                            <RenameNoteField name={router.query.title} jwt={jwt} shared={false} />
                         </div>
                     </div>
                     <div id='delete'>

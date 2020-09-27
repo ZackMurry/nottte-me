@@ -3,9 +3,19 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Typography } from '@material-ui/core'
 import Head from 'next/head'
 import Cookie from 'js-cookie'
-import { Editor, EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, KeyBindingUtil, Modifier } from 'draft-js'
+import { EditorState, convertFromRaw, convertToRaw, RichUtils, getDefaultKeyBinding, Modifier } from 'draft-js'
 import { debounce } from 'lodash'
 import Link from 'next/link'
+import Editor from 'draft-js-plugins-editor'
+import createLinkifyPlugin from 'draft-js-linkify-plugin'
+
+
+const linkifyPlugin = createLinkifyPlugin({
+    component: (props) => (
+        <a {..._.omit(props, ['blockKey'])} style={{textDecoration: 'underline'}} onClick={() => window.open(props.href)} />
+    )
+})
+const plugins = [ linkifyPlugin ]
 
 //used because EditorState.createFromEmpty() was producing errors.
 //just an empty content state
@@ -333,7 +343,7 @@ export default function Note() {
                     nottte.me
                 </Typography>
             </Link>
-            
+
             <div style={{width: '55%', minWidth: 750, margin: '10vh auto'}} className='note'>
                 <div style={{display: 'inline-flex', width: '100%'}}>
                     <Typography variant='h4' color='primary' style={{width: '50%', fontWeight: 300}}>
@@ -356,6 +366,7 @@ export default function Note() {
                     customStyleMap={styleMap}
                     editorKey='editor' //this fixes a 'props did not match' error
                     blockStyleFn={getBlockStyle}
+                    plugins={plugins}
                 />
             </div>
             

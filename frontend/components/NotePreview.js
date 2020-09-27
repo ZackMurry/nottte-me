@@ -42,7 +42,7 @@ export default function NotePreview({ name, editorState, jwt, onNoteRename, shar
     }, [ name ])
 
     const goToNotePage = () => {
-        router.push('/n/' + encodeURI(name))
+        router.push(shared ? (`/u/${encodeURI(author)}/${encodeURI(name)}`) : ('/n/' + encodeURI(name)))
     }
 
     const onShowMore = e => {

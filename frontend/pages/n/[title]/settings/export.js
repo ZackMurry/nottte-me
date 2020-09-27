@@ -68,7 +68,7 @@ export default function Export() {
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
-            setHtml(draftToHtml(textEditorState.getCurrentContent(), newStyleMap))
+            setHtml(draftToHtml(textEditorState.getCurrentContent(), parsedStyleMap))
         }
 
         

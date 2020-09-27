@@ -1,10 +1,21 @@
 import { Typography } from '@material-ui/core'
-import { convertFromRaw, Editor, EditorState } from 'draft-js'
+import { convertFromRaw, EditorState } from 'draft-js'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import Cookie from 'js-cookie'
+import Editor from 'draft-js-plugins-editor'
+import createLinkifyPlugin from 'draft-js-linkify-plugin'
+import _ from 'lodash'
+
+
+const linkifyPlugin = createLinkifyPlugin({
+    component: (props) => (
+        <a {..._.omit(props, ['blockKey'])} style={{textDecoration: 'underline'}} />
+    )
+})
+const plugins = [ linkifyPlugin ]
 
 const emptyContentState = convertFromRaw({
     entityMap: {},
@@ -124,8 +135,9 @@ export default function SharedNote() {
         }
     }
 
-    const onChange = () => {
-
+    //plugin editor will be calling this, but not the user
+    const handleChange = (newEditorState) => {
+        setEditorState(newEditorState)
     }
 
     return (
@@ -159,6 +171,8 @@ export default function SharedNote() {
                     editorKey='editor' //this fixes a 'props did not match' error
                     blockStyleFn={getBlockStyle}
                     readOnly={true}
+                    onChange={handleChange}
+                    plugins={plugins}
                 />
             </div>
             

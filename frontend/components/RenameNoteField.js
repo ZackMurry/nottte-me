@@ -3,10 +3,8 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import PlainTooltip from './PlainTooltip'
 
-export default function RenameNoteField({ name, jwt, shared }) {
-
-    if(shared == null) shared = false
-
+export default function RenameNoteField({ name, jwt, shared = false }) {
+    console.log('shared: ' + shared)
     const router = useRouter()
 
     const [ editedName, setEditedName ] = useState(name ? name : router.query.name)
@@ -36,7 +34,7 @@ export default function RenameNoteField({ name, jwt, shared }) {
                 onChange={e => setEditedName(e.target.value)}
                 style={{margin: 5}}
             />
-            <PlainTooltip title='You cannot rename a shared note' hidden={!shared} >
+            <PlainTooltip title='You cannot rename a shared note' disableHoverListener={shared ? undefined : true} >
                 <div style={{display: 'inline-flex'}}>
                     <Button 
                         color='secondary' 
