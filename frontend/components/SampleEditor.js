@@ -7,7 +7,7 @@ const emptyContentState = convertFromRaw({
     entityMap: {},
     blocks: [
       {
-        text: 'Welcome to nottte.me. Try editing this text!',
+        text: 'Welcome to nottte.me. We allow you to fully customize your writing experience by creating custom text shortcuts, style shortcuts, and more. You can also easily export your notes to Google Docs, PDF, and HTML.',
         key: 'sample',
         type: 'unstyled',
         entityRanges: []

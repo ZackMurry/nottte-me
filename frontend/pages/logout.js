@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Navbar from '../../components/Navbar'
+import Navbar from '../components/Navbar'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
 

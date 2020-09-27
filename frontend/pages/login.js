@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Cookie from 'js-cookie'
-import Navbar from '../../components/Navbar'
+import Navbar from '../components/Navbar'
 import { Paper, Typography, Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import Link from 'next/link'

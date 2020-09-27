@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import Navbar from '../../components/Navbar'
+import Navbar from '../components/Navbar'
 import { Paper, Typography, Grid } from '@material-ui/core'
 import Head from 'next/head'
-import TextShortcutPreview from '../../components/TextShortcutPreview'
-import CreateTextShortcut from '../../components/CreateTextShortcut'
+import TextShortcutPreview from '../components/TextShortcutPreview'
+import CreateTextShortcut from '../components/CreateTextShortcut'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
-import NottteShortcutDisplay from '../../components/NottteShortcutDisplay'
-import CreateStyleShortcut from '../../components/CreateStyleShortcut'
-import StyleShortcutPreview from '../../components/StyleShortcutPreview'
-import PlainSnackbar from '../../components/PlainSnackbar'
+import NottteShortcutDisplay from '../components/NottteShortcutDisplay'
+import CreateStyleShortcut from '../components/CreateStyleShortcut'
+import StyleShortcutPreview from '../components/StyleShortcutPreview'
+import PlainSnackbar from '../components/PlainSnackbar'
 
 //default text shortcuts
 const nottteShortcuts = [

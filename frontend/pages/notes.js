@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import Navbar from '../../components/Navbar'
-import NotePreview from '../../components/NotePreview'
+import Navbar from '../components/Navbar'
+import NotePreview from '../components/NotePreview'
 import { Grid, Typography, Fab, Button, Paper, MenuList, MenuItem, Popover, CircularProgress } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
-import CreateNoteMenu from '../../components/CreateNoteMenu';
+import CreateNoteMenu from '../components/CreateNoteMenu';
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router';
 import SortIcon from '@material-ui/icons/Sort';
 import SwapVertIcon from '@material-ui/icons/SwapVert';
-import SearchNotes from '../../components/SearchNotes';
+import SearchNotes from '../components/SearchNotes';
+import CreateNotePreview from '../components/CreateNotePreview'
 
 //todo display user's actual notes
 export default function Notes() {
@@ -30,6 +31,8 @@ export default function Notes() {
     const [ principalUsername, setPrincipalUsername ] = useState('nottte-loading') //todo don't let people make nottte-loading their name lol
 
     const [ backupNotes, setBackupNotes ] = useState([]) //used for reverting after search
+
+    const [ showNotes, setShowNotes ] = useState(true)
 
     const jwt = Cookie.get('jwt')
 
@@ -137,6 +140,10 @@ export default function Notes() {
         setNotes(notesCopy.filter(note => (note.title+'').toLowerCase().includes(value.toLowerCase())))
     }
 
+    const toggleShowNotes = () => {
+        setShowNotes(!showNotes)
+    }
+
     return (
         <div>
             <div style={{marginTop: '10vh'}} >
@@ -173,21 +180,6 @@ export default function Notes() {
                                 </Grid>
                             </Grid>
                             
-                            {/* <SearchNotes 
-                                handleSearch={value => handleSearch(value)}
-                                style={{marginRight: 10}}
-                            /> */}
-                            {/* <Button
-                                startIcon={<SortIcon />}
-                                onClick={e => {
-                                    setSortMenuAchor(e.currentTarget)
-                                    setShowSortMenu(!showSortMenu)
-                                }}
-                                style={{marginLeft: 5, marginRight: 5}}
-                            >
-                                Sort
-                            </Button> */}
-                            
                             <Popover 
                                 open={showSortMenu} 
                                 anchorEl={sortMenuAnchor} 
@@ -210,20 +202,17 @@ export default function Notes() {
                                 </Paper>
                             </Popover>
 
-                            {/* <Button
-                                startIcon={<SwapVertIcon className={orderDesc ? 'rotate' : 'unrotate'} />}
-                                onClick={handleOrderSwap}
-                            >
-                                {orderDesc ? 'Descending' : 'Ascending'}
-                            </Button> */}
                         </div>
                     </div>
                     {/* notes */}
                     <div style={{margin: 0}}>
                         <Grid container spacing={3} style={{margin: 0, width: '100%'}}>
                             <React.Fragment>
+                                <Grid item xs={12} sm={6} md={4} lg={3} style={{paddingTop: 3}}>
+                                    <CreateNotePreview jwt={jwt} onCreate={toggleShowNotes} />
+                                </Grid>
                                 {
-                                    notes.map((note, i) => (
+                                    showNotes && notes.map((note, i) => (
                                         <React.Fragment key={note.id}>
                                             <Grid item xs={12} sm={6} md={4} lg={3} style={{paddingTop: 3}} >
                                                 <NotePreview 
@@ -238,17 +227,6 @@ export default function Notes() {
                                         </React.Fragment>
                                     ))
                                     
-                                }
-
-                                {
-                                    (notes.length <= 0 && notesLoading == 'd') && (
-                                        <div style={{margin: '15% auto'}}>
-                                            <Typography variant='h4'>
-                                                You don't have any notes!
-                                                Click the button in the bottom right to make some.
-                                            </Typography>
-                                        </div>
-                                    )    
                                 }
 
                                 {
@@ -277,7 +255,7 @@ export default function Notes() {
                 </div>
             </div>
             
-            <div style={{position: 'absolute', bottom: '3vw', right: '3vw', width: '3.5vw', height: '3.5vw', backgroundColor: '#2d323e', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <div style={{position: 'fixed', bottom: '3vw', right: '3vw', width: '3.5vw', height: '3.5vw', backgroundColor: '#2d323e', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Fab color='secondary' aria-label='new note' onClick={handleCreateClick} >
                     <CreateIcon fontSize='large' />
                 </Fab>

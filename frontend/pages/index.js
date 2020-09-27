@@ -8,7 +8,6 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 export default function Home() {
 
-    const [ outerDivClass, setOuterDivClass ] = useState('plain-background')
     const [ showEditor, setShowEditor ] = useState(false)
     const [ previewStep, setPreviewStep ] = useState(1)
 
@@ -18,11 +17,12 @@ export default function Home() {
     const endingEl = useRef(null)
 
     const handleScroll = () => {
-        if(window.pageYOffset < 500) {
+        if(window.pageYOffset < 825) {
             if(showEditor) {
                 setShowEditor(false)
+                setPreviewStep(1)
             }
-        } else if(window.pageYOffset >= 500) {
+        } else if(window.pageYOffset >= 825) {
             if(!showEditor) {
                 setShowEditor(true)
             }
@@ -54,7 +54,7 @@ export default function Home() {
     }
 
     return (
-        <div className={outerDivClass} style={{margin: 0, padding: 0, overflowX: 'hidden', width: '100%'}} onScroll={handleScroll}>
+        <div style={{margin: 0, padding: 0, overflowX: 'hidden', width: '100%'}} onScroll={handleScroll}>
             {/* head */}
             <Head>
                 <title>nottte.me</title>
@@ -89,7 +89,7 @@ export default function Home() {
 
             
 
-            <div style={{position: 'fixed', top: '50%', left: '50%', marginTop: '-30vh', marginLeft: '-10vw'}} className={showEditor ? 'transition-show' : 'transition-hide'}>
+            <div style={{marginTop: '-30vh', marginLeft: '-10vw'}} className={showEditor ? 'fixed-preview-editor' : 'absolute-preview-editor'} >
                 <SampleEditor 
                     className='sample-editor' 
                     step={previewStep}
@@ -97,7 +97,7 @@ export default function Home() {
                 />
             </div>
             <div ref={contentEl} style={{position: 'absolute', left: 0, top: '75vh'}}></div>
-            <div style={{marginTop: '25vh', height: '500vh'}}>
+            <div style={{marginTop: '32.5vh', height: '359vh'}}>
                 {/* step one */}
                 <div style={{width: '37.5vw'}}>
                     <Typography variant='h3' color='primary' style={{textAlign: 'right'}}>
@@ -114,7 +114,7 @@ export default function Home() {
                 </div>
 
                 {/* step two */}
-                <div ref={stepTwoEl} style={{marginTop: '90vh', width: '37.5vw'}}>
+                <div ref={stepTwoEl} style={{marginTop: '50vh', width: '37.5vw'}}>
                     <Typography variant='h3' color='primary' style={{paddingTop: '25vh', textAlign: 'right'}}>
                         Try using a text shortcut
                     </Typography>
@@ -130,7 +130,7 @@ export default function Home() {
                 </div>
 
                 {/* step three */}
-                <div ref={stepThreeEl} style={{marginTop: '90vh', width: '37.5vw'}}>
+                <div ref={stepThreeEl} style={{marginTop: '50vh', width: '37.5vw'}}>
                     <Typography variant='h3' color='primary' style={{paddingTop: '25vh', textAlign: 'right'}}>
                         Apply a style shortcut
                     </Typography>
@@ -148,7 +148,7 @@ export default function Home() {
                     </Typography>
                 </div>
 
-                <div ref={endingEl} style={{marginTop: '90vh', width: '37.5vw'}}>
+                <div ref={endingEl} style={{marginTop: '50vh', width: '37.5vw'}}>
                     <Typography variant='h1' color='primary' style={{paddingTop: '25vh', textAlign: 'right'}}>
                         Sign up
                     </Typography>

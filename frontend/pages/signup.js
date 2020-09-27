@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar'
+import Navbar from '../components/Navbar'
 import { Typography, Paper, Button } from '@material-ui/core'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
