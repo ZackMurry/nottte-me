@@ -9,7 +9,9 @@ CREATE TABLE notes (
     author VARCHAR(32) NOT NULL, --todo next time this has to be cleared, add foreign key to this
     title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
     body TEXT DEFAULT '', --draft js content
-    last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_viewed_by_author TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_viewed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE shortcuts (

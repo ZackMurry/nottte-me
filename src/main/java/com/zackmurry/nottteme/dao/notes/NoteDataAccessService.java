@@ -44,6 +44,7 @@ public final class NoteDataAccessService implements NoteDao {
                     author
             );
             updateLastModified(title, author);
+            updateLastViewedByAuthor(title, author); //because only the author can modify
             return HttpStatus.OK;
         } catch (SQLException e) {
             //this shouldn't really happen
@@ -149,7 +150,7 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     /**
-     * gets body from a note
+     * gets body from a note. assumes that it's the author viewing
      *
      * @param title title of note
      * @param author author of note
@@ -167,6 +168,32 @@ public final class NoteDataAccessService implements NoteDao {
                     author
             );
             if(rawList.size() != 1) throw new IllegalStateException("Raw note list should only have one element. Instead, it has " + rawList.size());
+            updateLastViewedByAuthor(title, author);
+            return rawList.get(0);
+        } catch (SQLException | IllegalStateException e) {
+            e.printStackTrace();
+            return "";
+        }
+
+    }
+
+    @Override
+    public String getRawNote(String title, String author, boolean isAuthor) {
+        String sql = "SELECT body FROM notes WHERE title=? AND author=? LIMIT 1";
+
+        try {
+            List<String> rawList = jdbcTemplate.query(
+                    sql,
+                    resultSet -> resultSet.getString(1),
+                    title,
+                    author
+            );
+            if(rawList.size() != 1) throw new IllegalStateException("Raw note list should only have one element. Instead, it has " + rawList.size());
+            if (isAuthor) {
+                updateLastViewedByAuthor(title, author);
+            } else {
+                updateLastViewed(title, author);
+            }
             return rawList.get(0);
         } catch (SQLException | IllegalStateException e) {
             e.printStackTrace();
@@ -187,7 +214,9 @@ public final class NoteDataAccessService implements NoteDao {
                             resultSet.getString(2),
                             resultSet.getString(3),
                             resultSet.getString(4),
-                            resultSet.getTimestamp(5)
+                            resultSet.getTimestamp(5),
+                            resultSet.getTimestamp(6),
+                            resultSet.getTimestamp(7)
                     ),
                     username
             );
@@ -326,7 +355,9 @@ public final class NoteDataAccessService implements NoteDao {
                               resultSet.getString(2), //author
                               resultSet.getString(3), //title
                               resultSet.getString(4), //body
-                              resultSet.getTimestamp(5) //last modified
+                              resultSet.getTimestamp(5), //last modified
+                              resultSet.getTimestamp(6), //last viewed by author
+                              resultSet.getTimestamp(7) //last viewed
                         )
                 );
             }
@@ -356,6 +387,53 @@ public final class NoteDataAccessService implements NoteDao {
         }
     }
 
+    /**
+     * updates last viewed as well
+     *
+     * @param title title of note
+     * @param author author of note
+     * @return HttpStatus representing success status
+     */
+    @Override
+    public HttpStatus updateLastViewedByAuthor(String title, String author) {
+        String sql = "UPDATE notes SET last_viewed_by_author = ?, last_viewed = ? WHERE title=? AND author=?";
+
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setTimestamp(1, currentTime);
+            preparedStatement.setTimestamp(2, currentTime);
+            preparedStatement.setString(3, title);
+            preparedStatement.setString(4, author);
+            preparedStatement.execute();
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
+
+    @Override
+    public HttpStatus updateLastViewed(String title, String author) {
+        String sql = "UPDATE notes SET last_viewed = ? WHERE title=? AND author=?";
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setTimestamp(1, currentTime);
+            preparedStatement.setString(2, title);
+            preparedStatement.setString(3, author);
+            preparedStatement.execute();
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
+
     @Override
     public Optional<Note> getNote(String title, String author) {
         String sql = "SELECT * FROM notes WHERE title=? AND author=?";
@@ -367,7 +445,9 @@ public final class NoteDataAccessService implements NoteDao {
                             resultSet.getString(2), //author
                             resultSet.getString(3), //title
                             resultSet.getString(4), //body
-                            resultSet.getTimestamp(5) //last modified
+                            resultSet.getTimestamp(5), //last modified
+                            resultSet.getTimestamp(6), //last viewed by author
+                            resultSet.getTimestamp(7) //last viewed
                     ),
                     title,
                     author

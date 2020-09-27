@@ -20,6 +20,8 @@ public interface NoteDao {
 
     String getRawNote(String title, String author);
 
+    String getRawNote(String title, String author, boolean isAuthor);
+
     List<Note> getNotesByUser(String username);
 
     HttpStatus deleteNote(String title, String username);
@@ -35,6 +37,10 @@ public interface NoteDao {
     List<Note> getNotesByIdList(List<Long> noteIds);
 
     HttpStatus updateLastModified(String title, String author);
+
+    HttpStatus updateLastViewedByAuthor(String title, String author);
+
+    HttpStatus updateLastViewed(String title, String author);
 
     HttpStatus duplicateNote(String title, String author);
 

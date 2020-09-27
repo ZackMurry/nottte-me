@@ -26,16 +26,24 @@ public class Note {
     @Column
     private Timestamp lastModified;
 
+    @Column
+    private Timestamp lastViewedByAuthor;
+
+    @Column
+    private Timestamp lastViewed;
+
     public Note() {
 
     }
 
-    public Note(long id, String author, String title, String body, Timestamp lastModified) {
+    public Note(long id, String author, String title, String body, Timestamp lastModified, Timestamp lastViewedByAuthor, Timestamp lastViewed) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.body = body;
         this.lastModified = lastModified;
+        this.lastViewedByAuthor = lastViewedByAuthor;
+        this.lastViewed = lastViewed;
     }
 
     public long getId() {
@@ -76,6 +84,22 @@ public class Note {
 
     public void setLastModified(Timestamp lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public Timestamp getLastViewedByAuthor() {
+        return lastViewedByAuthor;
+    }
+
+    public void setLastViewedByAuthor(Timestamp lastViewedByAuthor) {
+        this.lastViewedByAuthor = lastViewedByAuthor;
+    }
+
+    public Timestamp getLastViewed() {
+        return lastViewed;
+    }
+
+    public void setLastViewed(Timestamp lastViewed) {
+        this.lastViewed = lastViewed;
     }
 
     /**

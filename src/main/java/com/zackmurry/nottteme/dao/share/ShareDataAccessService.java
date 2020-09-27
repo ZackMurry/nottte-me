@@ -109,7 +109,7 @@ public class ShareDataAccessService implements ShareDao {
         long noteId = noteDao.getIdByTitleAndAuthor(title, author);
         if(!noteIsSharedWithUser(noteId, username)) throw new UnauthorizedException(username + " does not have access to note " + title + " by author " + author + ".");
 
-        return noteDao.getRawNote(title, author);
+        return noteDao.getRawNote(title, author, false);
     }
 
     /**

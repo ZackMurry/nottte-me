@@ -33,6 +33,7 @@ export default function Notes() {
     const [ backupNotes, setBackupNotes ] = useState([]) //used for reverting after search
 
     const [ showNotes, setShowNotes ] = useState(true)
+    const [ sortedBy, setSortedBy ] = useState('last-modified')
 
     const jwt = Cookie.get('jwt')
 
@@ -91,7 +92,7 @@ export default function Notes() {
         setNotesLoading('d') //short for done
     }
 
-    const orderNotesByLastModified = (currentNotes = notes, desc = true) => {
+    const orderNotesByLastModified = (currentNotes = notes.slice(), desc = true) => {
         if(desc) {
             currentNotes.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
         } else {
@@ -101,7 +102,7 @@ export default function Notes() {
         return currentNotes
     }
 
-    const orderNotesByTitle = (currentNotes = notes, desc = true) => {
+    const orderNotesByTitle = (currentNotes = notes.slice(), desc = true) => {
         if(desc) {
             currentNotes.sort((a, b) => a.title > b.title ? 1 : -1)
         } else {
@@ -109,6 +110,24 @@ export default function Notes() {
         }
         setNotes(currentNotes)
     }    
+
+    const orderNotesByLastViewedByAuthor = (currentNotes = notes.slice(), desc = true) => {
+        if(desc) {
+            currentNotes.sort((a, b) => new Date(b.lastViewedByAuthor) - new Date(a.lastViewedByAuthor))
+        } else {
+            currentNotes.sort((a, b) => new Date(a.lastViewedByAuthor) - new Date(b.lastViewedByAuthor))
+        }
+        setNotes(currentNotes)
+    }
+
+    const orderNotesByLastViewed = (currentNotes = notes.slice(), desc = true) => {
+        if(desc) {
+            currentNotes.sort((a, b) => new Date(b.lastViewed) - new Date(a.lastViewed))
+        } else {
+            currentNotes.sort((a, b) => new Date(a.lastViewed) - new Date(b.lastViewed))
+        }
+        setNotes(currentNotes)
+    }
 
     const handleCreateClick = () => {
         setMenuOpen(!menuOpen)
@@ -121,12 +140,19 @@ export default function Notes() {
     }
 
     const selectSortOption = (option) => {
+        const currentNotes = notes.slice()
         if(option === 'last-modified') {
-            orderNotesByLastModified(notes, orderDesc)
+            orderNotesByLastModified(currentNotes, orderDesc)
         } else if(option === 'title') {
-            orderNotesByTitle(notes, orderDesc)
+            orderNotesByTitle(currentNotes, orderDesc)
+        } else if(option == 'last-viewed-by-author') {
+            orderNotesByLastViewedByAuthor(currentNotes, orderDesc)
+        } else if(option == 'last-viewed') {
+            orderNotesByLastViewed(currentNotes, orderDesc)
         }
+        setSortedBy(option)
         setShowSortMenu(false)
+        console.log(option)
     }
 
     const handleOrderSwap = () => {
@@ -192,11 +218,17 @@ export default function Notes() {
                             >
                                 <Paper>
                                     <MenuList id='sort-menu'>
-                                        <MenuItem onClick={() => selectSortOption('last-modified')}>
+                                        <MenuItem onClick={() => selectSortOption('last-modified')} selected={sortedBy == 'last-modified'}>
                                             Last modified
                                         </MenuItem>
-                                        <MenuItem onClick={() => selectSortOption('title')}>
+                                        <MenuItem onClick={() => selectSortOption('title')} selected={sortedBy == 'title'}>
                                             Title
+                                        </MenuItem>
+                                        <MenuItem onClick={() => selectSortOption('last-viewed-by-author')} selected={sortedBy == 'last-viewed-by-author'}>
+                                            Last viewed by author
+                                        </MenuItem>
+                                        <MenuItem onClick={() => selectSortOption('last-viewed')} selected={sortedBy == 'last-viewed'}>
+                                            Last viewed
                                         </MenuItem>
                                     </MenuList>
                                 </Paper>
