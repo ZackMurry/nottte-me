@@ -8,6 +8,7 @@ import { debounce } from 'lodash'
 import Link from 'next/link'
 import Editor from 'draft-js-plugins-editor'
 import createLinkifyPlugin from 'draft-js-linkify-plugin'
+import GenerateStyleMenu from '../../../components/GenerateStyleMenu'
 
 
 const linkifyPlugin = createLinkifyPlugin({
@@ -44,6 +45,10 @@ export default function Note() {
     const [ textShortcuts, setTextShortcuts] = useState([])
     const [ styleShortcuts, setStyleShortcuts ] = useState([])
     const [ styleMap, setStyleMap ] = useState({})
+
+    const [ showGenerateStyleMenu, setShowGenerateStyleMenu ] = useState(false)
+    const [ tempSelection, setTempSelection ] = useState(null)
+    const [ generatedStyles, setGeneratedStyles ] = useState([])
     
     // right click override
     // const handleContext = (event) => {
@@ -122,6 +127,8 @@ export default function Note() {
             return 'handled'
         } 
 
+        if(command == 'nottte-show-generate') return 'handled'
+
         //user can set shortcut name to __BLOCK-CLASS__ to enable some special block types
         if(command == '__center__') {
             setEditorState(RichUtils.toggleBlockType(editorState, 'center'))
@@ -175,6 +182,7 @@ export default function Note() {
           onChange(newState)
           return 'handled'
         }
+
         return 'not-handled'
     }
 
@@ -218,16 +226,26 @@ export default function Note() {
         const sharedShortcutText = await sharedShortcutResponse.text()
         const parsedSharedShortcuts = JSON.parse(sharedShortcutText)
 
+        const generatedStyleResponse = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/generated', requestOptions)
+        const generatedStyleText = await generatedStyleResponse.text()
+
+        if(generatedStyleResponse.status !== 200) {
+            console.log('generated style error: ' + generatedStyleResponse.status)
+            return
+        }
+        
+        const parsedGeneratedStyles = JSON.parse(generatedStyleText)
+        setGeneratedStyles(parsedGeneratedStyles)
+
         parsedStyleShortcuts = [...parsedSharedShortcuts, ...parsedStyleShortcuts]
 
         let newStyleMap = {}
-        for(var i = 0; i < parsedStyleShortcuts.length; i++) {
-            let styleShortcut = parsedStyleShortcuts[i]
+        for(var styleShortcut of parsedStyleShortcuts) {
             let name = styleShortcut.name
 
-            for(var j = 0; j < styleShortcut.attributes.length; j++) {
-                let attribute = styleShortcut.attributes[j].attribute
-                let value = styleShortcut.attributes[j].value
+            for(var styleAttribute of styleShortcut.attributes) {
+                let attribute = styleAttribute.attribute
+                let value = styleAttribute.value
                 let existingAttributes = newStyleMap[name]
                 newStyleMap = {
                     ...newStyleMap,
@@ -238,6 +256,22 @@ export default function Note() {
                 }
             }
         }
+
+        for(var genStyle of parsedGeneratedStyles) {
+            let name = genStyle.name
+            
+            let attribute = genStyle.attribute.attribute
+            let value = genStyle.attribute.value
+
+            newStyleMap = {
+                ...newStyleMap,
+                [name]: {
+                    [attribute]: value
+                }
+            }
+
+        }
+
         console.log('map: ' + JSON.stringify(newStyleMap))
         await setStyleMap(newStyleMap)
 
@@ -300,6 +334,12 @@ export default function Note() {
             return 'nottte-save'
         }
 
+        if(e.key == 'm') {
+            setShowGenerateStyleMenu(!showGenerateStyleMenu)
+            setTempSelection(editorState.getSelection())
+            return 'nottte-show-generate'
+        }
+
         for(var i = 0; i < textShortcuts.length; i++) {
             let shortcut = textShortcuts[i]
             if(e.key == shortcut.key && e.altKey == shortcut.alt) {
@@ -331,6 +371,56 @@ export default function Note() {
             default:
                 return 'block'
         }
+    }
+
+    const handleCreateGeneratedStyle = async (attribute, value) => {
+        console.log('attr: ' + attribute + ', val: ' + value)
+        let generatedName = ''
+
+        for(var genStyle of generatedStyles) {
+            console.log(JSON.stringify(generatedStyles[0]))
+            if(genStyle.attribute.attribute == attribute && genStyle.attribute.value == value) {
+                generatedName = genStyle.name
+                setStyleMap({
+                    ...styleMap,
+                    [generatedName]: {
+                        [attribute]: value
+                    }
+                })
+            }
+        }
+
+        if(generatedName === '') {
+            const requestOptions = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
+                body: JSON.stringify({
+                    attribute: attribute,
+                    value: value
+                })
+            }
+    
+            const response = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/generated', requestOptions)
+    
+            if(response.status !== 200) {
+                console.log('error: ' + response.status)
+                return
+            }
+    
+            generatedName = await response.text()
+        }
+        
+
+        await setEditorState(
+            RichUtils.toggleInlineStyle(
+                EditorState.acceptSelection(
+                    editorState, 
+                    tempSelection
+                ), 
+            generatedName)
+        )
+        
+        setShowGenerateStyleMenu(false)
     }
 
     return (
@@ -369,6 +459,14 @@ export default function Note() {
                     plugins={plugins}
                 />
             </div>
+
+            {
+                showGenerateStyleMenu && (
+                    <div style={{position: 'fixed', top: '15%', left: '0%', zIndex: 2, width: '100%'}}>
+                        <GenerateStyleMenu onCreate={handleCreateGeneratedStyle} />
+                    </div>
+                )
+            } 
             
         </div>
         

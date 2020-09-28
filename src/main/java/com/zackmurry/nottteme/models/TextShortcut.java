@@ -3,7 +3,7 @@ package com.zackmurry.nottteme.models;
 /**
  * used for user-defined keyboard shortcuts
  */
-public class TextShortcut implements Shortcut {
+public class TextShortcut implements BoundShortcut {
 
     private String name;
     private String key;

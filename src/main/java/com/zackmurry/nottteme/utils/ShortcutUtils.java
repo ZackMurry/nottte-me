@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zackmurry.nottteme.models.CSSAttribute;
+import com.zackmurry.nottteme.models.GeneratedShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 
@@ -16,6 +17,7 @@ public class ShortcutUtils {
     private static final Gson gson = new Gson();
     private static final Type keyboardShortcutListType = new TypeToken<ArrayList<TextShortcut>>(){}.getType();
     private static final Type styleShortcutListType = new TypeToken<ArrayList<StyleShortcut>>(){}.getType();
+    private static final Type generatedShortcutListType = new TypeToken<ArrayList<GeneratedShortcut>>(){}.getType();
 
     /**
      * tool used for converting from JSON string to list of KeyboardShortcuts
@@ -33,6 +35,10 @@ public class ShortcutUtils {
      */
     public static List<StyleShortcut> convertStyleShortcutStringToObjects(String styleShortcuts) {
         return gson.fromJson(styleShortcuts, styleShortcutListType);
+    }
+
+    public static List<GeneratedShortcut> convertGeneratedShortcutStringToObjects(String generatedShortcuts) {
+        return gson.fromJson(generatedShortcuts, generatedShortcutListType);
     }
 
     /**
@@ -143,7 +149,7 @@ public class ShortcutUtils {
     }
 
     /**
-     * internal method for looping through options of anonymized style shortcuts
+     * method for looping through options of anonymized style shortcuts
      *
      * why anonymize? some people make really weird names for stuff (myself included),
      * so it'd be better to just anonymize (by anonymize i mean remove connection to the
@@ -156,6 +162,10 @@ public class ShortcutUtils {
      */
     private static String anonymizeStyleShortcut(StyleShortcut styleShortcut, String author, int offset) {
         return author + "-" + styleShortcut.getAttributes().get(0).getAttribute() + "-" + styleShortcut.getAttributes().get(0).getValue().replace(" ", "") + (offset > 0 ? ("-" + offset) : "");
+    }
+
+    public static String anonymizeGeneratedShortcutName(String author, CSSAttribute cssAttribute, int offset) {
+        return author + "-" + cssAttribute.getAttribute() + "-" + cssAttribute.getValue().replace(" ", "") + (offset > 0 ? ("-" + offset) : "");
     }
 
 }

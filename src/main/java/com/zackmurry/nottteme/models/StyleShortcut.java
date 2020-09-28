@@ -2,7 +2,7 @@ package com.zackmurry.nottteme.models;
 
 import java.util.List;
 
-public class StyleShortcut implements Shortcut {
+public class StyleShortcut implements BoundShortcut {
 
     private String name;
     private String key;

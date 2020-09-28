@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.share.ShareDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
+import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.utils.ShortcutUtils;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,6 +64,14 @@ public class ShareService {
         List<String> namesOfAuthorStyleShortcuts = authorStyleShortcuts.stream().map(StyleShortcut::getName).collect(Collectors.toList());
         List<StyleShortcut> userStyleShortcuts = shortcutService.getStyleShortcutsByUsername(username);
         userStyleShortcuts.addAll(shortcutService.getSharedStyleShortcutsByUser(username));
+
+        userStyleShortcuts.addAll(shortcutService.getGeneratedShortcutsByUser(username).stream().map(shortcut -> {
+            //convert to dummy style shortcut
+            ArrayList<CSSAttribute> cssAttributes = new ArrayList<>();
+            cssAttributes.add(shortcut.getAttribute());
+            return new StyleShortcut(shortcut.getName(), "", cssAttributes, false);
+        }).collect(Collectors.toList()));
+
         List<String> newNamesOfAuthorStyleShortcuts = ShortcutUtils.anonymizeStyleShortcuts(authorStyleShortcuts, userStyleShortcuts, author);
         for (int i = 0; i < authorStyleShortcuts.size(); i++) {
             authorStyleShortcuts.get(i).setName(newNamesOfAuthorStyleShortcuts.get(i));

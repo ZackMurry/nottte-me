@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.dao.shortcuts;
 
 import com.zackmurry.nottteme.models.CSSAttribute;
+import com.zackmurry.nottteme.models.GeneratedShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 import javassist.NotFoundException;
@@ -54,5 +55,13 @@ public interface ShortcutDao {
     HttpStatus deleteSharedStyleShortcutsByUser(String username);
 
     HttpStatus deleteTextShortcutsByUser(String username);
+
+    HttpStatus deleteGeneratedShortcutsByUser(String username);
+
+    HttpStatus addGeneratedShortcut(String username, GeneratedShortcut generatedShortcut);
+
+    List<GeneratedShortcut> getGeneratedShortcutsByUser(String username);
+
+    HttpStatus setGeneratedShortcutsByUser(String username, List<GeneratedShortcut> generatedShortcuts);
 
 }

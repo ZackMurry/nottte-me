@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.dao.shortcuts;
 
 import com.google.gson.Gson;
 import com.zackmurry.nottteme.models.CSSAttribute;
+import com.zackmurry.nottteme.models.GeneratedShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
 import com.zackmurry.nottteme.utils.ShortcutUtils;
@@ -331,6 +332,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
     public List<StyleShortcut> getSharedStyleShortcutsByUser(String username) {
 
         //todo probably edit queries to include limits where only one row will match
+        //todo make new obj for shared shortcuts to ignore keys and alt
         String sql = "SELECT shared_style_shortcuts FROM shortcuts WHERE username=? LIMIT 1";
 
         try {
@@ -420,6 +422,68 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             e.printStackTrace();
             return HttpStatus.BAD_REQUEST;
         }
+    }
+
+    @Override
+    public HttpStatus deleteGeneratedShortcutsByUser(String username) {
+        if(!accountExists(username)) return HttpStatus.NOT_MODIFIED;
+        String sql = "UPDATE shortcuts SET generated_shortcuts = '[]' WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @Override
+    public HttpStatus addGeneratedShortcut(String username, GeneratedShortcut generatedShortcut) {
+        if(!accountExists(username)) return HttpStatus.NOT_FOUND;
+        List<GeneratedShortcut> shortcuts = getGeneratedShortcutsByUser(username);
+        shortcuts.add(generatedShortcut);
+        return setGeneratedShortcutsByUser(username, shortcuts);
+    }
+
+    @Override
+    public List<GeneratedShortcut> getGeneratedShortcutsByUser(String username) {
+        String sql = "SELECT generated_shortcuts FROM shortcuts WHERE username=? LIMIT 1";
+
+        try {
+            String shortcutString = jdbcTemplate.queryForString(
+                    sql,
+                    username
+            );
+            return ShortcutUtils.convertGeneratedShortcutStringToObjects(shortcutString);
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+
+    @Override
+    public HttpStatus setGeneratedShortcutsByUser(String username, List<GeneratedShortcut> generatedShortcuts) {
+        if(!accountExists(username)) return HttpStatus.NOT_FOUND;
+        String shortcutString = gson.toJson(generatedShortcuts);
+        String sql = "UPDATE shortcuts SET generated_shortcuts = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    shortcutString,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+
     }
 
 }

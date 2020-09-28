@@ -175,7 +175,7 @@ export default function SharedNote() {
                     plugins={plugins}
                 />
             </div>
-            
+
         </div>
         
     )

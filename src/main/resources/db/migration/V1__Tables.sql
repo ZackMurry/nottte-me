@@ -18,7 +18,8 @@ CREATE TABLE shortcuts (
     username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE PRIMARY KEY,
     text_shortcuts TEXT DEFAULT '[]',
     style_shortcuts TEXT DEFAULT '[]',
-    shared_style_shortcuts TEXT DEFAULT '[]' --key bindings will never be used, might want to remove
+    shared_style_shortcuts TEXT DEFAULT '[]', --key bindings will never be used, might want to remove
+    generated_shortcuts TEXT DEFAULT '[]'
 );
 
 --probably add permissions here if i can find a way to have

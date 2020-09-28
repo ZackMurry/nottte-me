@@ -2,14 +2,17 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.shortcuts.ShortcutDao;
 import com.zackmurry.nottteme.models.CSSAttribute;
+import com.zackmurry.nottteme.models.GeneratedShortcut;
 import com.zackmurry.nottteme.models.StyleShortcut;
 import com.zackmurry.nottteme.models.TextShortcut;
+import com.zackmurry.nottteme.utils.ShortcutUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShortcutService {
@@ -95,6 +98,48 @@ public class ShortcutService {
 
     public HttpStatus deleteTextShortcutsByUser(String username) {
         return shortcutDao.deleteTextShortcutsByUser(username);
+    }
+
+    public List<GeneratedShortcut> getGeneratedShortcutsByUser(String username) {
+        return shortcutDao.getGeneratedShortcutsByUser(username);
+    }
+
+    public boolean isUniqueStyledShortcutName(String username, String shortcutName) {
+        List<StyleShortcut> styleShortcuts = shortcutDao.getStyleShortcutsByUsername(username);
+        List<StyleShortcut> sharedStyleShortcuts = shortcutDao.getSharedStyleShortcutsByUser(username);
+        List<GeneratedShortcut> generatedShortcuts = shortcutDao.getGeneratedShortcutsByUser(username);
+
+        return styleShortcuts.stream().noneMatch(styleShortcut -> styleShortcut.getName().equals(shortcutName)) &&
+                sharedStyleShortcuts.stream().noneMatch(sharedStyleShortcut -> sharedStyleShortcut.getName().equals(shortcutName)) &&
+                generatedShortcuts.stream().noneMatch(generatedShortcut -> generatedShortcut.getName().equals(shortcutName));
+
+    }
+
+    public String addGeneratedShortcutToUser(String username, CSSAttribute cssAttribute) throws NotFoundException {
+        List<GeneratedShortcut> generatedShortcuts = shortcutDao.getGeneratedShortcutsByUser(username);
+        generatedShortcuts = generatedShortcuts.stream()
+                .filter(generatedShortcut ->
+                        generatedShortcut.getAttribute().getAttribute().equals(cssAttribute.getAttribute()) &&
+                        generatedShortcut.getAttribute().getValue().equals(cssAttribute.getValue())
+                )
+                .collect(Collectors.toList());
+
+        if(generatedShortcuts.size() == 0) {
+            //create a new generated shortcut with a unique name
+            int createIndex = 0;
+            System.out.println(cssAttribute.getAttribute() + ", " + cssAttribute.getValue());
+            String name = ShortcutUtils.anonymizeGeneratedShortcutName(username, cssAttribute, createIndex++);
+            while(!isUniqueStyledShortcutName(username, name)) {
+                name = ShortcutUtils.anonymizeGeneratedShortcutName(username, cssAttribute, createIndex++);
+            }
+            HttpStatus addStatus = shortcutDao.addGeneratedShortcut(username, new GeneratedShortcut(name, cssAttribute));
+            if(addStatus.equals(HttpStatus.NOT_FOUND)) throw new NotFoundException("Cannot find user with name " + username + ".");
+            return name;
+        } else {
+            //else just return the first matching already-generated shortcut
+            return generatedShortcuts.get(0).getName();
+        }
+
     }
 
 }
