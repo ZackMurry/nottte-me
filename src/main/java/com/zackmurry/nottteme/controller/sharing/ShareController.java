@@ -1,4 +1,4 @@
-package com.zackmurry.nottteme.controller;
+package com.zackmurry.nottteme.controller.sharing;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.Note;

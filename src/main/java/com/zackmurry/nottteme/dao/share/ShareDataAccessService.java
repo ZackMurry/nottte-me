@@ -1,7 +1,7 @@
 package com.zackmurry.nottteme.dao.share;
 
 import com.zackmurry.nottteme.dao.notes.NoteDao;
-import com.zackmurry.nottteme.dao.user.UserDao;
+import com.zackmurry.nottteme.dao.users.UserDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.Note;
 import javassist.NotFoundException;
@@ -56,7 +56,7 @@ public class ShareDataAccessService implements ShareDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -151,7 +151,7 @@ public class ShareDataAccessService implements ShareDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }

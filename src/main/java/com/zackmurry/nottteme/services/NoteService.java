@@ -2,11 +2,14 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.NoteIdentifier;
 import com.zackmurry.nottteme.utils.NoteUtils;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,4 +83,7 @@ public class NoteService {
         return noteDao.getNote(title, username);
     }
 
+    public NoteIdentifier getNoteIdentifierById(long noteId) throws NotFoundException, SQLException {
+        return noteDao.getNoteIdentifierById(noteId);
+    }
 }

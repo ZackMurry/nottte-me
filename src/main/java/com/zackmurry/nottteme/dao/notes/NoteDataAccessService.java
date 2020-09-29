@@ -1,7 +1,9 @@
 package com.zackmurry.nottteme.dao.notes;
 
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.NoteIdentifier;
 import com.zackmurry.nottteme.utils.NoteUtils;
+import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,7 +51,7 @@ public final class NoteDataAccessService implements NoteDao {
         } catch (SQLException e) {
             //this shouldn't really happen
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 
@@ -103,9 +105,9 @@ public final class NoteDataAccessService implements NoteDao {
                     body
             );
             return HttpStatus.OK;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -243,7 +245,7 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -272,7 +274,7 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -305,7 +307,7 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -383,7 +385,7 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 
@@ -410,7 +412,7 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -429,7 +431,7 @@ public final class NoteDataAccessService implements NoteDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -490,4 +492,24 @@ public final class NoteDataAccessService implements NoteDao {
         return createNote(newTitle, note.getBody(), username);
     }
 
+    @Override
+    public NoteIdentifier getNoteIdentifierById(long noteId) throws NotFoundException, SQLException {
+        String sql = "SELECT author, title FROM notes WHERE id=?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setLong(1, noteId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!resultSet.next()) throw new NotFoundException("Cannot find note with id " + noteId + ".");
+
+            return new NoteIdentifier(
+                    noteId,
+                    resultSet.getString(1), //author
+                    resultSet.getString(2) //title
+            );
+        } catch(SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }

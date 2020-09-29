@@ -360,7 +360,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 
@@ -385,7 +385,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 
@@ -402,7 +402,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }
@@ -420,7 +420,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 
@@ -437,7 +437,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 
@@ -481,7 +481,7 @@ public final class ShortcutDataAccessService implements ShortcutDao {
             return HttpStatus.OK;
         } catch(SQLException e) {
             e.printStackTrace();
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
     }

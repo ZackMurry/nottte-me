@@ -1,6 +1,6 @@
 package com.zackmurry.nottteme.services;
 
-import com.zackmurry.nottteme.dao.user.UserDao;
+import com.zackmurry.nottteme.dao.users.UserDao;
 import com.zackmurry.nottteme.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

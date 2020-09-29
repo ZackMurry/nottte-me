@@ -1,8 +1,11 @@
 package com.zackmurry.nottteme.dao.notes;
 
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.NoteIdentifier;
+import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,5 +50,7 @@ public interface NoteDao {
     Optional<Note> getNote(String title, String author);
 
     HttpStatus copyNoteToUser(Note note, String username);
+
+    NoteIdentifier getNoteIdentifierById(long noteId) throws NotFoundException, SQLException;
 
 }

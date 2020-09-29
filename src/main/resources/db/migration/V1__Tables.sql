@@ -1,10 +1,10 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(32) NOT NULL PRIMARY KEY,
     password VARCHAR(64) NOT NULL,
     email VARCHAR(320) DEFAULT ''
 );
 
-CREATE TABLE notes (
+CREATE TABLE IF NOT EXISTS notes (
     id BIGSERIAL PRIMARY KEY,
     author VARCHAR(32) NOT NULL, --todo next time this has to be cleared, add foreign key to this
     title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
@@ -14,7 +14,7 @@ CREATE TABLE notes (
     last_viewed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE shortcuts (
+CREATE TABLE IF NOT EXISTS shortcuts (
     username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE PRIMARY KEY,
     text_shortcuts TEXT DEFAULT '[]',
     style_shortcuts TEXT DEFAULT '[]',
@@ -22,10 +22,19 @@ CREATE TABLE shortcuts (
     generated_shortcuts TEXT DEFAULT '[]'
 );
 
---probably add permissions here if i can find a way to have
---multi-user editing
-CREATE TABLE shares (
+CREATE TABLE IF NOT EXISTS shares (
     id BIGSERIAL PRIMARY KEY,
     note_id BIGINT REFERENCES notes (id) ON DELETE CASCADE,
     shared_username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE
+);
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS link_shares (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    author VARCHAR(32) REFERENCES users (username), --might not need because note_id has access to author
+    note_id BIGINT REFERENCES notes (id),
+    authority VARCHAR(12) DEFAULT 'VIEW',
+    status VARCHAR(12) DEFAULT 'ACTIVE',
+    times_used INT DEFAULT 0
 );
