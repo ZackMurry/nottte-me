@@ -1,6 +1,6 @@
 package com.zackmurry.nottteme.controller.shortcuts;
 
-import com.zackmurry.nottteme.models.TextShortcut;
+import com.zackmurry.nottteme.models.shortcuts.TextShortcut;
 import com.zackmurry.nottteme.services.ShortcutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

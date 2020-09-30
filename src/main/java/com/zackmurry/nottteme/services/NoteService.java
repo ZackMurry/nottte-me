@@ -3,6 +3,7 @@ package com.zackmurry.nottteme.services;
 import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.models.NoteIdentifier;
+import com.zackmurry.nottteme.models.sharing.LinkShareStatus;
 import com.zackmurry.nottteme.utils.NoteUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class NoteService {
 
     @Autowired
     private NoteDao noteDao;
+
+    @Autowired
+    private LinkShareService linkShareService;
 
     public HttpStatus createNote(String title, String body, String author) {
         return noteDao.createNote(title, body, author);
@@ -48,6 +52,7 @@ public class NoteService {
     }
 
     public HttpStatus deleteNote(String title, String username) {
+        linkShareService.setStatusOfLinkSharesOfNote(title, username, LinkShareStatus.NOTE_DELETED);
         return noteDao.deleteNote(title, username);
     }
 
@@ -86,4 +91,9 @@ public class NoteService {
     public NoteIdentifier getNoteIdentifierById(long noteId) throws NotFoundException, SQLException {
         return noteDao.getNoteIdentifierById(noteId);
     }
+
+    public long getIdByTitleAndAuthor(String title, String author) {
+        return noteDao.getIdByTitleAndAuthor(title, author);
+    }
+
 }

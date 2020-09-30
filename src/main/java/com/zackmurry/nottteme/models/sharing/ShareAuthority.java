@@ -1,9 +1,9 @@
-package com.zackmurry.nottteme.models;
+package com.zackmurry.nottteme.models.sharing;
 
 public enum ShareAuthority {
 
-    VIEW("view"),
-    EDIT("edit");
+    VIEW("VIEW"),
+    EDIT("EDIT");
 
     private final String authority;
 

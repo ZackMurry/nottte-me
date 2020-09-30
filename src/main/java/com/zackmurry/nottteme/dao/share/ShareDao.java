@@ -12,6 +12,8 @@ public interface ShareDao {
 
     HttpStatus shareNoteWithUser(String author, String title, String recipient);
 
+    HttpStatus shareNoteWithUser(long id, String recipient);
+
     List<String> getSharesOfNote(String username, String title);
 
     boolean noteIsSharedWithUser(String title, String author, String recipient);

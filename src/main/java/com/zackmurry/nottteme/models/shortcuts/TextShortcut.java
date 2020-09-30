@@ -1,22 +1,23 @@
-package com.zackmurry.nottteme.models;
+package com.zackmurry.nottteme.models.shortcuts;
 
-import java.util.List;
-
-public class StyleShortcut implements BoundShortcut {
+/**
+ * used for user-defined keyboard shortcuts
+ */
+public class TextShortcut implements BoundShortcut {
 
     private String name;
     private String key;
-    private List<CSSAttribute> attributes;
+    private String text;
     private boolean alt;
 
-    public StyleShortcut() {
+    public TextShortcut() {
 
     }
 
-    public StyleShortcut(String name, String key, List<CSSAttribute> attributes, boolean alt) {
+    public TextShortcut(String name, String text, String key, boolean alt) {
         this.name = name;
         this.key = key;
-        this.attributes = attributes;
+        this.text = text;
         this.alt = alt;
     }
 
@@ -36,12 +37,12 @@ public class StyleShortcut implements BoundShortcut {
         this.key = key;
     }
 
-    public List<CSSAttribute> getAttributes() {
-        return attributes;
+    public String getText() {
+        return text;
     }
 
-    public void setAttributes(List<CSSAttribute> attributes) {
-        this.attributes = attributes;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public boolean getAlt() {

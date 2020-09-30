@@ -1,7 +1,7 @@
 package com.zackmurry.nottteme.controller.shortcuts;
 
 import com.zackmurry.nottteme.models.CSSAttribute;
-import com.zackmurry.nottteme.models.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
 import com.zackmurry.nottteme.services.ShortcutService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

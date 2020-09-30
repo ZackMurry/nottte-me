@@ -2,9 +2,9 @@ package com.zackmurry.nottteme.dao.shortcuts;
 
 import com.google.gson.Gson;
 import com.zackmurry.nottteme.models.CSSAttribute;
-import com.zackmurry.nottteme.models.GeneratedShortcut;
-import com.zackmurry.nottteme.models.StyleShortcut;
-import com.zackmurry.nottteme.models.TextShortcut;
+import com.zackmurry.nottteme.models.shortcuts.GeneratedShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.TextShortcut;
 import com.zackmurry.nottteme.utils.ShortcutUtils;
 import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;

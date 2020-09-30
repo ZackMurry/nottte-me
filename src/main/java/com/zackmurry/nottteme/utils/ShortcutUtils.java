@@ -3,9 +3,9 @@ package com.zackmurry.nottteme.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zackmurry.nottteme.models.CSSAttribute;
-import com.zackmurry.nottteme.models.GeneratedShortcut;
-import com.zackmurry.nottteme.models.StyleShortcut;
-import com.zackmurry.nottteme.models.TextShortcut;
+import com.zackmurry.nottteme.models.shortcuts.GeneratedShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.TextShortcut;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

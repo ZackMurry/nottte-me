@@ -2,8 +2,8 @@ package com.zackmurry.nottteme;
 
 import com.zackmurry.nottteme.dao.shortcuts.ShortcutDao;
 import com.zackmurry.nottteme.models.CSSAttribute;
-import com.zackmurry.nottteme.models.StyleShortcut;
-import com.zackmurry.nottteme.models.TextShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.TextShortcut;
 import com.zackmurry.nottteme.services.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.*;

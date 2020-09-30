@@ -1,7 +1,9 @@
 package com.zackmurry.nottteme.controller.sharing;
 
-import com.zackmurry.nottteme.models.LinkShareRequest;
 import com.zackmurry.nottteme.models.NoteIdentifier;
+import com.zackmurry.nottteme.models.sharing.LinkShare;
+import com.zackmurry.nottteme.models.sharing.LinkShareRequest;
+import com.zackmurry.nottteme.models.sharing.ShareAuthority;
 import com.zackmurry.nottteme.services.LinkShareService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,6 +26,11 @@ public class LinkShareController {
 
     @PostMapping("/principal/create")
     public ResponseEntity<HttpStatus> createShareableLink(@RequestBody @NotNull LinkShareRequest request) {
+        try {
+            ShareAuthority.valueOf(request.getAuthority());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         request.setAuthor(username);
         HttpStatus status = linkShareService.createShareableLink(request);
@@ -37,6 +45,12 @@ public class LinkShareController {
 
     @PostMapping("/user/{username}/create")
     public ResponseEntity<HttpStatus> createShareableLinkByUser(@PathVariable String username, @RequestBody @NotNull LinkShareRequest request) {
+        try {
+            ShareAuthority.valueOf(request.getAuthority());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
         request.setAuthor(username);
         HttpStatus status = linkShareService.createShareableLink(request);
         return new ResponseEntity<>(status);
@@ -45,6 +59,24 @@ public class LinkShareController {
     @GetMapping("/user/{username}/{id}")
     public NoteIdentifier useShareableLinkAsUser(@PathVariable String username, @PathVariable UUID id) throws NotFoundException, SQLException {
         return linkShareService.useShareableLink(id, username);
+    }
+
+    @DeleteMapping("/principal/{id}")
+    public ResponseEntity<HttpStatus> disableSharableLink(@PathVariable UUID id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        HttpStatus status = linkShareService.disableSharableLink(id, username);
+        return new ResponseEntity<>(status);
+    }
+
+    @GetMapping("/principal/note/{noteName}")
+    public List<LinkShare> getShareableLinksOfNote(@PathVariable String noteName) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return linkShareService.getShareableLinksFromNote(noteName, username);
+    }
+
+    @GetMapping("/user/{username}/note/{noteName}")
+    public List<LinkShare> getShareableLinksOfNote(@PathVariable("username") String username, @PathVariable("noteName") String noteName) {
+        return linkShareService.getShareableLinksFromNote(noteName, username);
     }
 
 

@@ -4,7 +4,7 @@ import com.zackmurry.nottteme.dao.share.ShareDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.Note;
-import com.zackmurry.nottteme.models.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
 import com.zackmurry.nottteme.utils.ShortcutUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,10 @@ public class ShareService {
 
     public HttpStatus shareNoteWithUser(String author, String title, String recipient) {
         return shareDao.shareNoteWithUser(author, title, recipient);
+    }
+
+    public HttpStatus shareNoteWithUser(long id, String recipient) {
+        return shareDao.shareNoteWithUser(id, recipient);
     }
 
     public List<String> getSharesOfNote(String username, String title) {

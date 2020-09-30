@@ -2,7 +2,7 @@ package com.zackmurry.nottteme.controller.sharing;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.Note;
-import com.zackmurry.nottteme.models.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.ShareService;
 import com.zackmurry.nottteme.services.ShortcutService;

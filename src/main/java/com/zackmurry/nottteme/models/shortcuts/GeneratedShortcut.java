@@ -1,4 +1,6 @@
-package com.zackmurry.nottteme.models;
+package com.zackmurry.nottteme.models.shortcuts;
+
+import com.zackmurry.nottteme.models.CSSAttribute;
 
 public class GeneratedShortcut implements Shortcut {
 

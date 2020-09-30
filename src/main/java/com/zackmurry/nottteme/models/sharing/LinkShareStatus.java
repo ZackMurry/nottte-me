@@ -1,11 +1,11 @@
-package com.zackmurry.nottteme.models;
+package com.zackmurry.nottteme.models.sharing;
 
 public enum LinkShareStatus {
 
-    ACTIVE("active"),
-    ACCOUNT_DELETED("account_deleted"),
-    NOTE_DELETED("note_deleted"),
-    DISABLED("disabled");
+    ACTIVE("ACTIVE"),
+    ACCOUNT_DELETED("ACCOUNT_DELETED"),
+    NOTE_DELETED("NOTE_DELETED"),
+    DISABLED("DISABLED");
 
     private final String status;
 

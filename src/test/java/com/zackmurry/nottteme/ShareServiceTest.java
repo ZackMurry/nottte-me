@@ -2,7 +2,7 @@ package com.zackmurry.nottteme;
 
 import com.zackmurry.nottteme.dao.notes.NoteDataAccessService;
 import com.zackmurry.nottteme.models.CSSAttribute;
-import com.zackmurry.nottteme.models.StyleShortcut;
+import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.ShareService;
 import com.zackmurry.nottteme.services.ShortcutService;

@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.services;
 
 import com.zackmurry.nottteme.dao.users.UserDao;
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.models.sharing.LinkShareStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,9 @@ public class UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private LinkShareService linkShareService;
 
     public boolean createUserAccount(String username, String password, String email) {
         return userDao.createUserAccount(username, password, email);
@@ -32,6 +36,7 @@ public class UserService {
      * @return response status
      */
     public HttpStatus deleteAccount(String username) {
+        if(linkShareService.setStatusOfLinkSharesByUser(username, LinkShareStatus.ACCOUNT_DELETED).isError()) return HttpStatus.INTERNAL_SERVER_ERROR;
         return userDao.deleteAccount(username);
     }
 

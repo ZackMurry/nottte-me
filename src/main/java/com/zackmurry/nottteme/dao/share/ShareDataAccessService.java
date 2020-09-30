@@ -61,6 +61,25 @@ public class ShareDataAccessService implements ShareDao {
 
     }
 
+    @Override
+    public HttpStatus shareNoteWithUser(long id, String recipient) {
+        //if share is already there, return not modified
+        if(noteIsSharedWithUser(id, recipient)) return HttpStatus.NOT_MODIFIED;
+
+        String sql = "INSERT INTO shares (note_id, shared_username) VALUES (?, ?)";
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setLong(1, id);
+            preparedStatement.setString(2, recipient);
+            preparedStatement.execute();
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
+
     /**
      *
      * @param username author name
