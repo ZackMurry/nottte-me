@@ -7,8 +7,8 @@ public class LinkShare {
     private UUID id;
     private String author;
     private long noteId;
-    private String authority;
-    private String status;
+    private ShareAuthority authority;
+    private LinkShareStatus status;
     private int timesUsed;
 
     public LinkShare() {
@@ -19,8 +19,8 @@ public class LinkShare {
         this.id = id;
         this.author = author;
         this.noteId = noteId;
-        this.authority = authority.getAuthority();
-        this.status = status.getStatus();
+        this.authority = authority;
+        this.status = status;
         this.timesUsed = timesUsed;
     }
 
@@ -48,20 +48,27 @@ public class LinkShare {
         this.noteId = noteId;
     }
 
-    public String getAuthority() {
+    public ShareAuthority getAuthority() {
         return authority;
     }
 
-    public void setAuthority(String authority) {
+    public void setAuthority(ShareAuthority authority) {
         this.authority = authority;
     }
 
-    public String getStatus() {
+    public LinkShareStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(LinkShareStatus status) {
         this.status = status;
     }
 
+    public int getTimesUsed() {
+        return timesUsed;
+    }
+
+    public void setTimesUsed(int timesUsed) {
+        this.timesUsed = timesUsed;
+    }
 }

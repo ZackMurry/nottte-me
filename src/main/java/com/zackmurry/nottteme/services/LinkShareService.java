@@ -68,4 +68,25 @@ public class LinkShareService {
         return linkShareDao.setStatusOfLinkSharesByUser(username, newStatus);
     }
 
+    public HttpStatus updateSharableLink(UUID id, LinkShare newLinkShare, String username) {
+        if(newLinkShare.getStatus() == null || newLinkShare.getAuthority() == null) {
+            return HttpStatus.NOT_ACCEPTABLE;
+        }
+        try {
+            if(!linkShareDao.getAuthorById(id).equals(username)) {
+                return HttpStatus.UNAUTHORIZED;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        } catch (NotFoundException e) {
+            return HttpStatus.NOT_FOUND;
+        }
+        return linkShareDao.updateSharableLink(id, newLinkShare);
+    }
+
+    public NoteIdentifier getNoteIdentifierById(UUID id) throws NotFoundException, SQLException {
+        LinkShare linkShare = linkShareDao.getLinkShareById(id);
+        return noteService.getNoteIdentifierById(linkShare.getNoteId());
+    }
 }

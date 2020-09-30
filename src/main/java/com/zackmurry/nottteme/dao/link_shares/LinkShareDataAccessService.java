@@ -42,7 +42,7 @@ public class LinkShareDataAccessService implements LinkShareDao {
 
             if(optionalLinkShare.isPresent()) {
                 LinkShare linkShare = optionalLinkShare.get();
-                if(linkShare.getStatus().equals(LinkShareStatus.ACTIVE.getStatus())) {
+                if(linkShare.getStatus().equals(LinkShareStatus.ACTIVE)) {
                     return HttpStatus.NOT_MODIFIED;
                 } else {
                     return setShareableLinkStatus(linkShare.getId(), LinkShareStatus.ACTIVE);
@@ -281,4 +281,22 @@ public class LinkShareDataAccessService implements LinkShareDao {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
+
+    @Override
+    public HttpStatus updateSharableLink(UUID id, LinkShare newLinkShare) {
+        String sql = "UPDATE link_shares SET status = ?, authority = ? WHERE id=?";
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setString(1, newLinkShare.getStatus().getStatus());
+            preparedStatement.setString(2, newLinkShare.getAuthority().getAuthority());
+            preparedStatement.setObject(3, id);
+            preparedStatement.execute();
+            return HttpStatus.OK;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
+
 }

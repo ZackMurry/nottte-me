@@ -36,4 +36,6 @@ public interface LinkShareDao {
 
     HttpStatus setStatusOfLinkSharesByUser(String username, LinkShareStatus newStatus);
 
+    HttpStatus updateSharableLink(UUID id, LinkShare newLinkShare);
+
 }

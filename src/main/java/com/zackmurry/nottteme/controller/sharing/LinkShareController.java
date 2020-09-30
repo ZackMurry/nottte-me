@@ -79,5 +79,18 @@ public class LinkShareController {
         return linkShareService.getShareableLinksFromNote(noteName, username);
     }
 
+    @PatchMapping("/principal/{id}")
+    public ResponseEntity<HttpStatus> updateSharableLink(@PathVariable UUID id, @RequestBody LinkShare linkShare) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        HttpStatus status = linkShareService.updateSharableLink(id, linkShare, username);
+        return new ResponseEntity<>(status);
+    }
+
+    //keep this open to unauthenticated users, too
+    @GetMapping("/id/{id}/note")
+    public NoteIdentifier getNoteIdentifierByLinkShareId(@PathVariable @NotNull UUID id) throws NotFoundException, SQLException {
+        return linkShareService.getNoteIdentifierById(id);
+    }
+
 
 }

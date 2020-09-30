@@ -7,6 +7,7 @@ import Cookie from 'js-cookie'
 import theme from '../../../../components/theme'
 import { CloudUpload } from '@material-ui/icons'
 import SharedWithTable from '../../../../components/SharedWithTable'
+import LinkSharesTable from '../../../../components/LinkSharesTable'
 
 //todo list shared users
 export default function share() {
@@ -22,6 +23,7 @@ export default function share() {
     const [ targetAccountExists, setTargetAccountExists] = useState('Loading...')
 
     const [ sharedWith, setSharedWith ] = useState([])
+    const [ linkShares, setLinkShares ] = useState([])
 
     useEffect(() => {
         if(title) {
@@ -207,6 +209,15 @@ export default function share() {
                         onUnshare={username => removeShareFromArray(username)}
                     />
                 </div>
+
+                <div style={{width: '60%', margin: '3vh auto'}}>
+                    <LinkSharesTable
+                        linkShares={linkShares}
+                        jwt={jwt}
+                        title={title}
+                    />
+                </div>
+                
             </Paper>         
             
         </div>
