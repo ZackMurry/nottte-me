@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS link_shares (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     author VARCHAR(32) REFERENCES users (username), --might not need because note_id has access to author
     note_id BIGINT REFERENCES notes (id),
-    authority VARCHAR(12) DEFAULT 'VIEW',
-    status VARCHAR(12) DEFAULT 'ACTIVE',
+    authority VARCHAR(18) DEFAULT 'VIEW',
+    status VARCHAR(18) DEFAULT 'ACTIVE',
     times_used INT DEFAULT 0
 );
