@@ -25,6 +25,8 @@ export default function SignUpPage() {
 
     const [ error, setError ] = useState('')
 
+    const redirectTo = router.query.redirect
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         
@@ -59,7 +61,12 @@ export default function SignUpPage() {
         console.log('jwt: ' + text)
         Cookie.set('jwt', JSON.parse(text).jwt)
 
-        router.push('/notes')
+        if(redirectTo) {
+            router.push(encodeURI(redirectTo))
+        } else {
+            router.push('/notes')
+        }
+        
     }
 
     //after the username field, you can press enter to go to the password field

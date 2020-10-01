@@ -89,4 +89,8 @@ public class LinkShareService {
         LinkShare linkShare = linkShareDao.getLinkShareById(id);
         return noteService.getNoteIdentifierById(linkShare.getNoteId());
     }
+
+    public LinkShare getLinkShareById(UUID id) throws NotFoundException, SQLException {
+        return linkShareDao.getLinkShareById(id);
+    }
 }

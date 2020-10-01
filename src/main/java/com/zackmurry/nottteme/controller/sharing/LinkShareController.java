@@ -92,5 +92,10 @@ public class LinkShareController {
         return linkShareService.getNoteIdentifierById(id);
     }
 
+    @GetMapping("/id/{id}/share")
+    public LinkShare getLinkShareById(@PathVariable @NotNull UUID id) throws NotFoundException, SQLException {
+        return linkShareService.getLinkShareById(id);
+    }
+
 
 }
