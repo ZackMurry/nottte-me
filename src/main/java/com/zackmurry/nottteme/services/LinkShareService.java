@@ -93,4 +93,22 @@ public class LinkShareService {
     public LinkShare getLinkShareById(UUID id) throws NotFoundException, SQLException {
         return linkShareDao.getLinkShareById(id);
     }
+
+    public HttpStatus deleteShareableLink(UUID id, String username) {
+        try {
+            if(!linkShareDao.getAuthorById(id).equals(username)) {
+                return HttpStatus.UNAUTHORIZED;
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return HttpStatus.NOT_FOUND;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return linkShareDao.deleteLinkShareById(id);
+
+    }
+
 }

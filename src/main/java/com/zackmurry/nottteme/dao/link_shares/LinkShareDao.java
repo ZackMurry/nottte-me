@@ -38,4 +38,6 @@ public interface LinkShareDao {
 
     HttpStatus updateSharableLink(UUID id, LinkShare newLinkShare);
 
+    HttpStatus deleteLinkShareById(UUID id);
+
 }

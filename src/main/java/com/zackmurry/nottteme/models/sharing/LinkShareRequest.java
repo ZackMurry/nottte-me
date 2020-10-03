@@ -15,9 +15,9 @@ public class LinkShareRequest {
         this.authority = authority;
     }
 
-    public LinkShareRequest(String name, String permission, String author) {
+    public LinkShareRequest(String name, String authority, String author) {
         this.name = name;
-        this.authority = permission;
+        this.authority = authority;
         this.author = author;
     }
 

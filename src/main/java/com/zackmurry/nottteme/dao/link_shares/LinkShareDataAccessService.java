@@ -299,4 +299,17 @@ public class LinkShareDataAccessService implements LinkShareDao {
         }
     }
 
+    @Override
+    public HttpStatus deleteLinkShareById(UUID id) {
+        String sql = "DELETE FROM link_shares WHERE id=?";
+
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setObject(1, id);
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
 }
