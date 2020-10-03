@@ -54,7 +54,7 @@ export default function Home() {
     }
 
     return (
-        <div style={{margin: 0, padding: 0, overflowX: 'hidden', width: '100%'}} onScroll={handleScroll}>
+        <div style={{margin: 0, padding: 0, overflowX: 'hidden', overflowY: 'hidden', width: '100%'}} onScroll={handleScroll}>
             {/* head */}
             <Head>
                 <title>nottte.me</title>
