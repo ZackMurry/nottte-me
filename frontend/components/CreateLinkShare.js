@@ -1,9 +1,10 @@
-import { Button, FormControl, FormHelperText, MenuItem, Select, Typography } from "@material-ui/core";
-import { useState } from "react";
-import parseJwt from './ParseJwt'
-import theme from "./theme";
+import { Button, FormControl, FormHelperText, MenuItem, Select, Typography } from "@material-ui/core"
+import { useState } from "react"
+import theme from "./theme"
 
 const alreadyExistsError = "A link share with this permission already exists. You can use that link instead of creating a new one."
+const serverError = "There was an unknown server error."
+const unknownError = "There was an unknown error."
 
 export default function CreateLinkShare({ title, jwt, onCreate }) {
 
@@ -18,8 +19,7 @@ export default function CreateLinkShare({ title, jwt, onCreate }) {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
             body: JSON.stringify({
                 name: title,
-                authority: authority,
-                author: parseJwt(jwt)?.sub
+                authority: authority
             })
         }
 
@@ -31,8 +31,10 @@ export default function CreateLinkShare({ title, jwt, onCreate }) {
             onCreate()
         } else if(response.status == 304) {
             setError(alreadyExistsError)
+        } else if(response.status == 500) {
+            setError(serverError)
         } else {
-            console.log('bruh')
+            setError(unknownError)
         }
 
     }

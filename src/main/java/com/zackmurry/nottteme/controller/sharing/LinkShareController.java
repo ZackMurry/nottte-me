@@ -43,24 +43,6 @@ public class LinkShareController {
         return linkShareService.useShareableLink(id, username);
     }
 
-    @PostMapping("/user/{username}/create")
-    public ResponseEntity<HttpStatus> createShareableLinkByUser(@PathVariable String username, @RequestBody @NotNull LinkShareRequest request) {
-        try {
-            ShareAuthority.valueOf(request.getAuthority());
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        request.setAuthor(username);
-        HttpStatus status = linkShareService.createShareableLink(request);
-        return new ResponseEntity<>(status);
-    }
-
-    @GetMapping("/user/{username}/{id}")
-    public NoteIdentifier useShareableLinkAsUser(@PathVariable String username, @PathVariable UUID id) throws NotFoundException, SQLException {
-        return linkShareService.useShareableLink(id, username);
-    }
-
     @DeleteMapping("/principal/{id}")
     public ResponseEntity<HttpStatus> disableSharableLink(@PathVariable UUID id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -71,11 +53,6 @@ public class LinkShareController {
     @GetMapping("/principal/note/{noteName}")
     public List<LinkShare> getShareableLinksOfNote(@PathVariable String noteName) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return linkShareService.getShareableLinksFromNote(noteName, username);
-    }
-
-    @GetMapping("/user/{username}/note/{noteName}")
-    public List<LinkShare> getShareableLinksOfNote(@PathVariable("username") String username, @PathVariable("noteName") String noteName) {
         return linkShareService.getShareableLinksFromNote(noteName, username);
     }
 

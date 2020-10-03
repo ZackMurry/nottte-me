@@ -31,22 +31,11 @@ export default function CreateNoteMenu({ open, onClose }) {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
             body: JSON.stringify({
-                title: title,
-                body: JSON.stringify({
-                    entityMap: {},
-                    blocks: [
-                      {
-                        text: '',
-                        key: 'nottte',
-                        type: 'unstyled',
-                        entityRanges: [],
-                      },
-                    ],
-                  })
+                title: title
             })
         }
 
-        const response = await fetch('http://localhost:8080/api/v1/notes/create/with-body', requestOptions)
+        const response = await fetch('http://localhost:8080/api/v1/notes/create', requestOptions)
         const status = response.status
         if(status == 200) {
             router.push('/n/' + encodeURI(title)) //encoding so that it'll work in a URL

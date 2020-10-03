@@ -13,7 +13,6 @@ import java.util.Optional;
 
 /**
  * used for accessing and updating data about users and their preferences
- * todo maybe move shortcuts into their own table and thus their own class for services et al
  * todo only allow one attribute of each attribute type per shortcut (literally doesn't make sense to override itself and makes it easier to index)
  */
 @Service

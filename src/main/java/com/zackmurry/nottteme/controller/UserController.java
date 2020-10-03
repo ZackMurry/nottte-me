@@ -14,7 +14,6 @@ import java.util.Optional;
 
 //todo might want to only show a preview of the notes on the notes page for performance reasons (don't load full text)
 //todo deleting accounts
-//todo changing account name
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -49,11 +48,6 @@ public class UserController {
         return userService.accountExists(username);
     }
 
-    @GetMapping("/user/{username}")
-    public Optional<User> getUserByName(@PathVariable String username) {
-        return userService.getUserByUsername(username);
-    }
-
     @GetMapping("/principal")
     public Optional<User> getPrincipalObject() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -79,13 +73,7 @@ public class UserController {
         return new ResponseEntity<>(deleteNotesStatus);
     }
 
-    @PostMapping("/user/{username}/email")
-    public ResponseEntity<HttpStatus> updateUserAccountEmail(@PathVariable("username") String username, @RequestBody String email) {
-        HttpStatus status = userService.updateEmail(username, email);
-        return new ResponseEntity<>(status);
-    }
-
-    @PostMapping("/principal/email")
+    @PutMapping("/principal/email")
     public ResponseEntity<HttpStatus> updatePrincipalAccountEmail(@RequestBody String email) {
         HttpStatus status = userService.updateEmail(SecurityContextHolder.getContext().getAuthentication().getName(), email);
         return new ResponseEntity<>(status);

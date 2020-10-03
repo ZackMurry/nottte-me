@@ -30,33 +30,22 @@ public class NoteController {
     private NoteService noteService;
 
     /**
-     * todo authorization
-     *
      * @param request object in JSON format (for ease of keeping in database). contains the raw editor state
      */
     @PatchMapping("/save/{title}")
     public ResponseEntity<HttpStatus> save(@PathVariable String title, @RequestBody String request) {
-
-        //todo remove once i sort out authorization
-        if(SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
         HttpStatus status = noteService.saveNote(title, SecurityContextHolder.getContext().getAuthentication().getName(), request);
         return new ResponseEntity<>(status);
     }
 
-    //todo no notes with % sign in title (bc of urls)
     @PostMapping("/create")
     public ResponseEntity<HttpStatus> create(@RequestBody CreateNoteRequest request) {
-        if(request.getTitle().contains("\"")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //because of JSON. todo show on website
         HttpStatus status = noteService.createNote(request.getTitle(), NoteUtils.getBlankNoteBody(), SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(status);
     }
 
     @PostMapping("/create/with-body")
     public ResponseEntity<HttpStatus> createWithBody(@RequestBody CreateNoteWithBodyRequest request) {
-        if(request.getTitle().contains("\"")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //because of JSON. todo show on website
         HttpStatus status = noteService.createNote(request.getTitle(), request.getBody(), SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(status);
     }
@@ -80,11 +69,7 @@ public class NoteController {
         //this returns "anonymousUser" if unauthenticated
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        //todo can probably remove this check once i implement spring security for blocking requests
-        if(username.equals("anonymousUser")) {
-            throw new UnauthorizedException("Note found with name " + title + ", but user is unauthenticated");
-        }
-        else if(!noteService.userHasNote(title, username)) {
+        if(!noteService.userHasNote(title, username)) {
             throw new UnauthorizedException("Note found with name " + title + ", but user does not have required authorization");
         }
 
@@ -96,12 +81,6 @@ public class NoteController {
     public List<Note> getNotesFromPrincipal() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return noteService.getNotesByUser(username);
-    }
-
-    @DeleteMapping("/user/{username}/note/{noteName}")
-    public ResponseEntity<HttpStatus> deleteNoteOfUsernameByName(@PathVariable("username") String username, @PathVariable("noteName") String noteName) {
-        HttpStatus status = noteService.deleteNote(noteName, username);
-        return new ResponseEntity<>(status);
     }
 
     @DeleteMapping("/principal/note/{noteName}")
@@ -116,36 +95,15 @@ public class NoteController {
          return new ResponseEntity<>(status);
     }
 
-    @PatchMapping("/user/{username}/note/{title}/rename/{newTitle}")
-    public ResponseEntity<HttpStatus> renameUserNote(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("newTitle") String newTitle) {
-        HttpStatus status = noteService.renameNote(title, newTitle, username);
-        return new ResponseEntity<>(status);
-    }
-
     @GetMapping("/count")
     public int getNoteCountFromPrincipal() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return noteService.getNoteCount(username);
     }
 
-    @GetMapping("/user/{username}/notes/count")
-    public int getNoteCountFromPrincipal(@PathVariable("username") String username) {
-        return noteService.getNoteCount(username);
-    }
-
     @GetMapping("/principal/has/{title}")
     public boolean principalHasNote(@PathVariable("title") String title) {
         return noteService.userHasNote(title, SecurityContextHolder.getContext().getAuthentication().getName());
-    }
-
-    @GetMapping("/user/{username}/has/{title}")
-    public boolean userHasNote(@PathVariable("username") String username, @PathVariable("title") String title) {
-        return noteService.userHasNote(title, username);
-    }
-
-    @PostMapping("/user/{username}/note/{title}/duplicate")
-    public HttpStatus duplicateNote(@PathVariable("username") String username, @PathVariable("title") String title) {
-        return noteService.duplicateNote(title, username);
     }
 
     @PostMapping("/principal/note/{title}/duplicate")

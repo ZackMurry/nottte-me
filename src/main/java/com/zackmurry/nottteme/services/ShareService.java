@@ -112,7 +112,6 @@ public class ShareService {
         for (int i = 0; i < namesOfAuthorStyleShortcuts.size(); i++) {
             String lookingFor = ",\"style\":\"" + namesOfAuthorStyleShortcuts.get(i) + "\"";
             String replacingWith = ",\"style\":\"" + newNamesOfAuthorStyleShortcuts.get(i) + "\"";
-            //todo do this more efficiently
             body = body.replace(lookingFor, replacingWith);
         }
         note.setBody(body);

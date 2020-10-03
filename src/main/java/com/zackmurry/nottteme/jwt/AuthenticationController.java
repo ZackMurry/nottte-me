@@ -35,12 +35,6 @@ public class AuthenticationController {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @CrossOrigin
-    @PostMapping("/test")
-    public String testResponse(@RequestBody AuthenticationRequest authenticationRequest) {
-        return authenticationRequest.getUsername() + "; " + authenticationRequest.getPassword();
-    }
-
-    @CrossOrigin
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 

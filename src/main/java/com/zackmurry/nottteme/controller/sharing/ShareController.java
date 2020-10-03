@@ -41,12 +41,6 @@ public class ShareController {
         return new ResponseEntity<>(status);
     }
 
-    @PostMapping("/user/{username}/share/{title}/{recipientUsername}")
-    public ResponseEntity<HttpStatus> shareUserNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
-        HttpStatus status = shareService.shareNoteWithUser(username, title, recipient);
-        return new ResponseEntity<>(status);
-    }
-
     @DeleteMapping("/principal/share/{title}/{recipientUsername}")
     public ResponseEntity<HttpStatus> unshareNoteWithUser(@PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -54,21 +48,9 @@ public class ShareController {
         return new ResponseEntity<>(status);
     }
 
-    @DeleteMapping("/user/{username}/share/{title}/{recipientUsername}")
-    public ResponseEntity<HttpStatus> unshareUserNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("recipientUsername") String recipient) {
-        HttpStatus status = shareService.unshareNoteWithUser(username, title, recipient);
-        return new ResponseEntity<>(status);
-    }
-
-
     @GetMapping("/principal/note/{title}/shares")
     public List<String> getSharesOfNote(@PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return shareService.getSharesOfNote(username, title);
-    }
-
-    @GetMapping("/user/{username}/note/{title}/shares")
-    public List<String> getSharesOfUserNote(@PathVariable("username") String username, @PathVariable("title") String title) {
         return shareService.getSharesOfNote(username, title);
     }
 
@@ -81,11 +63,6 @@ public class ShareController {
     @GetMapping("/user/{username}/note/{author}/{title}/access")
     public boolean principalHasAccessToNote(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("author") String author) {
         return shareService.noteIsSharedWithUser(title, author, username);
-    }
-
-    @GetMapping("/user/{username}/note/{author}/{title}/raw")
-    public String getRawContentsOfSharedNoteWithUser(@PathVariable("username") String username, @PathVariable("title") String title, @PathVariable("author") String author) throws NotFoundException, UnauthorizedException {
-        return shareService.getRawSharedNote(title, author, username);
     }
 
     @GetMapping("/principal/note/{author}/{title}/raw")
@@ -114,12 +91,6 @@ public class ShareController {
         return shareService.getSharesOfNote(author, title);
     }
 
-    @GetMapping("/user/{username}/note/{author}/{title}/shares")
-    public List<String> getSharesOfNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
-        if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
-        return shareService.getSharesOfNote(author, title);
-    }
-
     @GetMapping("/principal/shared-notes")
     public List<Note> getNotesSharedWithPrincipal() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -128,26 +99,9 @@ public class ShareController {
         return noteService.getNotesByIdList(noteIds);
     }
 
-    @GetMapping("/user/{username}/shared-notes")
-    public List<Note> getNotesSharedWithPrincipal(@PathVariable("username") String username) {
-        List<Long> noteIds = shareService.getNoteIdsSharedWithUser(username);
-        if(noteIds.size() == 0) return new ArrayList<>();
-        return noteService.getNotesByIdList(noteIds);
-    }
-
-    //todo implement these methods for /user/{username} as well
-
-    //TODO NOT DONE. still need to convert raw styles in a note to the new names
     @PostMapping("/principal/note/{author}/{title}/duplicate")
     public ResponseEntity<HttpStatus> duplicateNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        HttpStatus status = shareService.duplicateSharedNote(author, title, username);
-        return new ResponseEntity<>(status);
-    }
-
-    //todo add tests for this
-    @PostMapping("/user/{username}/note/{author}/{title}/duplicate")
-    public ResponseEntity<HttpStatus> duplicateNoteSharedWithUser(@PathVariable("username") String username, @PathVariable("author") String author, @PathVariable("title") String title) {
         HttpStatus status = shareService.duplicateSharedNote(author, title, username);
         return new ResponseEntity<>(status);
     }
@@ -156,11 +110,5 @@ public class ShareController {
     public List<StyleShortcut> getSharedStyleShortcutsOfPrincipal() {
         return shortcutService.getSharedStyleShortcutsByUser(SecurityContextHolder.getContext().getAuthentication().getName());
     }
-
-    @GetMapping("/user/{username}/shortcuts")
-    public List<StyleShortcut> getSharedStyleShortcutsOfUser(@PathVariable("username") String username) {
-        return shortcutService.getSharedStyleShortcutsByUser(username);
-    }
-
 
 }

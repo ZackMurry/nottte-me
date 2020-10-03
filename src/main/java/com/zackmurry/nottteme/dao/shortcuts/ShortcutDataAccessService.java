@@ -72,7 +72,8 @@ public final class ShortcutDataAccessService implements ShortcutDao {
      * @param username name of user to add shortcut to
      * @param name name of shortcut
      * @param text text to insert when shortcut is called
-     * @param key key to type with control (todo multiple keys at the same time)
+     * @param key key to type with control
+     * @param alt if alt needs to be pressed to activate it
      * @return http response describing success/fail
      */
     @Override
@@ -159,7 +160,6 @@ public final class ShortcutDataAccessService implements ShortcutDao {
 
     }
 
-    //todo not allow two shortcuts with the same key (only one would get activated because of returning)
     @Override
     public HttpStatus addStyleShortcut(String username, String name, String key, List<CSSAttribute> attributes, boolean alt) {
         List<StyleShortcut> styleShortcuts = getStyleShortcutsByUsername(username);

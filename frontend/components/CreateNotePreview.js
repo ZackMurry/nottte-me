@@ -20,19 +20,27 @@ export default function CreateNotePreview({ jwt, onCreate }) {
         router.push('/n/' + encodeURI(name))
     }
 
-    const onShowMore = e => {
-        e.stopPropagation()
-        setShowingMore(!showingMore)
-        setAnchorElement(e.currentTarget)
-    }
-    
-
     const handleCreate = e => {
         setCreated(!created)
         onCreate()
     }
 
+    const validateTitle = (noteTitle = name) => {
+        if(noteTitle.includes('%')) {
+            setCreationError("Your note title cannot contain a percent sign.")
+            return false
+        } else if(noteTitle.length > 200) {
+            setCreationError("Your note title cannot be longer than 200 characers.")
+            return false
+        }
+        return true
+    }
+
     const createNote = async () => {
+        if(!validateTitle(name)) {
+            return
+        }
+
         console.log(jwt)
         if(!jwt) return
         console.log('sending')

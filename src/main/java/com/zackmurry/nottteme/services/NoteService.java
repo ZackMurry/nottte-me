@@ -24,6 +24,7 @@ public class NoteService {
     private LinkShareService linkShareService;
 
     public HttpStatus createNote(String title, String body, String author) {
+        if(title.contains("/") || title.contains("%") || title.length() > 200) return HttpStatus.BAD_REQUEST;
         return noteDao.createNote(title, body, author);
     }
 
