@@ -1,5 +1,6 @@
-import { Grid, IconButton, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import { useEffect, useState } from "react";
+import CreateLinkShare from "./CreateLinkShare";
 import LinkShareItem from "./LinkShareItem";
 
 export default function LinkSharesTable({ jwt, title }) {
@@ -85,7 +86,23 @@ export default function LinkSharesTable({ jwt, title }) {
                         </>
                     )
                 }
+                {
+                    linkShares.length == 0 && (
+                        <Grid item xs={12} >
+                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 400}}>
+                                You don't have any link shares
+                            </Typography>
+                        </Grid>
+                    )
+                }
             </Grid> 
+
+            <CreateLinkShare
+                title={title}
+                jwt={jwt}
+                onCreate={getFromServer}
+            />
+            
         </>
         
     )
