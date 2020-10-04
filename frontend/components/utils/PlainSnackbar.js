@@ -1,7 +1,7 @@
 import React from 'react'
 import { Snackbar, IconButton, SnackbarContent } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
-import theme from './theme'
+import theme from '../theme'
 
 export default function PlainSnackbar ({ message, duration = 3000, value, onClose }) {
 

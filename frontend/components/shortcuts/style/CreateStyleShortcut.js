@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Grid, TextField, Button, Typography } from '@material-ui/core'
-import theme from './theme'
+import theme from '../../theme'
 import Router from 'next/router'
-import PlainTooltip from './PlainTooltip'
+import PlainTooltip from '../../utils/PlainTooltip'
 
 const defaultName = 'myStyleTitle'
 const defaultKey = 'none'

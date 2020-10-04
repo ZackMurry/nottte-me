@@ -6,10 +6,10 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import { convertFromRaw, EditorState } from 'draft-js'
-import DownloadWithPreview from '../../../../components/DownloadWithPreview'
-import draftToPdf from '../../../../components/draftToPdf'
-import openInNewTab from '../../../../components/openInNewTab'
-import draftToHtml from '../../../../components/draftToHtml'
+import DownloadWithPreview from '../../../../components/notes/export/DownloadWithPreview'
+import draftToPdf from '../../../../components/notes/export/DraftToPdf'
+import openInNewTab from '../../../../components/utils/OpenInNewTab'
+import draftToHtml from '../../../../components/notes/export/DraftToHtml'
 
 export default function Export() {
 
@@ -71,8 +71,6 @@ export default function Export() {
             setHtml(draftToHtml(textEditorState.getCurrentContent(), parsedStyleMap))
         }
 
-        
-
     }
 
     const getBlockStyle = (block) => {
@@ -89,11 +87,7 @@ export default function Export() {
     }
 
     const downloadAsPdf = () => {
-        draftToPdf(editorState.getCurrentContent(), styleMap, title, false)
-    }
-
-    const downloadAsDoc = () => {
-        draftToPdf(editorState.getCurrentContent(), styleMap, title, true)
+        draftToPdf(editorState.getCurrentContent(), styleMap, title)
     }
 
     return (
@@ -153,24 +147,18 @@ export default function Export() {
                     {/* todo explain why Courier in /help/export/courier */}
                     <Typography style={{margin: '3vh auto'}}>
                         To export to Google Docs, you have to first convert it to PDF form,
-                        and then import it to Docs through Google Drive. Docs can't read some
-                        of the characters in the Roboto font 
-                        <span style={{textDecoration: 'underline', cursor: 'pointer', marginLeft: 4}} onClick={() => router.push('/help/export/courier')}>
-                            very well
-                        </span>
-                        , so this export will
-                        convert your font to Courier. You can change the font to anything once
-                        you have your note in Docs.
+                        and then import it to Docs through Google Drive. For some combinations of characters,
+                        this won't work, so you'll have to read further for full compatibility.
                     </Typography>
                     <Typography variant='h5' style={{textAlign: 'center'}}>
-                        Download as Docs-compatible PDF
+                        First, download as PDF
                     </Typography>
                     {
                         editorState &&
                         <DownloadWithPreview
                             name={title}
                             editorState={editorState}
-                            onClick={downloadAsDoc}
+                            onClick={downloadAsPdf}
                             styleMap={styleMap}
                             blockStyleFn={getBlockStyle}
                         />
@@ -191,7 +179,7 @@ export default function Export() {
                     </Typography>
                     
                     <img 
-                        src='/pdf-to-doc.png' 
+                        src='/pdf-to-doc-min.png' 
                         alt="Screenshot of 'Open with' screen" 
                         style={{width: '80%', display: 'block', margin: '0 auto', minWidth: 100}} 
                     />
@@ -200,15 +188,59 @@ export default function Export() {
                         Finally, you'll see that your note has been successfully exported
                         to Google Docs!
                     </Typography>
-                    
+
                     <img
-                        src='/exported-to-docs.png'
+                        src='/exported-to-docs-min.png'
                         alt="Screenshot of note as a Google Doc"
                         style={{width: '80%', display: 'block', margin: '0 auto', minWidth: 100}}
                     />
 
-                </div>
+                    <Typography variant='h5' style={{textAlign: 'center', margin: '4vh 0 3vh 0'}}>
+                        Special cases
+                    </Typography>
+                    
+                    <Typography variant='h6' style={{textAlign: 'center', margin: '4vh 0 3vh 0'}}>
+                        Ligatures
+                    </Typography>
 
+                    <Typography style={{margin: '3vh auto'}}>
+                        As indicated earlier, there are some compatibility issues. If you type special
+                        pairs of letters like "fl", the conversion will truncate them into one letter (in this example, "f"). They're called 'ligatures'. This problem can, however, be fixed.
+                    </Typography>
+                    <Typography style={{margin: '1vh auto'}}>
+                        You'll have to convert your PDF to a .docx (Microsoft Word) file before importing it to Google Docs.
+                        You can use a website like
+                        <span style={{cursor: 'pointer', textDecoration: 'underline', margin: '0 3px'}} onClick={() => openInNewTab('https://www.ilovepdf.com/pdf_to_word')}>
+                            ilovepdf.com
+                        </span>
+                        to do just this. Afterwards, upload it to Google Drive and open it with Docs, as shown before. Finally, in the top-left corner of the Doc, click 'File' and 'Save as Google Docs'.
+                    </Typography>
+
+                    <Typography variant='h6' style={{textAlign: 'center', margin: '4vh 0 3vh 0'}}>
+                        Formatting
+                    </Typography>
+
+                    <Typography style={{margin: '1vh auto'}}>
+                        Your Doc might have several formatting errors. There's not much we can do about them behind the scenes, but there are easy fixes for all of the discovered issues.
+                    </Typography>
+
+                    <Typography style={{margin: '1vh auto'}}>
+                        First, if your text seems to wrap in the middle of the line instead of at the end,
+                        adjust the indents by moving the errors on the ruler near the top. The left arrow signifies the left indent and the right arrow will adjust the right indent.
+                    </Typography>
+
+                    <Typography style={{margin: '1vh auto'}}>
+                        Your Doc might also have several unwanted fonts. The quickest way to fix this is
+                        to select all of the content on your document (by pressing Control and A) and changing the font to one that you like. 
+                    </Typography>
+
+                    <Typography style={{margin: '1vh auto'}}>
+                        The spacing between lines might also have been converted poorly. To fix this, you can select the affected areas and click "line spacing" (on the formatting bar) and adjust it to your liking (default is 1.15).
+                    </Typography>
+
+
+                </div>
+                {/* todo exporting to word */}
                 <div id='html' style={{width: '80%', margin: '15vh auto'}}>
                     <Typography variant='h4' style={{textAlign: 'center', margin: '2vh 0'}}>
                         Export as HTML

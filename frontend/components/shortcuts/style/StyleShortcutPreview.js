@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Grid, Typography, IconButton, TextField, Grow } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
-import PlainTooltip from './PlainTooltip';
+import PlainTooltip from '../../utils/PlainTooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';

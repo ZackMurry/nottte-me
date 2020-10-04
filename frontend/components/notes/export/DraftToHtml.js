@@ -3,22 +3,32 @@ import { stateToHTML } from "draft-js-export-html"
 
 export default function draftToHtml(contentState, styleMap) {
     let exportHtmlStyles = {}
-
+    console.log(styleMap)
     //reformatting style map so that it's compatible with draft-js-export-html
-    for(var child of Object.entries(styleMap)) {
-        const attr = child[1]
-        const key = Object.keys(attr)[0]
-        const val = Object.values(attr)[0]
-        const childName = child[0]
-        exportHtmlStyles = {
-            ...exportHtmlStyles, 
-            [childName]: {
-                style: {
-                    [key]: val
+    for(var i = 0; i < styleMap.length; i++) {
+        const child = styleMap[i]
+        console.log('child: ' + JSON.stringify(child))
+        const attributes = child.attributes
+        console.log(attributes)
+        const childName = child.name
+        for(var j = 0; j < attributes.length; j++) {
+            const attr = attributes[j]
+            const existingAttrs = exportHtmlStyles[childName]?.style
+            console.log('existing: ' + JSON.stringify(existingAttrs))
+            const key = attr.attribute
+            const val = attr.value
+            exportHtmlStyles = {
+                ...exportHtmlStyles, 
+                [childName]: {
+                    style: {
+                        ...existingAttrs,
+                        [key]: val
+                    }
                 }
             }
         }
     }
+    console.log(exportHtmlStyles)
 
     let exportHtmlOptions = {
         inlineStyles: {

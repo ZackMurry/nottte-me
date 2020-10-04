@@ -8,7 +8,7 @@ import { debounce } from 'lodash'
 import Link from 'next/link'
 import Editor from 'draft-js-plugins-editor'
 import createLinkifyPlugin from 'draft-js-linkify-plugin'
-import GenerateStyleMenu from '../../../components/GenerateStyleMenu'
+import GenerateStyleMenu from '../../../components/shortcuts/GenerateStyleMenu'
 
 
 const linkifyPlugin = createLinkifyPlugin({

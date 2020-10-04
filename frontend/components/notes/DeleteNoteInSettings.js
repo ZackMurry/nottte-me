@@ -1,8 +1,8 @@
 import { Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import PlainTooltip from './PlainTooltip'
-import YesNoDialog from './YesNoDialog'
+import PlainTooltip from '../utils/PlainTooltip'
+import YesNoDialog from '../utils/YesNoDialog'
 
 export default function DeleteNoteInSettings({ title, jwt, shared }) {
 

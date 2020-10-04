@@ -1,6 +1,6 @@
 import { Grid, IconButton, Typography } from '@material-ui/core'
 import React from 'react'
-import PlainTooltip from './PlainTooltip'
+import PlainTooltip from '../utils/PlainTooltip'
 import RemoveIcon from '@material-ui/icons/Remove';
 
 export default function SharedWithTable({ sharedWith, jwt, title, onUnshare }) {

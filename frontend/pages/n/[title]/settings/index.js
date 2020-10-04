@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
-import RenameNoteField from '../../../../components/RenameNoteField'
-import DeleteNoteInSettings from '../../../../components/DeleteNoteInSettings'
+import RenameNoteField from '../../../../components/notes/RenameNoteField'
+import DeleteNoteInSettings from '../../../../components/notes/DeleteNoteInSettings'
 
 export default function Settings() {
 

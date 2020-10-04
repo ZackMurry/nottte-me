@@ -1,6 +1,6 @@
 import { Button, Paper, TextField, Typography } from "@material-ui/core"
 import { useState } from "react"
-import theme from "./theme"
+import theme from "../theme"
 
 export default function GenerateStyleMenu({ onCreate }) {
 

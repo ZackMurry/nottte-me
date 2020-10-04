@@ -2,8 +2,8 @@ import { IconButton, InputBase } from '@material-ui/core'
 import React, { useState } from 'react'
 import SearchIcon from '@material-ui/icons/Search'
 import ClearIcon from '@material-ui/icons/Clear'
-import PlainTooltip from './PlainTooltip'
-import theme from './theme'
+import PlainTooltip from '../utils/PlainTooltip'
+import theme from '../theme'
 
 export default function SearchNotes({ handleSearch, style }) {
 

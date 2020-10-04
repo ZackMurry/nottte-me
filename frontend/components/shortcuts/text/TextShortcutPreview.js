@@ -3,7 +3,7 @@ import { Typography, Grid, IconButton, TextField } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PlainTooltip from './PlainTooltip';
+import PlainTooltip from '../../utils/PlainTooltip';
 
 //todo deleting
 export default function TextShortcutPreview({ name, button, text, alt, update, jwt, onError, showError, deleteSelf }) {

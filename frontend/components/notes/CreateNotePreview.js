@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { Paper, Typography, Card, CardContent, CardActions, IconButton, Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import theme from './theme';
-import PlainTooltip from './PlainTooltip'
+import theme from '../theme';
+import PlainTooltip from '../utils/PlainTooltip'
 import CreateIcon from '@material-ui/icons/Create'
-import Link from 'next/link';
 
 //todo don't let people rename or delete shared notes from here
 export default function CreateNotePreview({ jwt, onCreate }) {

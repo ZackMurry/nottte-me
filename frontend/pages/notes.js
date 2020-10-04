@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
-import NotePreview from '../components/NotePreview'
+import NotePreview from '../components/notes/NotePreview'
 import { Grid, Typography, Fab, Button, Paper, MenuList, MenuItem, Popover, CircularProgress } from '@material-ui/core'
 import CreateIcon from '@material-ui/icons/Create';
-import CreateNoteMenu from '../components/CreateNoteMenu';
+import CreateNoteMenu from '../components/notes/CreateNoteMenu';
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router';
 import SortIcon from '@material-ui/icons/Sort';
 import SwapVertIcon from '@material-ui/icons/SwapVert';
-import SearchNotes from '../components/SearchNotes';
-import CreateNotePreview from '../components/CreateNotePreview'
+import SearchNotes from '../components/notes/SearchNotes';
+import CreateNotePreview from '../components/notes/CreateNotePreview'
 
 //todo display user's actual notes
 export default function Notes() {

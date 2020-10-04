@@ -1,7 +1,7 @@
 import { Button, TextField } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import PlainTooltip from './PlainTooltip'
+import PlainTooltip from '../utils/PlainTooltip'
 
 export default function RenameNoteField({ name, jwt, shared = false }) {
     console.log('shared: ' + shared)

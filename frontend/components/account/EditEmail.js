@@ -1,8 +1,8 @@
-import { Button, Fade, Grow, IconButton, TextField, Typography } from '@material-ui/core'
+import { Grow, IconButton, TextField, Typography } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import DoneIcon from '@material-ui/icons/Done';
-import PlainTooltip from './PlainTooltip'
+import PlainTooltip from '../utils/PlainTooltip'
 
 export default function EditEmail({ jwt, currentEmail }) {
 

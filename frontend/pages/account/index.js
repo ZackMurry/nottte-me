@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Cookie from 'js-cookie'
 import Navbar from '../../components/Navbar'
 import { Link, Paper, Typography } from '@material-ui/core'
-import EditEmail from '../../components/EditEmail'
-import EmailViewEdit from '../../components/EditEmail'
+import EditEmail from '../../components/account/EditEmail'
+import parseJwt from '../../components/utils/ParseJwt'
 
 //todo show statistics about notes?
 export default function Account() {
@@ -39,17 +39,6 @@ export default function Account() {
         }
         getData()
     }, [])
-
-
-    const parseJwt = (token) => {
-        var base64Url = token.split('.')[1]
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-        var jsonPayload = decodeURIComponent(atob(base64).split('').map(
-            (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-        ).join(''))
-    
-        return JSON.parse(jsonPayload);
-    }
 
     return (
         <div>

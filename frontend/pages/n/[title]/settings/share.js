@@ -6,8 +6,8 @@ import Navbar from '../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import theme from '../../../../components/theme'
 import { CloudUpload } from '@material-ui/icons'
-import SharedWithTable from '../../../../components/SharedWithTable'
-import LinkSharesTable from '../../../../components/LinkSharesTable'
+import SharedWithTable from '../../../../components/shares/SharedWithTable'
+import LinkSharesTable from '../../../../components/shares/LinkSharesTable'
 
 //todo list shared users
 export default function share() {

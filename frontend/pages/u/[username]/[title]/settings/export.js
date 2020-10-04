@@ -6,10 +6,10 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import { convertFromRaw, EditorState } from 'draft-js'
-import DownloadWithPreview from '../../../../../components/DownloadWithPreview'
-import draftToPdf from '../../../../../components/draftToPdf'
-import openInNewTab from '../../../../../components/openInNewTab'
-import draftToHtml from '../../../../../components/draftToHtml'
+import DownloadWithPreview from '../../../../../components/notes/export/DownloadWithPreview'
+import draftToPdf from '../../../../../components/notes/export/DraftToPdf'
+import openInNewTab from '../../../../../components/utils/OpenInNewTab'
+import draftToHtml from '../../../../../components/notes/export/DraftToHtml'
 
 export default function Export() {
 
@@ -221,7 +221,7 @@ export default function Export() {
                     </Typography>
                     
                     <img 
-                        src='/pdf-to-doc.png' 
+                        src='/pdf-to-doc-min.png' 
                         alt="Screenshot of 'Open with' screen" 
                         style={{width: '80%', display: 'block', margin: '0 auto', minWidth: 100}} 
                     />
@@ -232,7 +232,7 @@ export default function Export() {
                     </Typography>
                     
                     <img
-                        src='/exported-to-docs.png'
+                        src='/exported-to-docs-min.png'
                         alt="Screenshot of note as a Google Doc"
                         style={{width: '80%', display: 'block', margin: '0 auto', minWidth: 100}}
                     />

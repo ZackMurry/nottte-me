@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar"
 import Cookie from 'js-cookie'
 import { Button, Paper, Typography } from "@material-ui/core"
 import { useEffect, useState } from "react"
-import parseJwt from "../../components/ParseJwt"
+import parseJwt from "../../components/utils/ParseJwt"
 
 export default function UseLinkShare() {
     const router = useRouter()

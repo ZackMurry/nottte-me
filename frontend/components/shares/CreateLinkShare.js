@@ -1,6 +1,6 @@
 import { Button, FormControl, FormHelperText, MenuItem, Select, Typography } from "@material-ui/core"
 import { useState } from "react"
-import theme from "./theme"
+import theme from "../theme"
 
 const alreadyExistsError = "A link share with this permission already exists. You can use that link instead of creating a new one."
 const serverError = "There was an unknown server error."

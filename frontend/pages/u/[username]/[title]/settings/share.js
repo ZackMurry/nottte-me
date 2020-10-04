@@ -6,7 +6,7 @@ import Navbar from '../../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import theme from '../../../../../components/theme'
 import { CloudUpload } from '@material-ui/icons'
-import SharedWithTable from '../../../../../components/SharedWithTable'
+import SharedWithTable from '../../../../../components/shares/SharedWithTable'
 
 //todo allow shared users to edit sharing with a permission
 export default function share() {

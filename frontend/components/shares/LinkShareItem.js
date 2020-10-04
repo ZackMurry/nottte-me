@@ -2,8 +2,8 @@ import { Grid, IconButton, makeStyles, MenuItem, Select } from '@material-ui/cor
 import DoneIcon from '@material-ui/icons/Done'
 import EditIcon from '@material-ui/icons/Edit'
 import { useEffect, useState } from 'react'
-import PlainSnackbar from './PlainSnackbar'
-import PlainTooltip from './PlainTooltip'
+import PlainSnackbar from '../utils/PlainSnackbar'
+import PlainTooltip from '../utils/PlainTooltip'
 
 export default function LinkShareItem({ id, authority, status, jwt, onUpdate }) {
 

@@ -5,9 +5,9 @@ import { EditorState, convertFromRaw } from 'draft-js'
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import YesNoDialog from './YesNoDialog';
+import YesNoDialog from '../utils/YesNoDialog';
 import DoneIcon from '@material-ui/icons/Done';
-import PlainSnackbar from './PlainSnackbar'
+import PlainSnackbar from '../utils/PlainSnackbar'
 import PeopleIcon from '@material-ui/icons/People'
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 
