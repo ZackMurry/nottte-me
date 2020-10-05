@@ -1,7 +1,7 @@
 import pdfMake from 'pdfmake/build/pdfmake'
 import htmlToPdfmake from 'html-to-pdfmake'
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-import draftToHtml from "./DraftToHtml";
+import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import draftToHtml from './DraftToHtml'
 
 //declaring fonts
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -18,20 +18,19 @@ pdfMake.fonts = {
 
 export default function draftToPdf(contentState, styleMap, title) {
     console.log(styleMap)
-    let html = draftToHtml(contentState, styleMap)
+    const html = draftToHtml(contentState, styleMap)
     console.log(html)
-    
+
     //converting html to pdfmake compatible input
-    var pdfMakeInput = htmlToPdfmake(html)
+    let pdfMakeInput = htmlToPdfmake(html)
     //putting it into a content object so that it's actually pdfmake compatible
-    pdfMakeInput = {content: [pdfMakeInput]}
-    
+    pdfMakeInput = { content: [pdfMakeInput] }
+
     //set default font size
     pdfMakeInput.defaultStyle = {
         fontSize: 12
     }
-    
+
     //downloading
     pdfMake.createPdf(pdfMakeInput).download(title)
-    
 }

@@ -1,24 +1,23 @@
-import { stateToHTML } from "draft-js-export-html"
-
+import { stateToHTML } from 'draft-js-export-html'
 
 export default function draftToHtml(contentState, styleMap) {
     let exportHtmlStyles = {}
     console.log(styleMap)
     //reformatting style map so that it's compatible with draft-js-export-html
-    for(var i = 0; i < styleMap.length; i++) {
+    for (let i = 0; i < styleMap.length; i++) {
         const child = styleMap[i]
         console.log('child: ' + JSON.stringify(child))
-        const attributes = child.attributes
+        const { attributes } = child
         console.log(attributes)
         const childName = child.name
-        for(var j = 0; j < attributes.length; j++) {
+        for (let j = 0; j < attributes.length; j++) {
             const attr = attributes[j]
             const existingAttrs = exportHtmlStyles[childName]?.style
             console.log('existing: ' + JSON.stringify(existingAttrs))
             const key = attr.attribute
             const val = attr.value
             exportHtmlStyles = {
-                ...exportHtmlStyles, 
+                ...exportHtmlStyles,
                 [childName]: {
                     style: {
                         ...existingAttrs,
@@ -30,26 +29,28 @@ export default function draftToHtml(contentState, styleMap) {
     }
     console.log(exportHtmlStyles)
 
-    let exportHtmlOptions = {
+    const exportHtmlOptions = {
         inlineStyles: {
             ...exportHtmlStyles
         },
         //used for block styles (text aligning)
-        blockStyleFn: (block) => {
+        blockStyleFn: block => {
             const type = block.getType()
-            if(type === 'right') {
+            if (type === 'right') {
                 return {
                     style: {
                         textAlign: 'right'
                     }
                 }
-            } else if(type === 'center') {
+            }
+            if (type === 'center') {
                 return {
                     style: {
                         textAlign: 'center'
                     }
                 }
             }
+            return {}
         }
     }
 

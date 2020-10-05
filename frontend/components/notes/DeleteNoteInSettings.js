@@ -5,9 +5,6 @@ import PlainTooltip from '../utils/PlainTooltip'
 import YesNoDialog from '../utils/YesNoDialog'
 
 export default function DeleteNoteInSettings({ title, jwt, shared }) {
-
-    if(shared == null) shared = false
-
     const router = useRouter()
 
     const [ showConfirmDialog, setShowConfirmDialog ] = useState(false)
@@ -15,49 +12,49 @@ export default function DeleteNoteInSettings({ title, jwt, shared }) {
     const handleDelete = async () => {
         setShowConfirmDialog(false)
 
-        if(!jwt) return
-        
+        if (!jwt) return
+
         const requestOptions = {
             method: 'DELETE',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
         const response = await fetch(`http://localhost:8080/api/v1/notes/principal/note/${encodeURI(title)}`, requestOptions)
         console.log(response.status)
 
-        if(response.status == 200) {
+        if (response.status === 200) {
             router.push('/notes')
-        } else {
-
         }
-
+        //todo show feedback
     }
 
     return (
-        <div style={{margin: '25px 0', width: '100%', display: 'flex', justifyContent: 'space-around'}}>
+        <div style={{
+            margin: '25px 0', width: '100%', display: 'flex', justifyContent: 'space-around'
+        }}
+        >
             <PlainTooltip title='You cannot delete a shared note'>
                 <div>
                     <Button
                         variant='contained'
                         color='secondary'
                         onClick={() => setShowConfirmDialog(true)}
-                        style={{margin: '0 auto'}}
+                        style={{ margin: '0 auto' }}
                         disabled={shared ? true : undefined}
                     >
                         Delete Note
                     </Button>
                 </div>
             </PlainTooltip>
-            
 
-            <YesNoDialog 
+            <YesNoDialog
                 title={`Are you sure you want to delete ${title}?`}
+                //eslint-disable-next-line
                 text="This action can be undo'd for two weeks. After that, all history of the note will be deleted. Are you sure you wish to delete this note?"
                 onClose={() => setShowConfirmDialog(false)}
                 open={showConfirmDialog}
-                onResponse={val => val ? handleDelete() : setShowConfirmDialog(false)}
+                onResponse={val => (val ? handleDelete() : setShowConfirmDialog(false))}
             />
         </div>
-        
-    )
 
+    )
 }

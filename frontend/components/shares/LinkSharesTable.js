@@ -1,27 +1,20 @@
-import { Grid, Typography } from "@material-ui/core";
-import { useEffect, useState } from "react";
-import CreateLinkShare from "./CreateLinkShare";
-import LinkShareItem from "./LinkShareItem";
+import { Grid, Typography } from '@material-ui/core'
+import { useEffect, useState } from 'react'
+import CreateLinkShare from './CreateLinkShare'
+import LinkShareItem from './LinkShareItem'
 
 export default function LinkSharesTable({ jwt, title }) {
-
     const [ linkShares, setLinkShares ] = useState([])
 
-    useEffect(() => {
-        if(title) {
-            getFromServer()
-        }  
-    }, [ title ])
-
     const getFromServer = async () => {
-        if(!jwt) return
+        if (!jwt) return
 
         const requestOptions = {
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
 
         const response = await fetch(`http://localhost:8080/api/v1/shares/link/principal/note/${encodeURI(title)}`, requestOptions)
-        if(response.status !== 200) {
+        if (response.status !== 200) {
             console.log(response.status)
             return
         }
@@ -30,8 +23,14 @@ export default function LinkSharesTable({ jwt, title }) {
         setLinkShares(JSON.parse(text))
     }
 
+    useEffect(() => {
+        if (title) {
+            getFromServer()
+        }
+    }, [ title ])
+
     const updateLinkShare = (index, newAuthority, newStatus) => {
-        let tempLinkShares = linkShares.slice()
+        const tempLinkShares = linkShares.slice()
         tempLinkShares[index] = {
             ...tempLinkShares[index],
             authority: newAuthority,
@@ -42,7 +41,7 @@ export default function LinkSharesTable({ jwt, title }) {
 
     return (
         <>
-            <Typography variant='h4' style={{textAlign: 'center', marginTop: '5vh', marginBottom: '3vh'}}>
+            <Typography variant='h4' style={{ textAlign: 'center', marginTop: '5vh', marginBottom: '3vh' }}>
                 Link shares
             </Typography>
             <Grid container spacing={3}>
@@ -51,22 +50,22 @@ export default function LinkSharesTable({ jwt, title }) {
                         <>
                             <Grid container spacing={3} item xs={12}>
                                 <Grid item xs={12} md={6}>
-                                    <Typography style={{fontWeight: 700}}>
+                                    <Typography style={{ fontWeight: 700 }}>
                                         ID
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={3} md={2}>
-                                    <Typography style={{fontWeight: 700}}>
+                                    <Typography style={{ fontWeight: 700 }}>
                                         Authority
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={3} md={3}>
-                                    <Typography style={{fontWeight: 700}}>
+                                    <Typography style={{ fontWeight: 700 }}>
                                         Status
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={3} md={1}>
-                                    <Typography style={{fontWeight: 700}}>
+                                    <Typography style={{ fontWeight: 700 }}>
                                         Edit
                                     </Typography>
                                 </Grid>
@@ -74,7 +73,7 @@ export default function LinkSharesTable({ jwt, title }) {
                             {
                                 linkShares.map((linkShare, index) => (
                                     <LinkShareItem
-                                        id={linkShare.id} 
+                                        id={linkShare.id}
                                         authority={linkShare.authority}
                                         status={linkShare.status}
                                         jwt={jwt}
@@ -87,24 +86,23 @@ export default function LinkSharesTable({ jwt, title }) {
                     )
                 }
                 {
-                    linkShares.length == 0 && (
-                        <Grid item xs={12} >
-                            <Typography variant='h6' style={{textAlign: 'center', fontWeight: 400}}>
+                    linkShares.length === 0 && (
+                        <Grid item xs={12}>
+                            <Typography variant='h6' style={{ textAlign: 'center', fontWeight: 400 }}>
                                 You don't have any link shares
                             </Typography>
                         </Grid>
                     )
                 }
-            </Grid> 
+            </Grid>
 
             <CreateLinkShare
                 title={title}
                 jwt={jwt}
                 onCreate={getFromServer}
             />
-            
-        </>
-        
-    )
 
+        </>
+
+    )
 }

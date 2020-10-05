@@ -27,12 +27,16 @@ export default function CreateNotePreview({ jwt, onCreate }) {
     const validateTitle = (noteTitle = name) => {
         if(noteTitle.includes('%')) {
             setCreationError("Your note title cannot contain a percent sign.")
-            return false
         } else if(noteTitle.length > 200) {
             setCreationError("Your note title cannot be longer than 200 characers.")
-            return false
+        } else if(noteTitle.includes('/')) {
+            setCreationError("Your note cannot contain a slash, since URLs are encoded using slashes.")
+        } else if(noteTitle.includes('\\')) {
+            setCreationError("Your note title cannot contain a back slash (\\).")
+        } else {
+            return true
         }
-        return true
+        return false
     }
 
     const createNote = async () => {

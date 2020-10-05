@@ -1,16 +1,17 @@
-import { Button, Paper, Popover, Typography } from '@material-ui/core'
+import {
+    Button, Paper, Popover, Typography
+} from '@material-ui/core'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import Navbar from '../../../../../components/Navbar'
-import Cookie from 'js-cookie'
-import theme from '../../../../../components/theme'
 import { CloudUpload } from '@material-ui/icons'
+import Cookie from 'js-cookie'
+import Navbar from '../../../../../components/Navbar'
+import theme from '../../../../../components/theme'
 import SharedWithTable from '../../../../../components/shares/SharedWithTable'
 
 //todo allow shared users to edit sharing with a permission
 export default function share() {
-
     const router = useRouter()
     const { username, title } = router.query
 
@@ -23,22 +24,19 @@ export default function share() {
 
     const [ sharedWith, setSharedWith ] = useState([])
 
-    useEffect(() => {
-        if(title) {
-            getData()
-        }
-    }, [ title ])
-
     const getData = async () => {
         //getting who this note is shared with
-        if(!jwt) return
+        if (!jwt) return
 
         const requestOptions = {
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
 
-        const response = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(username)}/${encodeURI(title)}/shares`, requestOptions)
-        if(response.status !== 200) {
+        const response = await fetch(
+            'http://localhost:8080/api/v1/shares/principal/note/' + encodeURI(username) + '/' + encodeURI(title) + '/shares',
+            requestOptions
+        )
+        if (response.status !== 200) {
             console.log(response.status)
             return
         }
@@ -47,39 +45,49 @@ export default function share() {
         setSharedWith(JSON.parse(text))
     }
 
+    useEffect(() => {
+        if (title) {
+            getData()
+        }
+    }, [ title ])
+
     const handleShareWithUser = async () => {
         setShowMoreSharing(false)
 
         const requestOptions = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
 
-        const response = await fetch(`http://localhost:8080/api/v1/shares/principal/share/${title}/${targetUsername}`, requestOptions)
+        const response = await fetch('http://localhost:8080/api/v1/shares/principal/share/' + title + '/' + targetUsername, requestOptions)
 
-        if(response.status == 200) {
+        if (response.status === 200) {
             router.reload() //could also just add it to the list
         }
         //todo show user different error conditions
     }
 
-    const handleEnter = async (event) => {
-        if(event.key == 'Enter') {
+    const handleEnter = async event => {
+        if (event.key === 'Enter') {
             setShowMoreSharing(true)
             const requestOptions = {
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
             }
 
             const response = await fetch('http://localhost:8080/api/v1/users/exists/' + encodeURI(targetUsername), requestOptions)
             const text = await response.text()
-            setTargetAccountExists(text == 'true' ? "This user's account exists. You're good to go!" : "We couldn't find a user with this username. Double-check the username.")
+            setTargetAccountExists(
+                text === 'true'
+                    ? "This user's account exists. You're good to go!"
+                    : "We couldn't find a user with this username. Double-check the username."
+            )
         }
     }
 
-    const removeShareFromArray = (removedUsername) => {
-        let updatedSharedWith = sharedWith.slice()
+    const removeShareFromArray = removedUsername => {
+        const updatedSharedWith = sharedWith.slice()
         const index = updatedSharedWith.indexOf(removedUsername)
-        if(index == -1) {
+        if (index === -1) {
             console.log('index should not be -1.')
             return
         }
@@ -90,37 +98,44 @@ export default function share() {
     return (
         <div>
             <Head>
-                <title>share {title} | nottte.me</title>
+                <title>
+                    share
+                    {title}
+                    {' '}
+                    | nottte.me
+                </title>
             </Head>
-            <div style={{marginTop: 0}} >
+            <div style={{ marginTop: 0 }}>
                 <Navbar />
             </div>
 
             {/* main login */}
-            <Paper 
+            <Paper
                 style={{
-                    margin: '0 auto', 
-                    marginTop: '20vh', 
-                    marginBottom: '20vh', 
-                    width: '50%', 
-                    minHeight: '120vh', 
+                    margin: '0 auto',
+                    marginTop: '20vh',
+                    marginBottom: '20vh',
+                    width: '50%',
+                    minHeight: '120vh',
                     paddingBottom: '10vh',
-                    borderRadius: 40, 
+                    borderRadius: 40,
                     boxShadow: '5px 5px 10px black',
                     minWidth: 750
-                }} 
+                }}
             >
-                <Typography variant='h1' style={{textAlign: 'center', padding: '2vh 0'}}>
+                <Typography variant='h1' style={{ textAlign: 'center', padding: '2vh 0' }}>
                     Share
                 </Typography>
-                <div style={{width: '60%', margin: '0 auto'}}>
-                    <div style={{marginBottom: '2vh'}}>
+                <div style={{ width: '60%', margin: '0 auto' }}>
+                    <div style={{ marginBottom: '2vh' }}>
                         <Typography variant='h5'>
                             Note:
                         </Typography>
-                        <Typography style={{fontSize: 18}}>
-                            Sharing notes is currently in beta. Currently, you can share notes with other users,
-                            but they won't be able to edit them. This feature is being developed, so you can
+                        <Typography style={{ fontSize: 18 }}>
+                            Sharing notes is currently in beta.
+                            Currently, you can share notes with other users,
+                            but they won't be able to edit them.
+                            This feature is being developed, so you can
                             hope for it in the future.
                         </Typography>
                     </div>
@@ -130,29 +145,31 @@ export default function share() {
                             Share by username
                         </Typography>
 
-                        <Typography style={{fontSize: 18}}>
+                        <Typography style={{ fontSize: 18 }}>
                             Just type in your friend's username and hit enter
                         </Typography>
 
-                        <div style={{display: 'inline-flex'}}>
-                            <Typography style={{fontSize: 20, alignSelf: 'center', cursor: 'default'}}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <Typography style={{ fontSize: 20, alignSelf: 'center', cursor: 'default' }}>
                                 Share with
                             </Typography>
-                            <input 
+                            <input
                                 aria-label='username'
                                 type='text'
                                 value={targetUsername}
                                 onChange={e => setTargetUsername(e.target.value)}
-                                style={{border: 'none', fontSize: 20, padding: 10, paddingLeft: 5, textDecoration: 'underline', width: '12.5vw'}}
+                                style={{
+                                    border: 'none', fontSize: 20, padding: 10, paddingLeft: 5, textDecoration: 'underline', width: '12.5vw'
+                                }}
                                 placeholder='username'
-                                onKeyPress={(event) => handleEnter(event)}
+                                onKeyPress={event => handleEnter(event)}
                                 autoCorrect='false'
                                 spellCheck='false'
                                 onClick={e => setShowMoreAnchorEl(e.currentTarget)}
                             />
 
                             <Popover
-                                id={'share-username-popover'}
+                                id='share-username-popover'
                                 open={showMoreSharing}
                                 anchorEl={showMoreAnchorEl}
                                 onClose={() => setShowMoreSharing(false)}
@@ -160,57 +177,64 @@ export default function share() {
                                     vertical: 'bottom',
                                     horizontal: 'left'
                                 }}
-                                style={{width: '70%'}}
+                                style={{ width: '70%' }}
                             >
-                                <Paper elevation={3} style={{minWidth: '12.5vw', maxWidth: '25vw', minHeight: '15vh', backgroundColor: theme.palette.secondary.main}} >
-                                    <Typography 
-                                        variant='h5' 
-                                        color='primary' 
-                                        style={{textAlign: 'center', padding: 10}}
+                                <Paper
+                                    elevation={3}
+                                    style={{
+                                        minWidth: '12.5vw', maxWidth: '25vw', minHeight: '15vh', backgroundColor: theme.palette.secondary.main
+                                    }}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        color='primary'
+                                        style={{ textAlign: 'center', padding: 10 }}
                                     >
-                                        Share with {targetUsername}
+                                        Share with
+{' '}
+{targetUsername}
                                     </Typography>
-                                    <Typography color='primary' style={{textAlign: 'center', padding: 5}}>
+                                    <Typography color='primary' style={{ textAlign: 'center', padding: 5 }}>
                                         {targetAccountExists}
                                     </Typography>
                                     {
-                                        targetAccountExists == "This user's account exists. You're good to go!" && <div 
-                                            style={{
-                                                width: '100%', 
-                                                display: 'flex', 
-                                                justifyContent: 'center', 
-                                                padding: '1vh 0'
-                                            }}
-                                        >
-                                            <Button
-                                                startIcon={<CloudUpload />}
-                                                onClick={handleShareWithUser}
-                                                variant='contained'
+                                        targetAccountExists === "This user's account exists. You're good to go!" && (
+                                            <div
+                                                style={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    padding: '1vh 0'
+                                                }}
                                             >
-                                                Share
-                                            </Button>
-                                        </div>
+                                                <Button
+                                                    startIcon={<CloudUpload />}
+                                                    onClick={handleShareWithUser}
+                                                    variant='contained'
+                                                >
+                                                    Share
+                                                </Button>
+                                            </div>
+                                        )
                                     }
-                                    
-                                    
+
                                 </Paper>
                             </Popover>
                         </div>
-                        
+
                     </div>
                 </div>
-                <div style={{width: '60%', margin: '3vh auto'}}>
-                    <SharedWithTable 
-                        sharedWith={sharedWith} 
-                        jwt={jwt} 
-                        title={title} 
-                        onUnshare={username => removeShareFromArray(username)}
+                <div style={{ width: '60%', margin: '3vh auto' }}>
+                    <SharedWithTable
+                        sharedWith={sharedWith}
+                        jwt={jwt}
+                        title={title}
+                        onUnshare={shortcutName => removeShareFromArray(shortcutName)}
                     />
                 </div>
-            </Paper>         
-            
-        </div>
-        
-    )
+            </Paper>
 
+        </div>
+
+    )
 }

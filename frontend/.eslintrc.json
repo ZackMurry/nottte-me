@@ -1,0 +1,50 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "parser": "babel-eslint",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "airbnb"
+    ],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"]}],
+        "linebreak-style": 0,
+        "react/no-unescaped-entities": 0,
+        "indent": ["error", 4, {"ignoredNodes": ["JSXElement"]}],
+        "react/jsx-indent": "off",
+        "semi": [2, "never"],
+        "react/jsx-indent-props": "off",
+        "jsx-quotes": ["error", "prefer-single"],
+        "comma-dangle": ["error", "never"],
+        "arrow-parens": ["error", "as-needed"],
+        "spaced-comment": "off",
+        "array-bracket-spacing": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/prop-types": "off",
+        "prefer-template": "off",
+        "quote-props": "off",
+        "no-plusplus": "off",
+        "max-len": ["error", 150],
+        "jsx-a11y/no-static-element-interactions": "off",
+        "jsx-a11y/click-events-have-key-events": "off"
+    }
+}

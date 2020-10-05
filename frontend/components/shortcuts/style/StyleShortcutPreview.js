@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, Typography, IconButton, TextField, Grow } from '@material-ui/core'
-import EditIcon from '@material-ui/icons/Edit';
-import DoneIcon from '@material-ui/icons/Done';
-import PlainTooltip from '../../utils/PlainTooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
+import {
+    Grid, Typography, IconButton, TextField
+} from '@material-ui/core'
+import EditIcon from '@material-ui/icons/Edit'
+import DoneIcon from '@material-ui/icons/Done'
+import DeleteIcon from '@material-ui/icons/Delete'
+import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove'
+import PlainTooltip from '../../utils/PlainTooltip'
 
-export default function StyleShortcutPreview({ name, button, attributes, alt, update, jwt, onError, showError, deleteSelf }) {
-
+export default function StyleShortcutPreview({
+    name, button, attributes, alt, update, jwt, onError, showError, deleteSelf
+}) {
     const [ editMode, setEditMode ] = useState(false)
     const [ editedKey, setEditedKey ] = useState(button + '')
     const [ editedAttributes, setEditedAttributes ] = useState(attributes)
     const [ editedAlt, setEditedAlt ] = useState(alt)
 
     const [ addingAttribute, setAddingAttribute ] = useState(false)
-    const [ currentAddingAttribute, setCurrentAddingAttribute ] = useState({attribute: '', value: ''}) //attribute that user is currently adding
+    const [ currentAddingAttribute, setCurrentAddingAttribute ] = useState({ attribute: '', value: '' }) //attribute that user is currently adding
     const [ previewStyles, setPreviewStyles ] = useState({})
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = e => {
         setEditedKey(e.key)
         setEditedAlt(e.altKey)
         e.preventDefault()
@@ -30,8 +33,8 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
 
     //updates previewStyles on change of editedAttributes
     useEffect(() => {
-        let newPreviewStyles = {}
-        for(var i = 0; i < editedAttributes.length; i++) {
+        const newPreviewStyles = {}
+        for (let i = 0; i < editedAttributes.length; i++) {
             newPreviewStyles[editedAttributes[i].attribute] = editedAttributes[i].value
         }
         setPreviewStyles(newPreviewStyles)
@@ -39,18 +42,16 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
 
     const handleDone = async () => {
         setEditMode(false)
-        
+
         //checking if anything has been changed
-        if(editedKey == button && editedAttributes == attributes && editedAlt == alt) return
-        
-        
-        
+        if (editedKey === button && editedAttributes === attributes && editedAlt === alt) return
+
         //sending to server
         const requestOptions = {
             method: 'PATCH',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
             body: JSON.stringify({
-                name: name,
+                name,
                 key: editedKey,
                 attributes: editedAttributes,
                 alt: editedAlt
@@ -59,7 +60,7 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
 
         const response = await fetch('http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style/' + encodeURI(name), requestOptions)
 
-        if(response.status == 400) {
+        if (response.status === 400) {
             onError('Unable to update style shortcut: error code 400')
             showError(true)
             return
@@ -70,14 +71,14 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
     }
 
     //automatically finishes editing when enter is pressed on text field
-    const handleEnterDetection = (e) => {
-        if(e.key == 'Enter') {
+    const handleEnterDetection = e => {
+        if (e.key === 'Enter') {
             handleDone()
         }
     }
 
-    const handleRemoveAttribute = async (index) => {
-        if(editedAttributes.length == 1) {
+    const handleRemoveAttribute = async index => {
+        if (editedAttributes.length === 1) {
             handleDelete()
             return
         }
@@ -88,12 +89,15 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
         //sending to server
         const requestOptions = {
             method: 'DELETE',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
 
-        const response = await fetch(`http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style/${name}/attribute/${attrAttr}`, requestOptions)
+        const response = await fetch(
+            `http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style/${name}/attribute/${attrAttr}`,
+            requestOptions
+        )
         console.log(response.status)
-        if(response.status == 200) {
+        if (response.status === 200) {
             editedAttributes.splice(index, 1)
             update(name, button, editedAttributes)
         }
@@ -104,13 +108,13 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
     const handleDelete = async () => {
         //sending to server
         const requestOptions = {
-            method: 'DELETE', 
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
         const response = await fetch(`http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style/${name}`, requestOptions)
         console.log(response.status)
 
-        if(response.status == 200) {
+        if (response.status === 200) {
             deleteSelf()
         }
     }
@@ -119,17 +123,17 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
         //sending to server
         const requestOptions = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
             body: JSON.stringify(currentAddingAttribute)
         }
 
         const response = await fetch(`http://localhost:8080/api/v1/users/principal/preferences/shortcuts/style/${name}/attributes`, requestOptions)
         console.log(response.status)
 
-        if(response.status == 200) {
+        if (response.status === 200) {
             await setEditedAttributes([...editedAttributes, currentAddingAttribute])
             update(name, button, editedAttributes)
-            setCurrentAddingAttribute({attribute: '', value: ''})
+            setCurrentAddingAttribute({ attribute: '', value: '' })
             setAddingAttribute(false)
         }
     }
@@ -138,8 +142,7 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
         <div>
             {
                 editMode
-                ?
-                (
+                    ? (
                     <Grid container spacing={3}>
                         <Grid item xs={12} lg={3}>
                             <Typography>
@@ -147,58 +150,59 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                             </Typography>
                         </Grid>
                         <Grid item xs={12} lg={2}>
-                            <TextField 
-                                value={(editedAlt ? 'ALT+' : '') + editedKey} 
-                                style={{width: '100%', caretColor: 'transparent'}} 
+                            <TextField
+                                value={(editedAlt ? 'ALT+' : '') + editedKey}
+                                style={{ width: '100%', caretColor: 'transparent' }}
                                 spellCheck='false'
                                 onKeyDown={handleKeyDown}
                             />
                         </Grid>
                         {
                             editedAttributes && editedAttributes.map((editedAttribute, i) => (
+                                //eslint-disable-next-line
                                 <React.Fragment key={i}>
                                     {
-                                        i > 1 && <Grid item xs={12} lg={5}></Grid>
+                                        i > 1 && <Grid item xs={12} lg={5} />
                                     }
                                     {
-                                        i == 1 && (
+                                        i === 1 && (
                                             <>
                                                 <Grid item xs={3} lg={1}>
-                                                    <PlainTooltip title='Done editing' >
-                                                        <IconButton onClick={handleDone} style={{padding: 0}}>
+                                                    <PlainTooltip title='Done editing'>
+                                                        <IconButton onClick={handleDone} style={{ padding: 0 }}>
                                                             <DoneIcon color='secondary' />
                                                         </IconButton>
                                                     </PlainTooltip>
                                                 </Grid>
                                                 <Grid item xs={3} lg={1}>
                                                     <PlainTooltip title='Delete shortcut'>
-                                                        <IconButton onClick={handleDelete} style={{padding: 0}}>
+                                                        <IconButton onClick={handleDelete} style={{ padding: 0 }}>
                                                             <DeleteIcon color='secondary' />
                                                         </IconButton>
                                                     </PlainTooltip>
                                                 </Grid>
                                                 <Grid item xs={3} lg={1}>
                                                     <PlainTooltip title='Add attribute'>
-                                                        <IconButton onClick={() => setAddingAttribute(!addingAttribute)} style={{padding: 0}}>
+                                                        <IconButton onClick={() => setAddingAttribute(!addingAttribute)} style={{ padding: 0 }}>
                                                             <AddIcon color='secondary' />
                                                         </IconButton>
                                                     </PlainTooltip>
                                                 </Grid>
-                                                
-                                                <Grid item xs={3} lg={2}></Grid>
+
+                                                <Grid item xs={3} lg={2} />
                                             </>
                                         )
                                     }
                                     <Grid item xs={12} lg={3}>
-                                        <TextField 
+                                        <TextField
                                             value={editedAttribute.attribute}
                                             onKeyDown={e => handleEnterDetection(e)}
                                             onChange={e => {
-                                                let tempAttrs = editedAttributes.slice()
-                                                tempAttrs[i] = {...tempAttrs[i], attribute: e.target.value}
+                                                const tempAttrs = editedAttributes.slice()
+                                                tempAttrs[i] = { ...tempAttrs[i], attribute: e.target.value }
                                                 setEditedAttributes(tempAttrs)
                                             }}
-                                            style={{padding: 0, width: '100%'}}
+                                            style={{ padding: 0, width: '100%' }}
                                             error={editedAttribute.attribute.length <= 0}
                                             helperText={editedAttribute.attribute.length <= 0 ? 'attribute should not be empty' : ''}
                                             rowsMax={3}
@@ -210,23 +214,30 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                                             value={editedAttribute.value}
                                             onKeyDown={e => handleEnterDetection(e)}
                                             onChange={e => {
-                                                let tempAttrs = editedAttributes.slice()
-                                                tempAttrs[i] = {...tempAttrs[i], value: e.target.value}
+                                                const tempAttrs = editedAttributes.slice()
+                                                tempAttrs[i] = { ...tempAttrs[i], value: e.target.value }
                                                 setEditedAttributes(tempAttrs)
                                             }}
-                                            style={{padding: 0, width: '100%'}}
+                                            style={{ padding: 0, width: '100%' }}
                                             error={editedAttribute.value.length <= 0}
                                             helperText={editedAttribute.value.length <= 0 ? 'value should not be empty' : ''}
                                         />
                                     </Grid>
                                     <Grid item xs={2} lg={1}>
-                                        <PlainTooltip title={'Remove attribute' + (editedAttributes.length == 1 ? '. This will remove this shortcut, too.': '')}>
-                                            <IconButton onClick={() => handleRemoveAttribute(i)} style={{padding: 0}}>
+                                        <PlainTooltip
+                                            title={
+                                                'Remove attribute'
+                                                + (editedAttributes.length === 1
+                                                    ? '. This will remove this shortcut, too.'
+                                                    : '')
+                                            }
+                                        >
+                                            <IconButton onClick={() => handleRemoveAttribute(i)} style={{ padding: 0 }}>
                                                 <RemoveIcon color='secondary' />
                                             </IconButton>
-                                        </PlainTooltip>                
+                                        </PlainTooltip>
                                     </Grid>
-                                    
+
                                 </React.Fragment>
                             ))
                         }
@@ -234,27 +245,27 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                             editedAttributes.length === 1 && (
                                 <>
                                     <Grid item xs={3} lg={1}>
-                                        <PlainTooltip title='Done editing' >
-                                            <IconButton onClick={handleDone} style={{padding: 0}}>
+                                        <PlainTooltip title='Done editing'>
+                                            <IconButton onClick={handleDone} style={{ padding: 0 }}>
                                                 <DoneIcon color='secondary' />
                                             </IconButton>
                                         </PlainTooltip>
                                     </Grid>
                                     <Grid item xs={3} lg={1}>
                                         <PlainTooltip title='Delete shortcut'>
-                                            <IconButton onClick={handleDelete} style={{padding: 0}}>
+                                            <IconButton onClick={handleDelete} style={{ padding: 0 }}>
                                                 <DeleteIcon color='secondary' />
                                             </IconButton>
                                         </PlainTooltip>
                                     </Grid>
                                     <Grid item xs={3} lg={1}>
                                         <PlainTooltip title='Add attribute'>
-                                            <IconButton onClick={() => setAddingAttribute(!addingAttribute)} style={{padding: 0}}>
+                                            <IconButton onClick={() => setAddingAttribute(!addingAttribute)} style={{ padding: 0 }}>
                                                 <AddIcon color='secondary' />
                                             </IconButton>
                                         </PlainTooltip>
-                                    </Grid>     
-                                    <Grid item xs={2}></Grid>                       
+                                    </Grid>
+                                    <Grid item xs={2} />
                                 </>
                             )
                         }
@@ -262,14 +273,14 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                             addingAttribute && (
                                 <>
                                     {
-                                        editedAttributes.length > 1 && <Grid xs={3} lg={5}></Grid>
+                                        editedAttributes.length > 1 && <Grid xs={3} lg={5} />
                                     }
                                     <Grid item xs={6} lg={3}>
-                                        <TextField 
+                                        <TextField
                                             value={currentAddingAttribute.attribute}
                                             //onKeyDown={e => handleEnterDetection(e)} change this to add the attribute
-                                            onChange={e => setCurrentAddingAttribute({...currentAddingAttribute, attribute: e.target.value})}
-                                            style={{padding: 0, width: '100%'}}
+                                            onChange={e => setCurrentAddingAttribute({ ...currentAddingAttribute, attribute: e.target.value })}
+                                            style={{ padding: 0, width: '100%' }}
                                             error={currentAddingAttribute.attribute.length <= 0}
                                             helperText={currentAddingAttribute.attribute.length <= 0 ? 'attribute should not be empty' : ''}
                                             rowsMax={3}
@@ -280,8 +291,8 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                                         <TextField
                                             value={currentAddingAttribute.value}
                                             //onKeyDown={e => handleEnterDetection(e)}
-                                            onChange={e => setCurrentAddingAttribute({...currentAddingAttribute, value: e.target.value})}
-                                            style={{padding: 0, width: '100%'}}
+                                            onChange={e => setCurrentAddingAttribute({ ...currentAddingAttribute, value: e.target.value })}
+                                            style={{ padding: 0, width: '100%' }}
                                             error={currentAddingAttribute.value.length <= 0}
                                             helperText={currentAddingAttribute.value.length <= 0 ? 'value should not be empty' : ''}
                                         />
@@ -298,31 +309,38 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                         }
                         {/* preview */}
                         <Grid item xs={12}>
-                            <div style={{textAlign: 'center', marginTop: '3%'}}>
-                                <Typography variant='h4' style={{
-                                    ...previewStyles
-                                }}>
+                            <div style={{ textAlign: 'center', marginTop: '3%' }}>
+                                <Typography
+                                    variant='h4'
+                                    style={{
+                                        ...previewStyles
+                                    }}
+                                >
                                     Preview
                                 </Typography>
                             </div>
                         </Grid>
                     </Grid>
-                )
-                :
-                (
+                    )
+                    : (
                     <Grid container spacing={3}>
                         <Grid item xs={12} lg={3}>
                             <Typography>{ name }</Typography>
                         </Grid>
                         <Grid item xs={12} lg={2}>
-                            <Typography style={{fontWeight: 500}}>CTRL+{alt ? 'ALT+' : ''}{ button }</Typography>
+                            <Typography style={{ fontWeight: 500 }}>
+                                CTRL+
+                                {alt ? 'ALT+' : ''}
+                                { button }
+                            </Typography>
                         </Grid>
                         {
-                            attributes && attributes.map(({attribute, value}, i) => (
+                            attributes && attributes.map(({ attribute, value }, i) => (
+                                //eslint-disable-next-line
                                 <React.Fragment key={i}>
                                     {
                                         i !== 0 && (
-                                            <Grid item xs={1} lg={5}></Grid>
+                                            <Grid item xs={1} lg={5} />
                                         )
                                     }
                                     <Grid item xs={12} lg={3}>
@@ -334,13 +352,14 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                                     {
                                         i === 0 && (
                                             <Grid item xs={12} lg={1}>
-                                                <IconButton onClick={() => {
+                                                <IconButton
+                                                    onClick={() => {
                                                         setEditMode(true)
                                                         //resetting values to actual ones, helps with delay in fetching
                                                         setEditedKey(button)
                                                         setEditedAttributes(attributes)
-                                                    }} 
-                                                    style={{padding: 0}}
+                                                    }}
+                                                    style={{ padding: 0 }}
                                                 >
                                                     <EditIcon color='secondary' />
                                                 </IconButton>
@@ -349,14 +368,13 @@ export default function StyleShortcutPreview({ name, button, attributes, alt, up
                                     }
                                 </React.Fragment>
                             ))
-                            
+
                         }
-                        
+
                     </Grid>
-                )
+                    )
             }
         </div>
-        
-    )
 
+    )
 }

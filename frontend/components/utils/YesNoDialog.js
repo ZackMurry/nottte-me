@@ -1,12 +1,14 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core'
+import {
+    Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+} from '@material-ui/core'
 import React from 'react'
 
-export default function YesNoDialog({ open, onClose, title, text, onResponse }) {
-
-
+export default function YesNoDialog({
+    open, onClose, title, text, onResponse
+}) {
     return (
-        <Dialog 
-            onClose={onClose} 
+        <Dialog
+            onClose={onClose}
             open={open}
         >
             <DialogTitle color='secondary'>{title}</DialogTitle>
@@ -15,7 +17,7 @@ export default function YesNoDialog({ open, onClose, title, text, onResponse }) 
                     {text}
                 </DialogContentText>
             </DialogContent>
-            <DialogActions style={{padding: '2.5%'}}>
+            <DialogActions style={{ padding: '2.5%' }}>
                 <Button onClick={() => onResponse(false)}>
                     No
                 </Button>
@@ -24,7 +26,6 @@ export default function YesNoDialog({ open, onClose, title, text, onResponse }) 
                 </Button>
             </DialogActions>
         </Dialog>
-        
-    )
 
+    )
 }

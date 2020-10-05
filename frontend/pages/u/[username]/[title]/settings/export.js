@@ -3,16 +3,15 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import Navbar from '../../../../../components/Navbar'
 import Cookie from 'js-cookie'
 import { convertFromRaw, EditorState } from 'draft-js'
+import Navbar from '../../../../../components/Navbar'
 import DownloadWithPreview from '../../../../../components/notes/export/DownloadWithPreview'
 import draftToPdf from '../../../../../components/notes/export/DraftToPdf'
 import openInNewTab from '../../../../../components/utils/OpenInNewTab'
 import draftToHtml from '../../../../../components/notes/export/DraftToHtml'
 
 export default function Export() {
-
     const router = useRouter()
     const { username, title } = router.query
     const jwt = Cookie.get('jwt')
@@ -21,42 +20,40 @@ export default function Export() {
     const [ styleMap, setStyleMap ] = useState('')
     const [ html, setHtml ] = useState('')
 
-    useEffect(() => {
-        if(title && jwt) {
-            getFromServer()
-        }
-    }, [ title ])
-
     const getFromServer = async () => {
-        if(!jwt) return; //todo prompt sign in or un-auth'd note
+        if (!jwt) return //todo prompt sign in or un-auth'd note
 
         const requestOptions = {
             method: 'GET',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
         }
 
         //getting style shortcuts
         //ideally, you'd want to get the editorState first so that it could load faster for the user
-        //but without a stylemap, provided by the style shortcuts, the editor state gets loaded before stylemaps are applied,
+        //but without a stylemap, provided by the style shortcuts,
+        //the editor state gets loaded before stylemaps are applied,
         //and it isn't updated until a new style shortcut is applied :(
-        const styleMapResponse = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${username}/${title}/shortcuts/style`, requestOptions)
+        const styleMapResponse = await fetch(
+            `http://localhost:8080/api/v1/shares/principal/note/${username}/${title}/shortcuts/style`,
+            requestOptions
+        )
         const styleMapText = await styleMapResponse.text()
-        
-        if(styleMapResponse.status === 401) return;
-        if(styleMapResponse.status === 403) return;
-        if(styleMapResponse.status === 404) return;
-        
-        const parsedStyleMap = JSON.parse(styleMapText)
-        
-        let newStyleMap = {}
-        for(var i = 0; i < parsedStyleMap.length; i++) {
-            let styleShortcut = parsedStyleMap[i]
-            let name = styleShortcut.name
 
-            for(var j = 0; j < styleShortcut.attributes.length; j++) {
-                let attribute = styleShortcut.attributes[j].attribute
-                let value = styleShortcut.attributes[j].value
-                let existingAttributes = newStyleMap[name]
+        if (styleMapResponse.status === 401) return
+        if (styleMapResponse.status === 403) return
+        if (styleMapResponse.status === 404) return
+
+        const parsedStyleMap = JSON.parse(styleMapText)
+
+        let newStyleMap = {}
+        for (let i = 0; i < parsedStyleMap.length; i++) {
+            const styleShortcut = parsedStyleMap[i]
+            const { name } = styleShortcut
+
+            for (let j = 0; j < styleShortcut.attributes.length; j++) {
+                const { attribute } = styleShortcut.attributes[j]
+                const { value } = styleShortcut.attributes[j]
+                const existingAttributes = newStyleMap[name]
                 newStyleMap = {
                     ...newStyleMap,
                     [name]: {
@@ -71,17 +68,20 @@ export default function Export() {
 
         //getting editor state
 
-        const editorResponse = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(username)}/${encodeURI(title)}/raw`, requestOptions)
+        const editorResponse = await fetch(
+            `http://localhost:8080/api/v1/shares/principal/note/${encodeURI(username)}/${encodeURI(title)}/raw`,
+            requestOptions
+        )
         const editorText = await editorResponse.text()
         console.log(editorResponse.status)
 
         //todo show error for 404s and 401s
-        if(editorResponse.status === 401) return
-        if(editorResponse.status === 404) return
-        if(editorResponse.status === 403) return
-        if(editorResponse.status === 500) return
+        if (editorResponse.status === 401) return
+        if (editorResponse.status === 404) return
+        if (editorResponse.status === 403) return
+        if (editorResponse.status === 500) return
 
-        if(editorResponse === '') {
+        if (editorResponse === '') {
             setEditorState(EditorState.createEmpty())
         } else {
             const parsedText = JSON.parse(editorText)
@@ -90,167 +90,241 @@ export default function Export() {
             setEditorState(textEditorState)
             setHtml(draftToHtml(textEditorState.getCurrentContent(), newStyleMap))
         }
-
-        
-
     }
 
-    const getBlockStyle = (block) => {
+    const getBlockStyle = block => {
         switch (block.getType()) {
-            case 'left':
-                return 'align-left'
-            case 'center':
-                return 'align-center'
-            case 'right':
-                return 'align-right'
-            default:
-                return 'block'
+        case 'left':
+            return 'align-left'
+        case 'center':
+            return 'align-center'
+        case 'right':
+            return 'align-right'
+        default:
+            return 'block'
         }
     }
+
+    useEffect(() => {
+        if (title && jwt) {
+            getFromServer()
+        }
+    }, [ title ])
 
     const downloadAsPdf = () => {
         draftToPdf(editorState.getCurrentContent(), styleMap, title, false)
     }
 
-    const downloadAsDoc = () => {
-        draftToPdf(editorState.getCurrentContent(), styleMap, title, true)
-    }
-
     return (
         <div>
             <Head>
-                <title>export {title} | nottte.me</title>
+                <title>
+export
+{title}
+{' '}
+| nottte.me
+                </title>
             </Head>
-            <div style={{marginTop: 0}} >
+            <div style={{ marginTop: 0 }}>
                 <Navbar />
             </div>
 
             {/* main login */}
-            <Paper 
+            <Paper
                 style={{
-                    margin: '20vh auto', 
-                    width: '50%', 
-                    minHeight: '120vh', 
+                    margin: '20vh auto',
+                    width: '50%',
+                    minHeight: '120vh',
                     paddingBottom: '10vh',
-                    borderRadius: 40, 
+                    borderRadius: 40,
                     boxShadow: '5px 5px 10px black',
                     minWidth: 750
-                }} 
+                }}
             >
-                <Typography variant='h1' style={{textAlign: 'center', padding: '2vh 0'}}>
+                <Typography variant='h1' style={{ textAlign: 'center', padding: '2vh 0' }}>
                     Export note
                 </Typography>
 
                 {/* table of contents */}
-                <div style={{width: '60%', margin: '0 auto'}}>
+                <div style={{ width: '60%', margin: '0 auto' }}>
                     <Link href={`/u/${username}/${title}/settings/export#pdf`}>
-                        <Typography variant='h5' style={{textAlign: 'center', cursor: 'pointer'}}>
+                        <Typography variant='h5' style={{ textAlign: 'center', cursor: 'pointer' }}>
                             Export as PDF
                         </Typography>
                     </Link>
                     <Link href={`/u/${username}/${title}/settings/export#docs`}>
-                        <Typography variant='h5' style={{textAlign: 'center', cursor: 'pointer'}}>
+                        <Typography variant='h5' style={{ textAlign: 'center', cursor: 'pointer' }}>
                             Export to Google Docs
                         </Typography>
                     </Link>
                     <Link href={`/u/${username}/${title}/settings/export#html`}>
-                        <Typography variant='h5' style={{textAlign: 'center', cursor: 'pointer'}}>
+                        <Typography variant='h5' style={{ textAlign: 'center', cursor: 'pointer' }}>
                             Export as HTML
                         </Typography>
                     </Link>
                 </div>
-                <div style={{paddingTop: '15%'}}></div>
-                <div id='pdf' style={{paddingTop: '10vh', paddingBottom: '25vh', width: '80%', margin: '0 auto'}}>
-                    <Typography variant='h4' style={{textAlign: 'center'}}>
+                <div style={{ paddingTop: '15%' }} />
+                <div
+                    id='pdf'
+                    style={{
+                        paddingTop: '10vh', paddingBottom: '25vh', width: '80%', margin: '0 auto'
+                    }}
+                >
+                    <Typography variant='h4' style={{ textAlign: 'center' }}>
                         Export as PDF
                     </Typography>
                     {
-                        editorState && 
-                        <DownloadWithPreview 
-                            name={title} 
-                            editorState={editorState} 
-                            onClick={downloadAsPdf} 
-                            styleMap={styleMap} 
-                            blockStyleFn={getBlockStyle}
-                            style={{margin: '5vh 5vw'}}
-                        />
+                        editorState
+                        && (
+<DownloadWithPreview
+    name={title}
+    editorState={editorState}
+    onClick={downloadAsPdf}
+    styleMap={styleMap}
+    blockStyleFn={getBlockStyle}
+    style={{ margin: '5vh 5vw' }}
+/>
+                        )
                     }
                 </div>
-                <div id='docs' style={{width: '80%', margin: '0 auto'}}>
-                    <Typography variant='h4' style={{textAlign: 'center'}}>
+                <div id='docs' style={{ width: '80%', margin: '0 auto' }}>
+                    <Typography variant='h4' style={{ textAlign: 'center' }}>
                         Export to Google Docs
                     </Typography>
                     {/* todo explain why Courier in /help/export/courier */}
-                    <Typography style={{margin: '3vh auto'}}>
+                    <Typography style={{ margin: '3vh auto' }}>
                         To export to Google Docs, you have to first convert it to PDF form,
-                        and then import it to Docs through Google Drive. Docs can't read some
-                        of the characters in the Roboto font 
-                        <span style={{textDecoration: 'underline', cursor: 'pointer', marginLeft: 4}} onClick={() => router.push('/help/export/courier')}>
-                            very well
-                        </span>
-                        , so this export will
-                        convert your font to Courier. You can change the font to anything once
-                        you have your note in Docs.
+                        and then import it to Docs through Google Drive. For some combinations of characters,
+                        this won't work, so you'll have to read further for full compatibility.
                     </Typography>
-                    <Typography variant='h5' style={{textAlign: 'center'}}>
-                        Download as Docs-compatible PDF
+                    <Typography variant='h5' style={{ textAlign: 'center' }}>
+                        First, download as PDF
                     </Typography>
                     {
-                        editorState &&
-                        <DownloadWithPreview
-                            name={title}
-                            editorState={editorState}
-                            onClick={downloadAsDoc}
-                            styleMap={styleMap}
-                            blockStyleFn={getBlockStyle}
-                        />
+                        editorState
+                        && (
+<DownloadWithPreview
+    name={title}
+    editorState={editorState}
+    onClick={downloadAsPdf}
+    styleMap={styleMap}
+    blockStyleFn={getBlockStyle}
+/>
+                        )
                     }
-                    <Typography variant='h5' style={{textAlign: 'center', margin: '4vh 0 3vh 0'}}>
+                    <Typography variant='h5' style={{ textAlign: 'center', margin: '4vh 0 3vh 0' }}>
                         Import PDF to Google Docs
                     </Typography>
-                    <Typography style={{margin: '3vh auto'}}>
-                        Now, you'll have to go to 
-                        <span style={{textDecoration: 'underline', cursor: 'pointer', margin: '0 4px'}} onClick={() => openInNewTab('http://drive.google.com')}>
+                    <Typography style={{ margin: '3vh auto' }}>
+                        Now, you'll have to go to
+                        <span
+                            style={{
+                                textDecoration: 'underline',
+                                cursor: 'pointer',
+                                margin: '0 4px'
+                            }}
+                            onClick={() => openInNewTab('http://drive.google.com')}
+                        >
                             Google Drive
                         </span>
-                        and import the PDF. You can do this by clicking 'New' and then 'File Upload' 
-                        (you can also drag the file into your Drive). 
+                        and import the PDF. You can do this by clicking 'New' and then 'File Upload'
+                        (you can also drag the file into your Drive).
                         Then, select your PDF and it should start importing. Once it's done uploading to Drive,
                         click on your PDF in Google Drive. Click the 'Open with' button at the top of the screen
                         and select 'Google Docs'.
                     </Typography>
-                    
-                    <img 
-                        src='/pdf-to-doc-min.png' 
-                        alt="Screenshot of 'Open with' screen" 
-                        style={{width: '80%', display: 'block', margin: '0 auto', minWidth: 100}} 
+
+                    <img
+                        src='/pdf-to-doc-min.png'
+                        alt="Screenshot of 'Open with' screen"
+                        style={{
+                            width: '80%', display: 'block', margin: '0 auto', minWidth: 100
+                        }}
                     />
 
                     <Typography>
                         Finally, you'll see that your note has been successfully exported
                         to Google Docs!
                     </Typography>
-                    
+
                     <img
                         src='/exported-to-docs-min.png'
-                        alt="Screenshot of note as a Google Doc"
-                        style={{width: '80%', display: 'block', margin: '0 auto', minWidth: 100}}
+                        alt='Screenshot of note as a Google Doc'
+                        style={{
+                            width: '80%', display: 'block', margin: '0 auto', minWidth: 100
+                        }}
                     />
+
+                    <Typography variant='h5' style={{ textAlign: 'center', margin: '4vh 0 3vh 0' }}>
+                        Special cases
+                    </Typography>
+
+                    <Typography variant='h6' style={{ textAlign: 'center', margin: '4vh 0 3vh 0' }}>
+                        Ligatures
+                    </Typography>
+
+                    <Typography style={{ margin: '3vh auto' }}>
+                        As indicated earlier, there are some compatibility issues. If you type special
+                        pairs of letters like "fl", the conversion will truncate them into one letter
+                        (in this example, "f"). They're called 'ligatures'. This problem can, however, be fixed.
+                    </Typography>
+                    <Typography style={{ margin: '1vh auto' }}>
+                        You'll have to convert your PDF to a .docx (Microsoft Word) file before importing it to Google Docs.
+                        You can use a website like
+                        <span
+                            style={{
+                                cursor: 'pointer',
+                                textDecoration: 'underline',
+                                margin: '0 3px'
+                            }}
+                            onClick={() => openInNewTab('https://www.ilovepdf.com/pdf_to_word')}
+                        >
+                            ilovepdf.com
+                        </span>
+                        to do just this. Afterwards, upload it to Google Drive and open it with Docs,
+                        as shown before. Finally, in the top-left corner of the Doc, click 'File' and 'Save as Google Docs'.
+                    </Typography>
+
+                    <Typography variant='h6' style={{ textAlign: 'center', margin: '4vh 0 3vh 0' }}>
+                        Formatting
+                    </Typography>
+
+                    <Typography style={{ margin: '1vh auto' }}>
+                        Your Doc might have several formatting errors.
+                        There's not much we can do about them behind the scenes, but there are easy fixes for all of the discovered issues.
+                    </Typography>
+
+                    <Typography style={{ margin: '1vh auto' }}>
+                        First, if your text seems to wrap in the middle of the line instead of at the end,
+                        adjust the indents by moving the errors on the ruler near the top.
+                        The left arrow signifies the left indent and the right arrow will adjust the right indent.
+                    </Typography>
+
+                    <Typography style={{ margin: '1vh auto' }}>
+                        Your Doc might also have several unwanted fonts. The quickest way to fix this is
+                        to select all of the content on your document (by pressing Control and A) and changing the font to one that you like.
+                    </Typography>
+
+                    <Typography style={{ margin: '1vh auto' }}>
+                        The spacing between lines might also have been converted poorly.
+                        To fix this, you can select the affected areas and click "line spacing"
+                        (on the formatting bar) and adjust it to your liking (default is 1.15).
+                    </Typography>
 
                 </div>
 
-                <div id='html' style={{width: '80%', margin: '15vh auto'}}>
-                    <Typography variant='h4' style={{textAlign: 'center', margin: '2vh 0'}}>
+                <div id='html' style={{ width: '80%', margin: '15vh auto' }}>
+                    <Typography variant='h4' style={{ textAlign: 'center', margin: '2vh 0' }}>
                         Export as HTML
                     </Typography>
-                    
+
                     <Typography>
                         Below is the raw HTML of your note. You can use this to add your note to your website
                         or export it to an unsupported program.
                     </Typography>
 
-                    <Paper elevation={0} style={{margin: '3vh auto'}}>
-                        <Typography style={{fontWeight: 300}}>
+                    <Paper elevation={0} style={{ margin: '3vh auto' }}>
+                        <Typography style={{ fontWeight: 300 }}>
                             {html}
                         </Typography>
                     </Paper>
@@ -259,7 +333,6 @@ export default function Export() {
 
             </Paper>
         </div>
-        
-    )
 
+    )
 }
