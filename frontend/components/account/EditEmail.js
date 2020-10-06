@@ -21,7 +21,7 @@ export default function EditEmail({ jwt, currentEmail }) {
         if (currentEmail === editedEmail) return
 
         const requestOptions = {
-            method: 'POST',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
             body: editedEmail
         }
@@ -33,8 +33,9 @@ export default function EditEmail({ jwt, currentEmail }) {
         }
     }
 
-    const enterDetection = key => {
-        if (key === 'Enter') {
+    const enterDetection = e => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
             handleSubmit()
         }
     }
@@ -47,7 +48,7 @@ export default function EditEmail({ jwt, currentEmail }) {
             <TextField
                 value={editedEmail}
                 onChange={e => setEditedEmail(e.target.value)}
-                onKeyDown={e => enterDetection(e.key)}
+                onKeyDown={e => enterDetection(e)}
                 helperText='To remove, make this empty.'
             />
 

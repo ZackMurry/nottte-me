@@ -110,11 +110,11 @@ public class LinkShareDataAccessService implements LinkShareDao {
 
             return new LinkShare(
                     id,
-                    resultSet.getString(1), //author
-                    resultSet.getLong(2), //note id
-                    ShareAuthority.valueOf(resultSet.getString(3)), //authority
-                    LinkShareStatus.valueOf(resultSet.getString(4)), //status
-                    resultSet.getInt(5) //times used
+                    resultSet.getString("author"), //author
+                    resultSet.getLong("note_id"), //note id
+                    ShareAuthority.valueOf(resultSet.getString("authority")), //authority
+                    LinkShareStatus.valueOf(resultSet.getString("status")), //status
+                    resultSet.getInt("times_used") //times used
             );
         } catch(SQLException e) {
             e.printStackTrace();
@@ -139,12 +139,12 @@ public class LinkShareDataAccessService implements LinkShareDao {
 
             return Optional.of(
                     new LinkShare(
-                        UUID.fromString(resultSet.getString(2)), //id
-                        resultSet.getString(1), //author
+                        UUID.fromString(resultSet.getString("id")), //id
+                        resultSet.getString("author"), //author
                         noteId, //note id
                         authority, //authority
-                        LinkShareStatus.valueOf(resultSet.getString(3)), //status
-                        resultSet.getInt(4) //times used
+                        LinkShareStatus.valueOf(resultSet.getString("status")), //status
+                        resultSet.getInt("times_used") //times used
                 )
             );
         } catch(SQLException e) {
@@ -170,12 +170,12 @@ public class LinkShareDataAccessService implements LinkShareDao {
 
             return Optional.of(
                     new LinkShare(
-                            UUID.fromString(resultSet.getString(2)), //id
-                            resultSet.getString(1), //author
+                            UUID.fromString(resultSet.getString("id")), //id
+                            resultSet.getString("author"), //author
                             noteId, //note id
-                            ShareAuthority.valueOf(resultSet.getString(3)), //authority
-                            LinkShareStatus.valueOf(resultSet.getString(4)), //status
-                            resultSet.getInt(5) //times used
+                            ShareAuthority.valueOf(resultSet.getString("authority")), //authority
+                            LinkShareStatus.valueOf(resultSet.getString("status")), //status
+                            resultSet.getInt("times_used") //times used
                     )
             );
         } catch(SQLException e) {
@@ -196,7 +196,7 @@ public class LinkShareDataAccessService implements LinkShareDao {
 
             if(!resultSet.next()) throw new NotFoundException("Cannot find link share with id " + id);
 
-            return resultSet.getString(1);
+            return resultSet.getString("author");
         } catch(SQLException e) {
             e.printStackTrace();
             throw e;
@@ -232,12 +232,12 @@ public class LinkShareDataAccessService implements LinkShareDao {
             while(resultSet.next()) {
                 linkShares.add(
                         new LinkShare(
-                                UUID.fromString(resultSet.getString(2)),
-                                resultSet.getString(1), //author
+                                UUID.fromString(resultSet.getString("id")),
+                                resultSet.getString("author"), //author
                                 noteId, //note id
-                                ShareAuthority.valueOf(resultSet.getString(3)), //authority
-                                LinkShareStatus.valueOf(resultSet.getString(4)), //status
-                                resultSet.getInt(5) //times used
+                                ShareAuthority.valueOf(resultSet.getString("authority")), //authority
+                                LinkShareStatus.valueOf(resultSet.getString("status")), //status
+                                resultSet.getInt("times_used") //times used
                         )
                 );
             }

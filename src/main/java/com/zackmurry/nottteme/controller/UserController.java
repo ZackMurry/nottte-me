@@ -1,6 +1,7 @@
 package com.zackmurry.nottteme.controller;
 
 import com.zackmurry.nottteme.entities.User;
+import com.zackmurry.nottteme.models.auth.PasswordUpdateRequest;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,12 @@ public class UserController {
     @PutMapping("/principal/email")
     public ResponseEntity<HttpStatus> updatePrincipalAccountEmail(@RequestBody String email) {
         HttpStatus status = userService.updateEmail(SecurityContextHolder.getContext().getAuthentication().getName(), email);
+        return new ResponseEntity<>(status);
+    }
+
+    @PutMapping("/principal/password")
+    public ResponseEntity<HttpStatus> updatePrincipalPassword(@RequestBody PasswordUpdateRequest request) {
+        HttpStatus status = userService.updatePassword(SecurityContextHolder.getContext().getAuthentication().getName(), request.getOldPassword(), request.getNewPassword());
         return new ResponseEntity<>(status);
     }
 

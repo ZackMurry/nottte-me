@@ -4,8 +4,10 @@ import { Link, Paper, Typography } from '@material-ui/core'
 import Navbar from '../../components/Navbar'
 import EditEmail from '../../components/account/EditEmail'
 import parseJwt from '../../components/utils/ParseJwt'
+import EditPassword from '../../components/account/EditPassword'
 
 //todo show statistics about notes?
+//todo change passwords
 export default function Account() {
     const initialJwt = Cookie.get('jwt')
 
@@ -13,6 +15,7 @@ export default function Account() {
     const [ username, setUsername ] = useState('')
 
     const [ user, setUser ] = useState({ username: '', email: 'loading...', password: 'hidden' })
+    const [ editedEmail, setEditedEmail ] = useState(user.email)
 
     useEffect(() => {
         async function getData() {
@@ -23,7 +26,7 @@ export default function Account() {
             setUsername(parseJwt(jwt).sub)
 
             const requestOptions = {
-                //headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
             }
             const response = await fetch('http://localhost:8080/api/v1/users/principal', requestOptions)
 
@@ -58,10 +61,10 @@ export default function Account() {
                 </Typography>
                 {/* main */}
                 <div>
-                    <Paper elevation={0} style={{ width: '75%', padding: 10, margin: '0 auto' }}>
+                    <div style={{ width: '75%', padding: 10, margin: '0 auto' }}>
                         <Typography>
                             Username:
-                            {username}
+                            {' ' + username}
                         </Typography>
                         <EditEmail
                             currentEmail={user.email}
@@ -74,8 +77,9 @@ export default function Account() {
                                 </span>
                             </Link>
                         </Typography>
-                    </Paper>
 
+                        <EditPassword jwt={jwt} style={{ marginTop: '3vh' }} />
+                    </div>
                 </div>
 
             </Paper>

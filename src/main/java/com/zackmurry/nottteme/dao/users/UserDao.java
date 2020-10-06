@@ -17,4 +17,8 @@ public interface UserDao {
 
     HttpStatus updateEmail(String username, String email);
 
+    Optional<User> getUserByUsernameIncludePassword(String username);
+
+    HttpStatus updatePassword(String username, String encodedNewPassword);
+
 }

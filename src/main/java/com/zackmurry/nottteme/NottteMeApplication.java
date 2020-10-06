@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * todo create note if you're unauthenticated (just can't save it)
+ * todo monitor errors
  */
 @SpringBootApplication
 public class NottteMeApplication {

@@ -1,7 +1,7 @@
 package com.zackmurry.nottteme.jwt;
 
-import com.zackmurry.nottteme.models.AuthenticationRequest;
-import com.zackmurry.nottteme.models.AuthenticationResponse;
+import com.zackmurry.nottteme.models.auth.AuthenticationRequest;
+import com.zackmurry.nottteme.models.auth.AuthenticationResponse;
 import com.zackmurry.nottteme.services.NottteUserDetailsService;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,8 +30,6 @@ public class AuthenticationController {
 
     @Autowired
     private JwtUtil jwtTokenUtil;
-
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @CrossOrigin
     @PostMapping("/authenticate")

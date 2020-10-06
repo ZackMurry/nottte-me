@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS notes (
     id BIGSERIAL PRIMARY KEY,
-    author VARCHAR(32) NOT NULL, --todo next time this has to be cleared, add foreign key to this
+    author VARCHAR(32) NOT NULL REFERENCES users (username) ON DELETE CASCADE,
     title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
     body TEXT DEFAULT '', --draft js content
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS shortcuts (
     username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE PRIMARY KEY,
     text_shortcuts TEXT DEFAULT '[]',
     style_shortcuts TEXT DEFAULT '[]',
-    shared_style_shortcuts TEXT DEFAULT '[]', --key bindings will never be used, might want to remove
+    shared_style_shortcuts TEXT DEFAULT '[]', --todo key bindings will never be used, might want to remove
     generated_shortcuts TEXT DEFAULT '[]'
 );
 

@@ -212,13 +212,13 @@ public final class NoteDataAccessService implements NoteDao {
             return jdbcTemplate.query(
                     sql,
                     resultSet -> new Note(
-                            resultSet.getLong(1),
-                            resultSet.getString(2),
-                            resultSet.getString(3),
-                            resultSet.getString(4),
-                            resultSet.getTimestamp(5),
-                            resultSet.getTimestamp(6),
-                            resultSet.getTimestamp(7)
+                            resultSet.getLong("id"), //id
+                            resultSet.getString("author"), //author
+                            resultSet.getString("title"), //title
+                            resultSet.getString("body"), //body
+                            resultSet.getTimestamp("last_modified"), //last modified
+                            resultSet.getTimestamp("last_viewed_by_author"), //last viewed by author
+                            resultSet.getTimestamp("last_viewed") //last viewed
                     ),
                     username
             );
@@ -353,13 +353,13 @@ public final class NoteDataAccessService implements NoteDao {
             while(resultSet.next()) {
                 notes.add(
                         new Note(
-                              resultSet.getLong(1), //id
-                              resultSet.getString(2), //author
-                              resultSet.getString(3), //title
-                              resultSet.getString(4), //body
-                              resultSet.getTimestamp(5), //last modified
-                              resultSet.getTimestamp(6), //last viewed by author
-                              resultSet.getTimestamp(7) //last viewed
+                                resultSet.getLong("id"), //id
+                                resultSet.getString("author"), //author
+                                resultSet.getString("title"), //title
+                                resultSet.getString("body"), //body
+                                resultSet.getTimestamp("last_modified"), //last modified
+                                resultSet.getTimestamp("last_viewed_by_author"), //last viewed by author
+                                resultSet.getTimestamp("last_viewed") //last viewed
                         )
                 );
             }
@@ -443,13 +443,13 @@ public final class NoteDataAccessService implements NoteDao {
             List<Note> noteList = jdbcTemplate.query(
                     sql,
                     resultSet -> new Note(
-                            resultSet.getLong(1), //id
-                            resultSet.getString(2), //author
-                            resultSet.getString(3), //title
-                            resultSet.getString(4), //body
-                            resultSet.getTimestamp(5), //last modified
-                            resultSet.getTimestamp(6), //last viewed by author
-                            resultSet.getTimestamp(7) //last viewed
+                            resultSet.getLong("id"), //id
+                            resultSet.getString("author"), //author
+                            resultSet.getString("title"), //title
+                            resultSet.getString("body"), //body
+                            resultSet.getTimestamp("last_modified"), //last modified
+                            resultSet.getTimestamp("last_viewed_by_author"), //last viewed by author
+                            resultSet.getTimestamp("last_viewed") //last viewed
                     ),
                     title,
                     author
@@ -504,8 +504,8 @@ public final class NoteDataAccessService implements NoteDao {
 
             return new NoteIdentifier(
                     noteId,
-                    resultSet.getString(1), //author
-                    resultSet.getString(2) //title
+                    resultSet.getString("author"), //author
+                    resultSet.getString("title") //title
             );
         } catch(SQLException e) {
             e.printStackTrace();

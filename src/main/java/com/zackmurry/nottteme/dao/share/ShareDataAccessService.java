@@ -101,7 +101,7 @@ public class ShareDataAccessService implements ShareDao {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<String> out = new ArrayList<>();
             while(resultSet.next()) {
-                out.add(resultSet.getString(1));
+                out.add(resultSet.getString("shared_username"));
             }
             return out;
         } catch(SQLException e) {
@@ -183,7 +183,7 @@ public class ShareDataAccessService implements ShareDao {
         try {
             return jdbcTemplate.query(
                     sql,
-                    resultSet -> resultSet.getLong(1),
+                    resultSet -> resultSet.getLong("note_id"),
                     username
             );
         } catch(SQLException e) {

@@ -1,4 +1,4 @@
-package com.zackmurry.nottteme.models;
+package com.zackmurry.nottteme.models.auth;
 
 public class AuthenticationRequest {
 

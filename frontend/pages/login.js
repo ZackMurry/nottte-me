@@ -17,7 +17,6 @@ export default function Login() {
 
     const redirectTo = router.query.redirect
 
-    console.log(JSON.stringify(router.query))
     const handleSubmit = async e => {
         e.preventDefault()
 

@@ -76,20 +76,20 @@ public final class UserDataAccessService implements UserDao {
 
     @Override
     public Optional<User> getUserByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username=? LIMIT 1";
+        String sql = "SELECT username, email FROM users WHERE username=? LIMIT 1";
 
         try {
             List<User> list = jdbcTemplate.query(
                     sql,
                     resultSet -> new User(
-                            resultSet.getString(1), //username
+                            resultSet.getString("username"), //username
                             "secured", //password hidden because it's pretty useless when it's encrypted
-                            resultSet.getString(3) //email
+                            resultSet.getString("email") //email
                             ),
                     username
             );
             return Optional.of(list.get(0));
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
         }
@@ -138,5 +138,47 @@ public final class UserDataAccessService implements UserDao {
 
     }
 
+    @Override
+    public Optional<User> getUserByUsernameIncludePassword(String username) {
+        String sql = "SELECT username, password, email FROM users WHERE username=? LIMIT 1";
+
+        try {
+            List<User> list = jdbcTemplate.query(
+                    sql,
+                    resultSet -> new User(
+                            resultSet.getString("username"), //username
+                            resultSet.getString("password"), //still encrypted
+                            resultSet.getString("email") //email
+                    ),
+                    username
+            );
+            return Optional.of(list.get(0));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @param username username to update password of
+     * @param newPassword **encoded** new password
+     * @return status of operation
+     */
+    @Override
+    public HttpStatus updatePassword(String username, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE username=?";
+
+        try {
+            jdbcTemplate.execute(
+                    sql,
+                    newPassword,
+                    username
+            );
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
 
 }
