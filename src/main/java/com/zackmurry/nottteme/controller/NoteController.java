@@ -4,6 +4,7 @@ import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.CreateNoteRequest;
 import com.zackmurry.nottteme.models.CreateNoteWithBodyRequest;
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.notes.RawNotePatch;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.utils.NoteUtils;
 import javassist.NotFoundException;
@@ -110,6 +111,11 @@ public class NoteController {
     public HttpStatus duplicateNote(@PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return noteService.duplicateNote(title, username);
+    }
+
+    @PatchMapping("/principal/patch")
+    public HttpStatus patchNote(@RequestBody RawNotePatch patch) {
+        return noteService.patchNote("diffpatch", "foo", patch);
     }
 
 }

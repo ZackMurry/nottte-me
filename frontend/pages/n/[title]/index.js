@@ -12,6 +12,8 @@ import Editor from 'draft-js-plugins-editor'
 import createLinkifyPlugin from 'draft-js-linkify-plugin'
 import GenerateStyleMenu from '../../../components/shortcuts/GenerateStyleMenu'
 
+const jsondiffpatch = require('jsondiffpatch')
+
 const linkifyPlugin = createLinkifyPlugin({
     component: props => (
         /* eslint-disable */
@@ -49,6 +51,9 @@ export default function Note() {
     const jwt = Cookie.get('jwt')
 
     const [ editorState, setEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
+    
+    const [ lastSavedEditorState, setLastSavedEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
+
     const [ textShortcuts, setTextShortcuts] = useState([])
     const [ styleShortcuts, setStyleShortcuts ] = useState([])
     const [ styleMap, setStyleMap ] = useState({})
@@ -169,6 +174,7 @@ export default function Note() {
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
+            setLastSavedEditorState(textEditorState)
         }
 
         //getting shortcuts
@@ -221,10 +227,50 @@ export default function Note() {
             body: JSON.stringify(convertToRaw(newEditorState.getCurrentContent()))
         }
         await fetch('http://localhost:8080/api/v1/notes/save/' + encodeURI(title), requestOptions)
+        setLastSavedEditorState(newEditorState)
     }, 1500), [ jwt, title])
 
     const onChange = async newEditorState => {
         await setEditorState(newEditorState)
+        let diff = jsondiffpatch.diff(
+            convertToRaw(lastSavedEditorState.getCurrentContent()),
+            convertToRaw(newEditorState.getCurrentContent())
+        )
+        console.log('raw diff: ' + JSON.stringify(diff))
+
+        if (diff) {
+            let newBlocks = []
+
+            Object.keys(diff.blocks).forEach((item, index) => {
+                if (item === '_t') return
+                let block = diff.blocks['' + item]
+                if (block['0']) {
+                    console.log('0 detected')
+                    block = block['0']
+                } else {
+                    if (block?.text) {
+                        block.text = block.text[1]
+                    }
+                    if (block?.key) {
+                        block.key = block.key[1]
+                    }
+                }
+                console.log(item + ': ' + JSON.stringify(block))
+                newBlocks[index] = {
+                    idx: +item,
+                    ...block
+                }
+            })
+            console.log('newBlocks: ' + JSON.stringify(newBlocks))
+            diff.blocks = newBlocks
+            const requestOptions = {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
+                body: JSON.stringify(diff)
+            }
+            await fetch('http://localhost:8080/api/v1/notes/principal/patch', requestOptions)
+        }
+
         debounceSave(newEditorState)
     }
 

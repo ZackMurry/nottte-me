@@ -1,8 +1,13 @@
 package com.zackmurry.nottteme.services;
 
+import com.google.gson.JsonSyntaxException;
 import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.models.NoteIdentifier;
+import com.zackmurry.nottteme.models.notes.Block;
+import com.zackmurry.nottteme.models.notes.PatchBlock;
+import com.zackmurry.nottteme.models.notes.RawNoteContent;
+import com.zackmurry.nottteme.models.notes.RawNotePatch;
 import com.zackmurry.nottteme.models.sharing.LinkShareStatus;
 import com.zackmurry.nottteme.utils.NoteUtils;
 import javassist.NotFoundException;
@@ -95,6 +100,30 @@ public class NoteService {
 
     public long getIdByTitleAndAuthor(String title, String author) {
         return noteDao.getIdByTitleAndAuthor(title, author);
+    }
+
+    public HttpStatus patchNote(String title, String author, RawNotePatch patch) {
+        String current = noteDao.getRawNote(title, author);
+        RawNoteContent content;
+        try {
+            content = NoteUtils.convertJSONNoteContentToObject(current);
+        } catch (JsonSyntaxException e) {
+            System.out.println("bad json: " + current);
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+        for (int i = 0; i < patch.getBlocks().size(); i++) {
+            PatchBlock patchBlock = patch.getBlocks().get(i);
+            Block contentBlock = content.getBlocks().get(patchBlock.getIdx());
+            if(patchBlock.getText() != null) {
+                contentBlock.setText(patchBlock.getText());
+            }
+            if(patchBlock.getKey() != null) {
+                contentBlock.setKey(patchBlock.getKey());
+            }
+            //todo all of these
+        }
+        return HttpStatus.BAD_REQUEST;
     }
 
 }
