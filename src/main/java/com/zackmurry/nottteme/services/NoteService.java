@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,14 +115,36 @@ public class NoteService {
         }
         for (int i = 0; i < patch.getBlocks().size(); i++) {
             PatchBlock patchBlock = patch.getBlocks().get(i);
-            Block contentBlock = content.getBlocks().get(patchBlock.getIdx());
+            Block contentBlock;
+            if(content.getBlocks().size() >= patchBlock.getIdx()) {
+                contentBlock = new Block();
+                List<Block> currentContentBlocks = content.getBlocks();
+                currentContentBlocks.add(contentBlock);
+                content.setBlocks(currentContentBlocks);
+            } else {
+                contentBlock = content.getBlocks().get(patchBlock.getIdx());
+            }
             if(patchBlock.getText() != null) {
                 contentBlock.setText(patchBlock.getText());
             }
             if(patchBlock.getKey() != null) {
                 contentBlock.setKey(patchBlock.getKey());
             }
-            //todo all of these
+            //data doesn't really get modified much
+            if(patchBlock.getData() != null && patchBlock.getData().getData() != null) {
+                contentBlock.setData(patchBlock.getData());
+            }
+            if(patchBlock.getDepth() != null) {
+                contentBlock.setDepth(patchBlock.getDepth());
+            }
+            if(patchBlock.getType() != null) {
+                contentBlock.setType(patchBlock.getType());
+            }
+            //entity ranges is untested (can't figure out when it is used)
+            if(patchBlock.getEntityRanges() != null && patchBlock.getEntityRanges().size() > 0) {
+                List<String> entityRanges = new ArrayList<>(patchBlock.getEntityRanges());
+                contentBlock.setEntityRanges(entityRanges);
+            }
         }
         return HttpStatus.BAD_REQUEST;
     }
