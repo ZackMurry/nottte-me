@@ -10,7 +10,7 @@ public class PatchBlock {
     private String text;
     private String type;
     private Integer depth;
-    private List<InlineStyleRange> inlineStyleRanges;
+    private List<PatchInlineStyleRange> inlineStyleRanges;
     private List<String> entityRanges;
     private NoteDataObject data;
 
@@ -18,7 +18,7 @@ public class PatchBlock {
 
     }
 
-    public PatchBlock(int idx, String key, String text, String type, Integer depth, List<InlineStyleRange> inlineStyleRanges, List<String> entityRanges, NoteDataObject data, Boolean deleted) {
+    public PatchBlock(int idx, String key, String text, String type, Integer depth, List<PatchInlineStyleRange> inlineStyleRanges, List<String> entityRanges, NoteDataObject data, Boolean deleted) {
         this.idx = idx;
         this.key = key;
         this.text = text;
@@ -70,11 +70,11 @@ public class PatchBlock {
         this.depth = depth;
     }
 
-    public List<InlineStyleRange> getInlineStyleRanges() {
+    public List<PatchInlineStyleRange> getInlineStyleRanges() {
         return inlineStyleRanges;
     }
 
-    public void setInlineStyleRanges(List<InlineStyleRange> inlineStyleRanges) {
+    public void setInlineStyleRanges(List<PatchInlineStyleRange> inlineStyleRanges) {
         this.inlineStyleRanges = inlineStyleRanges;
     }
 

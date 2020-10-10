@@ -260,6 +260,41 @@ export default function Note() {
                         block.key = block.key[1]
                     }
                 }
+                if (block.inlineStyleRanges) {
+                    const newRanges = []
+                    let rangeSubtractIndex = 0
+                    Object.keys(block.inlineStyleRanges).forEach((label, rIndex) => {
+                        if (label === '_t') {
+                            rangeSubtractIndex++
+                            return
+                        }
+                        let range = block.inlineStyleRanges['' + label]
+
+                        if (range instanceof Array) {
+                            range = range[0]
+                        }
+
+                        if (range.offset instanceof Array) {
+                            range.offset = range.offset[1]
+                        }
+                        if (range && range['length']) {
+                            if (range['length'].length > 1) {
+                                range['length'] = range['length'][1]
+                            }
+                        }
+
+                        if (range.style instanceof Array) {
+                            range.style = range.style[1]
+                        }
+                        const rangeIdxIsNumber = /^-?[\d.]+(?:e-?\d+)?$/.test(label)
+                        newRanges[rIndex - rangeSubtractIndex] = {
+                            ...range, //todo maybe don't include elements if deleted
+                            idx: rangeIdxIsNumber ? +label : +(item.substring(1)),
+                            deleted: rangeIdxIsNumber ? undefined : true
+                        }
+                    })
+                    block.inlineStyleRanges = newRanges
+                }
                 const isNumber = /^-?[\d.]+(?:e-?\d+)?$/.test(item)
                 console.log('deleted: ' + isNumber + '; ' + item)
                 newBlocks[index - subtractFromIndex] = {
