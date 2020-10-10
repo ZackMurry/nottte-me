@@ -5,6 +5,7 @@ import java.util.List;
 public class PatchBlock {
 
     private int idx;
+    private Boolean deleted;
     private String key;
     private String text;
     private String type;
@@ -17,7 +18,7 @@ public class PatchBlock {
 
     }
 
-    public PatchBlock(int idx, String key, String text, String type, Integer depth, List<InlineStyleRange> inlineStyleRanges, List<String> entityRanges, NoteDataObject data) {
+    public PatchBlock(int idx, String key, String text, String type, Integer depth, List<InlineStyleRange> inlineStyleRanges, List<String> entityRanges, NoteDataObject data, Boolean deleted) {
         this.idx = idx;
         this.key = key;
         this.text = text;
@@ -26,6 +27,7 @@ public class PatchBlock {
         this.inlineStyleRanges = inlineStyleRanges;
         this.entityRanges = entityRanges;
         this.data = data;
+        this.deleted = deleted;
     }
 
     public int getIdx() {
@@ -91,4 +93,13 @@ public class PatchBlock {
     public void setData(NoteDataObject data) {
         this.data = data;
     }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
 }

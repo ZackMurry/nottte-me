@@ -62,6 +62,8 @@ export default function Note() {
     const [ tempSelection, setTempSelection ] = useState(null)
     const [ generatedStyles, setGeneratedStyles ] = useState([])
 
+    const [ gottenFromServer, setGottenFromServer ] = useState(false)
+
     // right click override
     // const handleContext = (event) => {
     //     event.preventDefault();
@@ -167,10 +169,12 @@ export default function Note() {
         if (editorResponse.status === 403) return
         if (editorResponse.status === 500) return
 
-        if (editorResponse === '') {
+        if (!editorResponse) {
             setEditorState(EditorState.createEmpty())
+            setLastSavedEditorState(EditorState.createEmpty())
         } else {
             const parsedText = JSON.parse(editorText)
+            console.log('parsed text: ' + editorText)
             const textFromRaw = convertFromRaw(parsedText)
             const textEditorState = EditorState.createWithContent(textFromRaw)
             setEditorState(textEditorState)
@@ -215,34 +219,35 @@ export default function Note() {
     //saves once user stops typing for 1.5 seconds.
     //todo probly need to save less often (especially with selections counting as saves because of style saving)
     const debounceSave = useCallback(debounce(async newEditorState => {
+        if (!gottenFromServer) {
+            setGottenFromServer(true)
+            return
+        }
+        if (newEditorState.getCurrentContent() === lastSavedEditorState.getCurrentContent()) return
         console.log('saving...')
         if (!jwt || !title) {
             console.log("can't save!")
             console.log('jwt: ' + jwt + '; title: ' + title)
             return
         }
-        const requestOptions = {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
-            body: JSON.stringify(convertToRaw(newEditorState.getCurrentContent()))
-        }
-        await fetch('http://localhost:8080/api/v1/notes/save/' + encodeURI(title), requestOptions)
-        setLastSavedEditorState(newEditorState)
-    }, 1500), [ jwt, title])
-
-    const onChange = async newEditorState => {
-        await setEditorState(newEditorState)
-        let diff = jsondiffpatch.diff(
+        console.log('last saved: ' + JSON.stringify(convertToRaw(lastSavedEditorState.getCurrentContent())))
+        console.log('current: ' + JSON.stringify(convertToRaw(editorState.getCurrentContent())))
+        console.log('new: ' + JSON.stringify(convertToRaw(newEditorState.getCurrentContent())))
+        const diff = jsondiffpatch.diff(
             convertToRaw(lastSavedEditorState.getCurrentContent()),
             convertToRaw(newEditorState.getCurrentContent())
         )
         console.log('raw diff: ' + JSON.stringify(diff))
 
         if (diff) {
-            let newBlocks = []
+            const newBlocks = []
 
+            let subtractFromIndex = 0
             Object.keys(diff.blocks).forEach((item, index) => {
-                if (item === '_t') return
+                if (item === '_t') {
+                    subtractFromIndex++
+                    return
+                }
                 let block = diff.blocks['' + item]
                 if (block['0']) {
                     console.log('0 detected')
@@ -255,9 +260,11 @@ export default function Note() {
                         block.key = block.key[1]
                     }
                 }
-                console.log(item + ': ' + JSON.stringify(block))
-                newBlocks[index] = {
-                    idx: +item,
+                const isNumber = /^-?[\d.]+(?:e-?\d+)?$/.test(item)
+                console.log('deleted: ' + isNumber + '; ' + item)
+                newBlocks[index - subtractFromIndex] = {
+                    idx: isNumber ? +item : +(item.substring(1)),
+                    deleted: isNumber ? undefined : true,
                     ...block
                 }
             })
@@ -268,10 +275,22 @@ export default function Note() {
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
                 body: JSON.stringify(diff)
             }
-            await fetch('http://localhost:8080/api/v1/notes/principal/patch', requestOptions)
+            console.log('sending fetch')
+            await fetch('http://localhost:8080/api/v1/notes/note/' + title + '/patch', requestOptions)
+            // const requestOptions = {
+            //     method: 'PATCH',
+            //     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
+            //     body: JSON.stringify(convertToRaw(newEditorState.getCurrentContent()))
+            // }
+            // await fetch('http://localhost:8080/api/v1/notes/save/' + encodeURI(title), requestOptions)
         }
+        await setLastSavedEditorState(newEditorState)
+    }, 1500), [ jwt, title, lastSavedEditorState, setLastSavedEditorState, gottenFromServer ])
 
+    const onChange = async newEditorState => {
+        console.log('on change')
         debounceSave(newEditorState)
+        await setEditorState(newEditorState)
     }
 
     const insertTextAtCursor = text => {
@@ -312,10 +331,10 @@ export default function Note() {
 
         //user can set shortcut name to __BLOCK-CLASS__ to enable some special block types
         if (command === '__center__') {
-            setEditorState(RichUtils.toggleBlockType(editorState, 'center'))
+            onChange(RichUtils.toggleBlockType(editorState, 'center'))
             return 'handled'
         } if (command === '__right__') {
-            setEditorState(RichUtils.toggleBlockType(editorState, 'right'))
+            onChange(RichUtils.toggleBlockType(editorState, 'right'))
             return 'handled'
         }
 
@@ -353,7 +372,7 @@ export default function Note() {
                 //calling on change because it waits for the new editor state to update first
                 //else it would save the old editor state
                 console.log('command: ' + shortcut.name)
-                setEditorState(RichUtils.toggleInlineStyle(editorState, shortcut.name))
+                onChange(RichUtils.toggleInlineStyle(editorState, shortcut.name))
                 return 'handled'
             }
         }

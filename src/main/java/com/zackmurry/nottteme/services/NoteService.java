@@ -1,5 +1,6 @@
 package com.zackmurry.nottteme.services;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.models.Note;
@@ -28,6 +29,8 @@ public class NoteService {
 
     @Autowired
     private LinkShareService linkShareService;
+
+    private static final Gson gson = new Gson();
 
     public HttpStatus createNote(String title, String body, String author) {
         if(title.contains("/") || title.contains("%") || title.length() > 200) return HttpStatus.BAD_REQUEST;
@@ -113,16 +116,25 @@ public class NoteService {
             e.printStackTrace();
             return HttpStatus.BAD_REQUEST;
         }
+
+        int removedFromContent = 0;
         for (int i = 0; i < patch.getBlocks().size(); i++) {
             PatchBlock patchBlock = patch.getBlocks().get(i);
             Block contentBlock;
-            if(content.getBlocks().size() >= patchBlock.getIdx()) {
+            //todo might not need -removedFromContent here
+            if(content.getBlocks() != null && content.getBlocks().size() <= patchBlock.getIdx()-removedFromContent) {
                 contentBlock = new Block();
                 List<Block> currentContentBlocks = content.getBlocks();
                 currentContentBlocks.add(contentBlock);
                 content.setBlocks(currentContentBlocks);
+            } else if(content.getBlocks() == null) {
+                return HttpStatus.BAD_REQUEST;
             } else {
-                contentBlock = content.getBlocks().get(patchBlock.getIdx());
+                contentBlock = content.getBlocks().get(patchBlock.getIdx()-removedFromContent);
+            }
+            if(patchBlock.getDeleted() != null && patchBlock.getDeleted()) {
+                content.getBlocks().remove(patchBlock.getIdx()-removedFromContent++);
+                continue;
             }
             if(patchBlock.getText() != null) {
                 contentBlock.setText(patchBlock.getText());
@@ -146,7 +158,7 @@ public class NoteService {
                 contentBlock.setEntityRanges(entityRanges);
             }
         }
-        return HttpStatus.BAD_REQUEST;
+        return noteDao.updateNote(title, author, gson.toJson(content));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.zackmurry.nottteme.controller;
 
+import com.google.gson.Gson;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.CreateNoteRequest;
 import com.zackmurry.nottteme.models.CreateNoteWithBodyRequest;
@@ -113,9 +114,11 @@ public class NoteController {
         return noteService.duplicateNote(title, username);
     }
 
-    @PatchMapping("/principal/patch")
-    public HttpStatus patchNote(@RequestBody RawNotePatch patch) {
-        return noteService.patchNote("diffpatch", "foo", patch);
+    @PatchMapping("/note/{title}/patch")
+    public HttpStatus patchNote(@PathVariable String title, @RequestBody RawNotePatch patch) {
+        System.out.println("patch: " + new Gson().toJson(patch));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return noteService.patchNote(title, username, patch);
     }
 
 }
