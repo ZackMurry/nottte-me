@@ -104,7 +104,10 @@ public class NoteService {
     }
 
     public HttpStatus patchNote(String title, String author, RawNotePatch patch) {
+        //get current note in database
         String current = noteDao.getRawNote(title, author);
+
+        //converting string of note to object
         RawNoteContent content;
         try {
             content = NoteUtils.convertJSONNoteContentToObject(current);
@@ -114,21 +117,25 @@ public class NoteService {
             return HttpStatus.BAD_REQUEST;
         }
 
-        int removedFromContent = 0;
+        //applying changes described in patch
+        int removedFromContent = 0; //how many blocks have been removed
+
+        //if the blocks of the content don't exist exist, create a new ArrayList of them
+        if(content.getBlocks() == null) {
+            content.setBlocks(new ArrayList<>());
+        }
+
         for (int i = 0; i < patch.getBlocks().size(); i++) {
             PatchBlock patchBlock = patch.getBlocks().get(i);
             Block contentBlock;
 
-            if(content.getBlocks() == null) {
-                content.setBlocks(new ArrayList<>());
-            }
-            //todo might not need -removedFromContent here
+            //if this is a block appended to the end
             if(content.getBlocks().size() <= patchBlock.getIdx()-removedFromContent) {
+                //add a new block to the blocks
                 contentBlock = new Block();
-                List<Block> currentContentBlocks = content.getBlocks();
-                currentContentBlocks.add(contentBlock);
-                content.setBlocks(currentContentBlocks);
+                content.getBlocks().add(contentBlock);
             } else {
+                //else get the block and alter it here
                 contentBlock = content.getBlocks().get(patchBlock.getIdx()-removedFromContent);
             }
             if(patchBlock.getDeleted() != null && patchBlock.getDeleted()) {
@@ -157,27 +164,29 @@ public class NoteService {
                 contentBlock.setEntityRanges(entityRanges);
             }
             if(patchBlock.getInlineStyleRanges() != null) {
-                int removedStyleRanges = 0;
+                //if the current block doesn't have an inlineStyleRange ArrayList, create one
+                if (contentBlock.getInlineStyleRanges() == null) {
+                    contentBlock.setInlineStyleRanges(new ArrayList<>());
+                }
+
+                int removedStyleRanges = 0; //number of removed style ranges
                 for (int j = 0; j < patchBlock.getInlineStyleRanges().size(); j++) {
                     PatchInlineStyleRange patchRange = patchBlock.getInlineStyleRanges().get(j);
 
                     InlineStyleRange contentRange;
-                    if (contentBlock.getInlineStyleRanges() == null) {
-                        contentBlock.setInlineStyleRanges(new ArrayList<>());
-                    }
-                    if(contentBlock.getInlineStyleRanges().size() <= patchRange.getIdx()) {
+
+                    //if this a style appended to the end, create a new one
+                    if(contentBlock.getInlineStyleRanges().size() <= patchRange.getIdx() - removedStyleRanges) {
                         contentRange = new InlineStyleRange();
-                        List<InlineStyleRange> ranges = contentBlock.getInlineStyleRanges();
-                        ranges.add(contentRange);
-                        contentBlock.setInlineStyleRanges(ranges); //might not need
+                        contentBlock.getInlineStyleRanges().add(contentRange);
                     } else {
+                        //else edit the existing one
                         contentRange = contentBlock.getInlineStyleRanges().get(patchRange.getIdx() - removedStyleRanges);
                     }
                     if(patchRange.getDeleted() != null && patchRange.getDeleted()) {
                         contentBlock.getInlineStyleRanges().remove(patchRange.getIdx() - removedStyleRanges++);
                         continue;
                     }
-
                     if(patchRange.getLength() != null) {
                         contentRange.setLength(patchRange.getLength());
                     }

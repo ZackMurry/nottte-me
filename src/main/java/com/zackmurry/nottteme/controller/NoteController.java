@@ -31,15 +31,6 @@ public class NoteController {
     @Autowired
     private NoteService noteService;
 
-    /**
-     * @param request object in JSON format (for ease of keeping in database). contains the raw editor state
-     */
-    @PatchMapping("/save/{title}")
-    public ResponseEntity<HttpStatus> save(@PathVariable String title, @RequestBody String request) {
-        HttpStatus status = noteService.saveNote(title, SecurityContextHolder.getContext().getAuthentication().getName(), request);
-        return new ResponseEntity<>(status);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<HttpStatus> create(@RequestBody CreateNoteRequest request) {
         HttpStatus status = noteService.createNote(request.getTitle(), NoteUtils.getBlankNoteBody(), SecurityContextHolder.getContext().getAuthentication().getName());
@@ -114,7 +105,13 @@ public class NoteController {
         return noteService.duplicateNote(title, username);
     }
 
-    @PatchMapping("/note/{title}/patch")
+    /**
+     * saves note using JSON diff
+     * @param title title of note
+     * @param patch body of patch, which details what needs to be changed
+     * @return HttpStatus of action
+     */
+    @PatchMapping("/save/{title}")
     public HttpStatus patchNote(@PathVariable String title, @RequestBody RawNotePatch patch) {
         System.out.println("patch: " + new Gson().toJson(patch));
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -254,12 +254,17 @@ export default function Note() {
                     block = block['0']
                 } else {
                     if (block?.text) {
+                        /* eslint-disable */
                         block.text = block.text[1]
                     }
                     if (block?.key) {
                         block.key = block.key[1]
                     }
                 }
+                if (block?.type && block.type instanceof Array && block.type[1]) {
+                    block.type = block.type[1]
+                }
+                /* eslint-enable */
                 if (block.inlineStyleRanges) {
                     const newRanges = []
                     let rangeSubtractIndex = 0
@@ -270,6 +275,7 @@ export default function Note() {
                         }
                         let range = block.inlineStyleRanges['' + label]
 
+                        /* eslint-disable */
                         if (range instanceof Array) {
                             range = range[0]
                         }
@@ -284,12 +290,15 @@ export default function Note() {
                         }
 
                         if (range.style instanceof Array) {
+                            //eslint-disable-next-line
                             range.style = range.style[1]
                         }
+                        /* eslint-enable */
+
                         const rangeIdxIsNumber = /^-?[\d.]+(?:e-?\d+)?$/.test(label)
                         newRanges[rIndex - rangeSubtractIndex] = {
                             ...range, //todo maybe don't include elements if deleted
-                            idx: rangeIdxIsNumber ? +label : +(item.substring(1)),
+                            idx: rangeIdxIsNumber ? +label : +(label.substring(1)),
                             deleted: rangeIdxIsNumber ? undefined : true
                         }
                     })
@@ -311,7 +320,7 @@ export default function Note() {
                 body: JSON.stringify(diff)
             }
             console.log('sending fetch')
-            await fetch('http://localhost:8080/api/v1/notes/note/' + title + '/patch', requestOptions)
+            await fetch('http://localhost:8080/api/v1/notes/save/' + title, requestOptions)
             // const requestOptions = {
             //     method: 'PATCH',
             //     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },

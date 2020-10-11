@@ -8,7 +8,9 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs
 pdfMake.fonts = {
     Roboto: {
         normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
-        bold: 'http://allfont.ru/cache/fonts/roboto-bold_aa865d37ee4a1cbd58a4f1c027933149.ttf'
+        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
+        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/fonts/Roboto/Roboto-Italic.ttf',
+        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
     },
     Courier: {
         normal: 'http://fontsfree.net//wp-content/fonts/basic/fixed-width/FontsFree-Net-SLC_.ttf',
