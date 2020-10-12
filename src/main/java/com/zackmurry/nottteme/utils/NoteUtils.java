@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 
 public class NoteUtils {
 
-    private static final String BLANK_NOTE_BODY = "{\"entityMap\":{},\"blocks\":[{\"text\":\"\",\"key\":\"nottte\",\"type\":\"unstyled\",\"entityRanges\":[]}]}";
+    private static final String BLANK_NOTE_BODY = "{\"entityMap\":{},\"blocks\":[{\"text\":\"\",\"key\":\"nottte\",\"type\":\"unstyled\",\"inlineStyleRanges\":[],\"entityRanges\":[]}]}";
     private static final Type RAW_NOTE_CONTENT_TYPE = new TypeToken<RawNoteContent>(){}.getType();
     private static final Type NOTE_PATCH_TYPE = new TypeToken<RawNotePatch>(){}.getType();
 

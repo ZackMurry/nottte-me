@@ -1,7 +1,9 @@
 package com.zackmurry.nottteme;
 
+import com.google.gson.Gson;
 import com.zackmurry.nottteme.dao.notes.NoteDataAccessService;
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.notes.RawNotePatch;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.UserService;
 import com.zackmurry.nottteme.utils.NoteUtils;
@@ -30,6 +32,8 @@ public class NoteServiceTest {
 
     private String testUsername;
     private String testPassword;
+
+    private final Gson gson = new Gson();
 
     @BeforeAll
     public void createTestUser() {
@@ -129,6 +133,77 @@ public class NoteServiceTest {
             assertTrue(optionalNote.isPresent(), "After saving a note, that note should still exist.");
             Note note = optionalNote.get();
             assertEquals(newBody, note.getBody(), "After saving a note, the body should be updated to match the new body.");
+        }
+
+        @DisplayName("Test JSON patch saving with plain text")
+        @Test
+        public void testPatchNote() {
+            //simple text patch
+            final String jsonPatch = "{\"blocks\":[{\"idx\":0,\"text\":\"a cool change\"}]}";
+            final RawNotePatch objPatch = NoteUtils.convertJSONPatchToObject(jsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, objPatch));
+            final String expectedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"a cool change\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedBody, noteService.getRawNote(noteTitle, testUsername));
+        }
+
+        @DisplayName("Test JSON patch with creating and deleting blocks")
+        @Test
+        public void testCreateDeleteBlockNotePatch() {
+            final String jsonPatch = "{\"blocks\":[{\"idx\":0,\"text\":\"block 1\"},{\"idx\":1,\"key\":\"39bdg\",\"text\":\"block 2\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}]}";
+            final RawNotePatch objPatch = NoteUtils.convertJSONPatchToObject(jsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, objPatch));
+            final String expectedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"block 1\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[]},{\"key\":\"39bdg\",\"text\":\"block 2\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedBody, noteService.getRawNote(noteTitle, testUsername));
+
+            final String deleteJsonPatch = "{\"blocks\":[{\"idx\":1,\"deleted\":true,\"key\":\"39bdg\",\"text\":\"block 2\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}]}";
+            final RawNotePatch deleteObjPatch = NoteUtils.convertJSONPatchToObject(deleteJsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, deleteObjPatch));
+            final String expectedDeletedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"block 1\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedDeletedBody, noteService.getRawNote(noteTitle, testUsername));
+        }
+
+        @DisplayName("Test JSON patch saving with inline styles")
+        @Test
+        public void testStyleNotePatch() {
+            //testing patches with style shortcuts
+            final String jsonPatch = "{\"blocks\":[{\"idx\":0,\"text\":\"a cool change for the day\",\"inlineStyleRanges\":[{\"offset\":7,\"length\":6,\"style\":\"secondShortcut\",\"idx\":0}]}]}";
+            final RawNotePatch objPatch = NoteUtils.convertJSONPatchToObject(jsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, objPatch));
+            final String expectedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"a cool change for the day\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":7,\"length\":6,\"style\":\"secondShortcut\"}],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedBody, noteService.getRawNote(noteTitle, testUsername));
+
+            //test multiple style shortcuts
+            final String multipleJsonPatch = "{\"blocks\":[{\"idx\":0,\"inlineStyleRanges\":[{\"offset\":21,\"length\":2,\"style\":\"secondShortcut\",\"idx\":1},{\"offset\":12,\"length\":7,\"style\":\"shortcutTablefodaday\",\"idx\":2}]}]}";
+            final RawNotePatch objMultiplePatch = NoteUtils.convertJSONPatchToObject(multipleJsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, objMultiplePatch));
+            final String expectedMultipleBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"a cool change for the day\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":7,\"length\":6,\"style\":\"secondShortcut\"},{\"offset\":21,\"length\":2,\"style\":\"secondShortcut\"},{\"offset\":12,\"length\":7,\"style\":\"shortcutTablefodaday\"}],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedMultipleBody, noteService.getRawNote(noteTitle, testUsername));
+
+            //test removing a style shortcut
+            //todo change this json to not have the offset details if this is deleted once i implement this
+            final String removeJsonPatch = "{\"blocks\":[{\"idx\":0,\"inlineStyleRanges\":[{\"offset\":12,\"length\":7,\"style\":\"shortcutTablefodaday\",\"idx\":2,\"deleted\":true}]}]}";
+            final RawNotePatch removeObjPatch = NoteUtils.convertJSONPatchToObject(removeJsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, removeObjPatch));
+            final String expectedRemovedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"a cool change for the day\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":7,\"length\":6,\"style\":\"secondShortcut\"},{\"offset\":21,\"length\":2,\"style\":\"secondShortcut\"}],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedRemovedBody, noteService.getRawNote(noteTitle, testUsername));
+        }
+
+        @DisplayName("Test JSON patch saving with block styles")
+        @Test
+        public void testBlockStylePatch() {
+            //testing text align (the only block style as of now)
+            final String jsonPatch = "{\"blocks\":[{\"idx\":0,\"text\":\"aligned center\",\"type\":\"center\"}]}";
+            final RawNotePatch objPatch = NoteUtils.convertJSONPatchToObject(jsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, objPatch));
+            final String expectedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"aligned center\",\"type\":\"center\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedBody, noteService.getRawNote(noteTitle, testUsername));
+
+            //test switching alignment saving
+            final String switchJsonPatch = "{\"blocks\":[{\"idx\":0,\"type\":\"right\"}]}";
+            final RawNotePatch switchObjPatch = NoteUtils.convertJSONPatchToObject(switchJsonPatch);
+            assertEquals(HttpStatus.OK, noteService.patchNote(noteTitle, testUsername, switchObjPatch));
+            final String expectedSwitchedBody = "{\"blocks\":[{\"key\":\"nottte\",\"text\":\"aligned center\",\"type\":\"right\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[]}],\"entityMap\":{}}";
+            assertEquals(expectedSwitchedBody, noteService.getRawNote(noteTitle, testUsername));
         }
 
     }

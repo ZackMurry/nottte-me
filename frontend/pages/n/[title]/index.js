@@ -320,6 +320,7 @@ export default function Note() {
                 body: JSON.stringify(diff)
             }
             console.log('sending fetch')
+            console.log('final: ' + JSON.stringify(diff))
             await fetch('http://localhost:8080/api/v1/notes/save/' + title, requestOptions)
             // const requestOptions = {
             //     method: 'PATCH',
