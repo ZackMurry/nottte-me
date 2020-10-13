@@ -7,7 +7,6 @@ import parseJwt from '../../components/utils/ParseJwt'
 import EditPassword from '../../components/account/EditPassword'
 
 //todo show statistics about notes?
-//todo change passwords
 export default function Account() {
     const initialJwt = Cookie.get('jwt')
 

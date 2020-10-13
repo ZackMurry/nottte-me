@@ -11,6 +11,7 @@ import Link from 'next/link'
 import Editor from 'draft-js-plugins-editor'
 import createLinkifyPlugin from 'draft-js-linkify-plugin'
 import GenerateStyleMenu from '../../../components/shortcuts/GenerateStyleMenu'
+import SaveStatus from '../../../components/SaveStatus'
 
 const jsondiffpatch = require('jsondiffpatch')
 
@@ -43,7 +44,6 @@ const emptyContentState = convertFromRaw({
 })
 
 //used for writing notes
-//todo visual saving indicator
 //todo collapse selection on shortcut (or preferably replace selected text)
 export default function Note() {
     const router = useRouter()
@@ -51,7 +51,7 @@ export default function Note() {
     const jwt = Cookie.get('jwt')
 
     const [ editorState, setEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
-    
+
     const [ lastSavedEditorState, setLastSavedEditorState ] = useState(() => EditorState.createWithContent(emptyContentState))
 
     const [ textShortcuts, setTextShortcuts] = useState([])
@@ -63,6 +63,8 @@ export default function Note() {
     const [ generatedStyles, setGeneratedStyles ] = useState([])
 
     const [ gottenFromServer, setGottenFromServer ] = useState(false)
+
+    const [ saveStatus, setSaveStatus ] = useState('u')
 
     // right click override
     // const handleContext = (event) => {
@@ -221,15 +223,20 @@ export default function Note() {
     const debounceSave = useCallback(debounce(async newEditorState => {
         if (!gottenFromServer) {
             setGottenFromServer(true)
+            setSaveStatus('s')
             return
         }
-        if (newEditorState.getCurrentContent() === lastSavedEditorState.getCurrentContent()) return
+        if (newEditorState.getCurrentContent() === lastSavedEditorState.getCurrentContent()) {
+            setSaveStatus('s')
+            return
+        }
         console.log('saving...')
         if (!jwt || !title) {
             console.log("can't save!")
             console.log('jwt: ' + jwt + '; title: ' + title)
             return
         }
+        setSaveStatus('g')
         console.log('last saved: ' + JSON.stringify(convertToRaw(lastSavedEditorState.getCurrentContent())))
         console.log('current: ' + JSON.stringify(convertToRaw(editorState.getCurrentContent())))
         console.log('new: ' + JSON.stringify(convertToRaw(newEditorState.getCurrentContent())))
@@ -322,18 +329,14 @@ export default function Note() {
             console.log('sending fetch')
             console.log('final: ' + JSON.stringify(diff))
             await fetch('http://localhost:8080/api/v1/notes/save/' + title, requestOptions)
-            // const requestOptions = {
-            //     method: 'PATCH',
-            //     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
-            //     body: JSON.stringify(convertToRaw(newEditorState.getCurrentContent()))
-            // }
-            // await fetch('http://localhost:8080/api/v1/notes/save/' + encodeURI(title), requestOptions)
         }
         await setLastSavedEditorState(newEditorState)
+        setSaveStatus('s')
     }, 1500), [ jwt, title, lastSavedEditorState, setLastSavedEditorState, gottenFromServer ])
 
     const onChange = async newEditorState => {
         console.log('on change')
+        setSaveStatus('u')
         debounceSave(newEditorState)
         await setEditorState(newEditorState)
     }
@@ -341,7 +344,8 @@ export default function Note() {
     const insertTextAtCursor = text => {
         const contentState = editorState.getCurrentContent()
         const targetRange = editorState.getSelection()
-        const newContentState = Modifier.insertText(
+        console.log('range: ' + targetRange.isCollapsed())
+        const newContentState = Modifier.replaceText(
             contentState,
             targetRange,
             text
@@ -387,25 +391,7 @@ export default function Note() {
         for (let i = 0; i < textShortcuts.length; i++) {
             const shortcut = textShortcuts[i]
             if (shortcut.name === command) {
-                const contentState = editorState.getCurrentContent()
-                const targetRange = editorState.getSelection()
-                const newContentState = Modifier.insertText(
-                    contentState,
-                    targetRange,
-                    shortcut.text
-                )
-                const newEditorState = EditorState.push(
-                    editorState,
-                    newContentState
-                )
-
-                //changing the position of the cursor to be at the end of the shortcutted text
-                const nextOffSet = newEditorState.getSelection().getFocusOffset()
-                const newSelection = newEditorState.getSelection().merge({
-                    focusOffset: nextOffSet,
-                    anchorOffset: nextOffSet
-                })
-                onChange(EditorState.acceptSelection(newEditorState, newSelection))
+                insertTextAtCursor(shortcut.text)
                 return 'handled'
             }
         }
@@ -572,7 +558,7 @@ nottte.me
                     </a>
 
                 </div>
-
+                {/* todo spellcheck option */}
                 <Editor
                     editorState={editorState}
                     handleKeyCommand={handleKeyCommand}
@@ -595,6 +581,8 @@ nottte.me
                     </div>
                 )
             }
+
+            <SaveStatus status={saveStatus} />
 
         </div>
 
