@@ -9,3 +9,12 @@ everyone seems to use.
 # how does it work?
 You start by binding a style to a key. The format for styles is the same as CSS, except in camelCase, making it easy to figure out what you need to do. Then, you can
 simply toggle the style by pressing the shortcut and typing or selecting text and pressing the shortcut.
+
+# how to build
+First, download the source code. Navigate into the project directory in a terminal 
+and type `mvn install`. Then, run `java -jar target/nottte-me-0.01-SNAPSHOT.jar`. 
+You now have the Java backend running.
+
+To run the frontend, navigate into the "frontend" directory and type `npm install` 
+to install its dependencies. Finally, enter `npm run dev` to get into a development environment. 
+If you'd like to have a production environment, type `npm run build` and `npm run start` instead.
