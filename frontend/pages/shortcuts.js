@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Paper, Typography, Grid } from '@material-ui/core'
+import { Paper, Typography, Grid, Link } from '@material-ui/core'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Cookie from 'js-cookie'
@@ -163,7 +163,10 @@ export default function Shortcuts() {
                         }}
                     >
                         Text shortcuts insert text at your cursor when you press the combination of
-                        keys that activate them
+                        keys that activate them.
+                        <Link href='/help/shortcuts/text' style={{ color: 'black', textDecoration: 'underline', marginLeft: 5 }}>
+                            Learn more
+                        </Link>
                     </Typography>
 
                     {/* if user doesn't have any text shortcuts, show this */}

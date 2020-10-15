@@ -44,7 +44,6 @@ const emptyContentState = convertFromRaw({
 })
 
 //used for writing notes
-//todo collapse selection on shortcut (or preferably replace selected text)
 export default function Note() {
     const router = useRouter()
     const { title } = router.query
