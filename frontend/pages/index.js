@@ -3,7 +3,7 @@ import '../styles/Home.module.css'
 import { IconButton, Typography } from '@material-ui/core'
 import { useEffect, useRef, useState } from 'react'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar/Navbar'
 import SampleEditor from '../components/SampleEditor'
 
 export default function Home() {

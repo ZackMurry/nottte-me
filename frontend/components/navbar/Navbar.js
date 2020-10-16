@@ -60,14 +60,14 @@ export default function Navbar() {
                         notes
                     </Typography>
                 </Link>
-                <Link href='/about'>
+                <Link href='/shortcuts'>
                     <Typography
                         color='primary'
                         style={{
                             fontSize: 36, fontWeight: 100, marginRight: '3vw', cursor: 'pointer'
                         }}
                     >
-                        about
+                        shortcuts
                     </Typography>
                 </Link>
                 {

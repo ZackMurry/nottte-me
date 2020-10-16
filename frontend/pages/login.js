@@ -3,7 +3,7 @@ import Cookie from 'js-cookie'
 import { Paper, Typography, Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar/Navbar'
 
 const authenticationError = 'Invalid username/password'
 

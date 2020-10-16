@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar/Navbar'
 
 export default function Logout() {
     const router = useRouter()

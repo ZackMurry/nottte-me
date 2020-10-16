@@ -9,7 +9,7 @@ import SortIcon from '@material-ui/icons/Sort'
 import SwapVertIcon from '@material-ui/icons/SwapVert'
 import CreateNoteMenu from '../components/notes/CreateNoteMenu'
 import NotePreview from '../components/notes/NotePreview'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar/Navbar'
 import SearchNotes from '../components/notes/SearchNotes'
 import CreateNotePreview from '../components/notes/CreateNotePreview'
 
