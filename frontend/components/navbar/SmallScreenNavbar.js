@@ -1,15 +1,36 @@
 import {
     ClickAwayListener, Collapse, Link, Paper, Typography
 } from '@material-ui/core'
-import { useState } from 'react'
-import theme from './theme'
+import { useEffect, useState } from 'react'
+import theme from '../theme'
 
 export default function SmallScreenNavbar({ jwt }) {
     const [ menuOpen, setMenuOpen ] = useState(false)
+    const [ prevScrollPos, setPrevScrollPos ] = useState(0)
+    const [ showing, setShowing ] = useState(true)
 
     const handleMenuClick = () => {
         setMenuOpen(!menuOpen)
     }
+
+    const handleScroll = () => {
+        const currentScrollPos = window.pageYOffset
+        if (prevScrollPos < currentScrollPos) {
+            console.log('down: ' + currentScrollPos + ' - ' + prevScrollPos)
+            if (showing) {
+                setShowing(false)
+            }
+        } else if (!showing) {
+            setShowing(true)
+        }
+        setPrevScrollPos(currentScrollPos)
+        console.log(showing + '; ' + currentScrollPos)
+    }
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [ showing, prevScrollPos, setPrevScrollPos ])
 
     return (
         <ClickAwayListener onClickAway={() => setMenuOpen(false)}>
@@ -24,6 +45,7 @@ export default function SmallScreenNavbar({ jwt }) {
                     height: '10vh',
                     justifyContent: 'space-between'
                 }}
+                className={showing ? 'show-nav' : 'hide-nav'}
             >
                 <div
                     style={{
@@ -80,9 +102,9 @@ export default function SmallScreenNavbar({ jwt }) {
                                 backgroundColor: theme.palette.secondary.main, height: '5vh', borderRadius: 0, padding: 15, cursor: 'pointer'
                             }}
                         >
-                            <Link href='/about'>
+                            <Link href='/shortcuts'>
                                 <Typography variant='h5' color='primary'>
-                                    about
+                                    shortcuts
                                 </Typography>
                             </Link>
                         </Paper>

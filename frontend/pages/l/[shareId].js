@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Cookie from 'js-cookie'
 import { Button, Paper, Typography } from '@material-ui/core'
 import { useEffect, useState } from 'react'
-import Navbar from '../../components/Navbar'
+import Navbar from '../../components/navbar/Navbar'
 import parseJwt from '../../components/utils/ParseJwt'
 
 export default function UseLinkShare() {

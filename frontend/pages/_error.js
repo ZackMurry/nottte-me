@@ -1,7 +1,7 @@
 import React from 'react'
 import { Typography } from '@material-ui/core'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar/Navbar'
 
 //todo style
 function Error({ statusCode }) {

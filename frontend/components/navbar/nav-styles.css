@@ -1,0 +1,7 @@
+.hide-nav {
+    visibility: hidden;
+}
+
+.show-nav {
+    visibility: visible;
+}

@@ -3,7 +3,7 @@ import { Typography, Paper, Button } from '@material-ui/core'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar/Navbar'
 
 const USERNAME_LENGTH_REQUIRED_ERROR = 'Your username must at least 4 characters'
 const PASSWORD_LENGTH_REQUIRED_ERROR = 'Your password must be at least 8 characters'

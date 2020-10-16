@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Cookie from 'js-cookie'
 import { Link, Paper, Typography } from '@material-ui/core'
-import Navbar from '../../components/Navbar'
+import Navbar from '../../components/navbar/Navbar'
 import EditEmail from '../../components/account/EditEmail'
 import parseJwt from '../../components/utils/ParseJwt'
 import EditPassword from '../../components/account/EditPassword'
