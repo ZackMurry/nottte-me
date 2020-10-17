@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Cookie from 'js-cookie'
 import SmallScreenNavbar from './SmallScreenNavbar'
 
-//todo have account if user is logged in
+//todo create separate component for large screen navbar instead of including it here
 export default function Navbar() {
     const [ jwt, setJwt ] = useState('')
     const [ windowWidth, setWindowWidth ] = useState(1920)

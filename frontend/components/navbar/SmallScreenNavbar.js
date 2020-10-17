@@ -19,9 +19,11 @@ export default function SmallScreenNavbar({ jwt }) {
             console.log('down: ' + currentScrollPos + ' - ' + prevScrollPos)
             if (showing) {
                 setShowing(false)
+                console.log('hiding')
             }
         } else if (!showing) {
             setShowing(true)
+            console.log('showing')
         }
         setPrevScrollPos(currentScrollPos)
         console.log(showing + '; ' + currentScrollPos)
@@ -38,12 +40,13 @@ export default function SmallScreenNavbar({ jwt }) {
                 style={{
                     width: '100%',
                     position: 'fixed',
-                    top: 0,
+                    top: showing ? 0 : -100,
                     left: 0,
                     zIndex: 10,
                     backgroundColor: theme.palette.secondary.main,
                     height: '10vh',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    visibility: showing ? undefined : 'hidden'
                 }}
                 className={showing ? 'show-nav' : 'hide-nav'}
             >
@@ -60,7 +63,7 @@ export default function SmallScreenNavbar({ jwt }) {
                     onClick={handleMenuClick}
                     className={menuOpen ? 'navbar-menu-open' : undefined}
                 >
-                    <div className='navbar-burger' />
+                    <div className='navbar-burger' style={!showing ? { visibility: 'hidden' } : undefined} />
                 </div>
                 <Collapse in={menuOpen} timeout={750} style={{ boxShadow: '0 15px 25px -12.5px black' }}>
                     <Paper elevation={0} style={{ borderRadius: 0 }}>
@@ -136,6 +139,5 @@ export default function SmallScreenNavbar({ jwt }) {
 
             </div>
         </ClickAwayListener>
-
     )
 }
