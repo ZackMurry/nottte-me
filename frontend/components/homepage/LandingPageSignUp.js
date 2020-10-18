@@ -1,18 +1,27 @@
-import { TextField } from '@material-ui/core'
+import { Button, TextField } from '@material-ui/core'
 import { useState } from 'react'
 
 export default function LandingPageSignUp() {
-    const [ username, setUsername ] = useState('')
-    const [ password, setPassword ] = useState('')
 
     return (
-        <div>
-            <TextField
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                variant='outlined'
-                // todo make this look better and finish
-            />
+        <div style={{ marginTop: '1vh' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                    href='/signup'
+                    variant='contained'
+                >
+                    Sign up
+                </Button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2vh' }}>
+                <Button
+                    href='/login'
+                    variant='outlined'
+                    color='primary'
+                >
+                    Or login
+                </Button>
+            </div>
         </div>
     )
 }

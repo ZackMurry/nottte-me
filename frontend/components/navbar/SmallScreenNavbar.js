@@ -18,11 +18,11 @@ export default function SmallScreenNavbar({ jwt }) {
         if (prevScrollPos < currentScrollPos) {
             console.log('down: ' + currentScrollPos + ' - ' + prevScrollPos)
             if (showing) {
-                setShowing(false)
+                setTimeout(() => setShowing(false), 250)
                 console.log('hiding')
             }
         } else if (!showing) {
-            setShowing(true)
+            setTimeout(() => setShowing(true), 250) //todo animate
             console.log('showing')
         }
         setPrevScrollPos(currentScrollPos)
