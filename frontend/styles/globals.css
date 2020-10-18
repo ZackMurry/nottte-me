@@ -205,3 +205,7 @@ div.sample-div > .DraftEditor-root {
 .navbar-menu-open .navbar-burger::after {
     transform: rotate(-45deg) translate(35px, 35px);
 }
+
+.context-button :hover {
+    background-color: #f5f5f5 !important;
+}

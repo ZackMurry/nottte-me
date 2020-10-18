@@ -133,7 +133,12 @@ export default function NotePreview({
                             <Button
                                 color='primary'
                                 startIcon={<DeleteIcon color='secondary' fontSize='large' />}
-                                style={{ textTransform: 'none', width: '100%', maxWidth: '12.5vw' }}
+                                style={{
+                                    textTransform: 'none',
+                                    width: '100%',
+                                    maxWidth: '12.5vw',
+                                    justifyContent: 'flex-start'
+                                }}
                                 onClick={() => { setShowDeleteDialog(true); setShowingMore(false) }}
                             >
                                 <Typography color='secondary'>
@@ -143,7 +148,12 @@ export default function NotePreview({
                             <Button
                                 color='primary'
                                 startIcon={<EditIcon color='secondary' fontSize='large' />}
-                                style={{ textTransform: 'none', width: '100%', maxWidth: '12.5vw' }}
+                                style={{
+                                    textTransform: 'none',
+                                    width: '100%',
+                                    maxWidth: '12.5vw',
+                                    justifyContent: 'flex-start'
+                                }}
                                 onClick={() => { setEditingName(true); setShowingMore(false) }}
                             >
                                 <Typography color='secondary'>
@@ -153,7 +163,12 @@ export default function NotePreview({
                             <Button
                                 color='primary'
                                 startIcon={<FileCopyIcon color='secondary' fontSize='large' />}
-                                style={{ textTransform: 'none', width: '100%', maxWidth: '12.5vw' }}
+                                style={{
+                                    textTransform: 'none',
+                                    width: '100%',
+                                    maxWidth: '12.5vw',
+                                    justifyContent: 'flex-start'
+                                }}
                                 onClick={() => handleDuplicate()}
                             >
                                 <Typography color='secondary'>
@@ -259,6 +274,7 @@ export default function NotePreview({
             {/* confirm delete dialog */}
             <YesNoDialog
                 title='Are you sure you want to delete this note?'
+                // eslint-disable-next-line max-len
                 text="This action can be undo'd for two weeks. After that, all history of the note will be deleted. Are you sure you wish to delete this note?"
                 onClose={() => setShowDeleteDialog(false)}
                 open={showDeleteDialog}

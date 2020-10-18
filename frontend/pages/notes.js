@@ -12,6 +12,7 @@ import NotePreview from '../components/notes/NotePreview'
 import Navbar from '../components/navbar/Navbar'
 import SearchNotes from '../components/notes/SearchNotes'
 import CreateNotePreview from '../components/notes/CreateNotePreview'
+import NotesRightClickMenu from '../components/utils/NotesRightClickMenu'
 
 //todo display user's actual notes
 export default function Notes() {
@@ -312,30 +313,14 @@ export default function Notes() {
                 </div>
             </div>
 
-            <div
-                style={{
-                    position: 'fixed',
-                    bottom: '3vw',
-                    right: '3vw',
-                    width: '3.5vw',
-                    height: '3.5vw',
-                    backgroundColor: '#2d323e',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-            >
-                <Fab color='secondary' aria-label='new note' onClick={handleCreateClick}>
-                    <CreateIcon fontSize='large' />
-                </Fab>
-            </div>
             <div style={{
                 position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'
             }}
             >
-                <CreateNoteMenu open={menuOpen} onClose={handleCreateClick} />
+                <CreateNoteMenu open={menuOpen} onClose={handleCreateClick} jwt={jwt} />
             </div>
+
+            <NotesRightClickMenu onCreateNote={handleCreateClick} />
 
         </div>
 
