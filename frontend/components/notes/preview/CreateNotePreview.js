@@ -4,9 +4,9 @@ import {
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import CreateIcon from '@material-ui/icons/Create'
-import theme from '../theme'
-import PlainTooltip from '../utils/PlainTooltip'
-import validateTitle from './ValidateTitle'
+import theme from '../../theme'
+import PlainTooltip from '../../utils/PlainTooltip'
+import validateTitle from '../../utils/ValidateTitle'
 
 //todo don't let people rename or delete shared notes from here
 export default function CreateNotePreview({ jwt, onCreate }) {

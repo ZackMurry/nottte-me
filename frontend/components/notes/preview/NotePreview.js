@@ -10,12 +10,24 @@ import EditIcon from '@material-ui/icons/Edit'
 import DoneIcon from '@material-ui/icons/Done'
 import PeopleIcon from '@material-ui/icons/People'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
-import PlainSnackbar from '../utils/PlainSnackbar'
-import YesNoDialog from '../utils/YesNoDialog'
+import PlainSnackbar from '../../utils/PlainSnackbar'
+import YesNoDialog from '../../utils/YesNoDialog'
+import NotePreviewContextMenu, { NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT } from './NotePreviewContextMenu'
 
-//todo don't let people rename or delete shared notes from here
+//todo maybe force renaming from context instead of three dots menu
 export default function NotePreview({
-    name, editorState, jwt, onNoteRename, shared, author
+    name,
+    editorState,
+    jwt,
+    onNoteRename,
+    shared,
+    author,
+    contextOpen,
+    onContextOpen,
+    onContextClose,
+    contextPos,
+    updateContextPos,
+    onDelete
 }) {
     const [ rawText, setRawText] = useState('')
     const [ showingMore, setShowingMore ] = useState(false)
@@ -43,6 +55,18 @@ export default function NotePreview({
         setEditedName(name)
     }, [ name ])
 
+    useEffect(() => {
+        const handleRightClick = e => {
+            e.preventDefault()
+            e.stopPropagation()
+        }
+
+        document.addEventListener('contextmenu', handleRightClick)
+        return () => {
+            document.removeEventListener('contextmenu', handleRightClick)
+        }
+    })
+
     const goToNotePage = () => {
         router.push(shared ? (`/u/${encodeURI(author)}/${encodeURI(name)}`) : ('/n/' + encodeURI(name)))
     }
@@ -64,7 +88,7 @@ export default function NotePreview({
         const response = await fetch(`http://localhost:8080/api/v1/notes/principal/note/${encodeURI(name)}`, requestOptions)
         console.log(response.status)
 
-        router.reload()
+        onDelete()
     }
 
     const handleDoneRenaming = async e => {
@@ -124,6 +148,30 @@ export default function NotePreview({
         }
     }
 
+    const handleContextMenu = e => {
+        e.persist()
+        e.preventDefault()
+        e.stopPropagation()
+
+        const updateContext = () => {
+            onContextOpen()
+            setTimeout(() => updateContextPos({ x: e.clientX, y: e.clientY }), NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT)
+        }
+
+        if (contextOpen) {
+            onContextClose()
+            setTimeout(updateContext, NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT)
+        } else {
+            updateContext()
+        }
+    }
+
+    const handleContextClose = () => {
+        //updating contextPos so that the user can still click on everything
+        onContextClose()
+        setTimeout(() => updateContextPos({ x: -100, y: -500 }), NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT)
+    }
+
     return (
         <>
             <Popper open={showingMore} anchorEl={anchorElement} placement='right'>
@@ -179,7 +227,7 @@ export default function NotePreview({
                     </Grow>
                 </ClickAwayListener>
             </Popper>
-            <div style={{ margin: 0, cursor: 'pointer' }} onClick={() => goToNotePage()}>
+            <div style={{ margin: 0, cursor: 'pointer' }} onClick={goToNotePage} onContextMenu={handleContextMenu}>
                 <Card>
                     <CardContent>
                         <div
@@ -287,6 +335,14 @@ export default function NotePreview({
                 value={showRenameSnackbar}
                 onClose={() => setShowRenameSnackbar(false)}
             />
+
+            <NotePreviewContextMenu
+                show={contextOpen}
+                onClose={() => handleContextClose()}
+                pos={contextPos}
+                onDelete={() => setShowDeleteDialog(true)}
+            />
+
         </>
 
     )

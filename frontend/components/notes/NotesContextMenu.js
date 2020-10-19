@@ -1,37 +1,14 @@
-import { Button, ClickAwayListener, Grow, MenuItem, Paper, Typography } from '@material-ui/core'
-import { useEffect, useState } from 'react'
+import {
+    Button, ClickAwayListener, Grow, MenuItem, Paper, Typography
+} from '@material-ui/core'
 import SubjectIcon from '@material-ui/icons/Subject'
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder'
 
-export default function NotesRightClickMenu({
-    onCreateNote
+export default function NotesContextMenu({
+    onCreateNote, show, pos, setShow, setPos
 }) {
-    const [ showContext, setShowContext ] = useState(false)
-    const [ contextPos, setContextPos ] = useState({ x: 0, y: 0 })
-
-    useEffect(() => {
-        const handleRightClick = e => {
-            e.preventDefault()
-            const updateContext = () => {
-                setShowContext(true)
-                setContextPos({ x: e.clientX, y: e.clientY })
-            }
-            if (showContext) {
-                setShowContext(false)
-                setTimeout(updateContext, 150)
-            } else {
-                updateContext()
-            }
-            console.log(e)
-        }
-        document.addEventListener('contextmenu', handleRightClick)
-        return () => {
-            document.removeEventListener('contextmenu', handleRightClick)
-        }
-    }, [ showContext, setShowContext, setContextPos ])
-
     const handleCreateNote = () => {
-        setShowContext(false)
+        setShow(false)
         onCreateNote()
     }
 
@@ -39,18 +16,24 @@ export default function NotesRightClickMenu({
 
     }
 
+    const handleClose = () => {
+        setShow(false)
+        setTimeout(() => setPos({ x: -100, y: -500 }), 100)
+    }
+
     return (
-        <ClickAwayListener onClickAway={() => setShowContext(false)}>
+        <ClickAwayListener onClickAway={handleClose}>
             <div
                 style={{
                     position: 'fixed',
-                    top: contextPos.y,
-                    left: contextPos.x,
+                    top: pos.y,
+                    left: pos.x,
                     zIndex: 20
                 }}
+                onContextMenu={e => e.stopPropagation()}
             >
-                <Grow in={showContext}>
-                    <Paper color='secondary' elevation={3} style={{ borderRadius: 7, padding: '5px 0' }}>
+                <Grow in={show} timeout={100}>
+                    <Paper elevation={3} style={{ borderRadius: 7, padding: '5px 0' }}>
                         <MenuItem
                             onClick={handleCreateNote}
                             style={{ padding: 0 }}

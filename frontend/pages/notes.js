@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import {
-    Grid, Typography, Fab, Button, Paper, MenuList, MenuItem, Popover, CircularProgress
+    Grid, Typography, Button, Paper, MenuList, MenuItem, Popover, CircularProgress
 } from '@material-ui/core'
-import CreateIcon from '@material-ui/icons/Create'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
 import SortIcon from '@material-ui/icons/Sort'
 import SwapVertIcon from '@material-ui/icons/SwapVert'
 import CreateNoteMenu from '../components/notes/CreateNoteMenu'
-import NotePreview from '../components/notes/NotePreview'
+import NotePreview from '../components/notes/preview/NotePreview'
 import Navbar from '../components/navbar/Navbar'
 import SearchNotes from '../components/notes/SearchNotes'
-import CreateNotePreview from '../components/notes/CreateNotePreview'
-import NotesRightClickMenu from '../components/utils/NotesRightClickMenu'
+import CreateNotePreview from '../components/notes/preview/CreateNotePreview'
+import NotesRightClickMenu from '../components/notes/NotesContextMenu'
+import NotesContextMenu from '../components/notes/NotesContextMenu'
+import { NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT } from '../components/notes/preview/NotePreviewContextMenu'
 
 //todo display user's actual notes
 export default function Notes() {
@@ -23,11 +24,6 @@ export default function Notes() {
 
     //l short for loading (i'm cutting it short)
     const [ notesLoading, setNotesLoading ] = useState('l')
-
-    /*eslint-disable*/
-    const [ userNotes, setUserNotes ] = useState([])
-    const [ sharedNotes, setSharedNotes ] = useState([])
-    /*eslint-enable*/
 
     const [ showSortMenu, setShowSortMenu ] = useState(false)
     const [ sortMenuAnchor, setSortMenuAchor] = useState(null)
@@ -40,6 +36,16 @@ export default function Notes() {
 
     const [ showNotes, setShowNotes ] = useState(true)
     const [ sortedBy, setSortedBy ] = useState('last-modified')
+
+    const [ showContext, setShowContext ] = useState(false)
+    const [ contextPos, setContextPos ] = useState({ x: -100, y: -500 })
+
+    //keeps track of note preview with an open context menu
+    //there can't be more than one open context at a time,
+    //so we have to close the context with the index of notePreviewContextIdx
+    //when we open another context
+    const [ notePreviewContextIdx, setNotePreviewContextIdx ] = useState(-1)
+    const [ notePreviewContextPos, setNotePreviewContextPos ] = useState({ x: -100, y: -500 })
 
     const jwt = Cookie.get('jwt')
 
@@ -77,7 +83,6 @@ export default function Notes() {
         }
         const userNotesText = await userNotesResponse.text()
         const userNotesParsed = JSON.parse(userNotesText)
-        setUserNotes(userNotesParsed)
 
         const sharedNotesResponse = await fetch('http://localhost:8080/api/v1/shares/principal/shared-notes', {
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
@@ -90,7 +95,6 @@ export default function Notes() {
         }
         const sharedNotesText = await sharedNotesResponse.text()
         const sharedNotesParsed = JSON.parse(sharedNotesText)
-        setSharedNotes(sharedNotesParsed)
 
         const combinedNotes = [...userNotesParsed, ...sharedNotesParsed]
 
@@ -181,8 +185,48 @@ export default function Notes() {
         setShowNotes(!showNotes)
     }
 
+    const handleContext = e => {
+        e.persist()
+        e.preventDefault()
+        const updateContext = () => {
+            setContextPos({ x: e.clientX, y: e.clientY })
+            setShowContext(true)
+        }
+
+        if (notePreviewContextIdx !== -1) {
+            setNotePreviewContextIdx(-1)
+            setTimeout(updateContext, 100)
+        } else if (showContext) {
+            setShowContext(false)
+            setTimeout(updateContext, 100)
+        } else {
+            updateContext()
+        }
+    }
+
+    const handleOpenNoteContext = index => {
+        if (showContext) {
+            setShowContext(false)
+            setTimeout(() => setContextPos({ x: -100, y: -600 }), 100)
+            setTimeout(() => setNotePreviewContextIdx(index), NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT)
+        } else if (notePreviewContextIdx !== -1) {
+            setNotePreviewContextIdx(-1)
+            setTimeout(() => setNotePreviewContextIdx(index), NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT)
+        } else {
+            setTimeout(() => setNotePreviewContextIdx(index), NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT)
+        }
+    }
+
+    //only has to remove note from display since it's been deleted in NotePreview
+    const handleDeleteNote = index => {
+        const newNotes = notes.slice()
+        newNotes.splice(index, 1)
+        setNotes(newNotes)
+        setBackupNotes(newNotes)
+    }
+
     return (
-        <div>
+        <div onContextMenu={handleContext}>
             <div style={{ marginTop: '10vh' }}>
                 <Navbar />
                 <div style={{
@@ -282,6 +326,12 @@ export default function Notes() {
                                                     onNoteRename={newName => handleNoteRename(i, newName)}
                                                     shared={note.author !== principalUsername && principalUsername !== 'nottte-loading'}
                                                     author={note.author}
+                                                    onContextOpen={() => handleOpenNoteContext(i)}
+                                                    contextOpen={i === notePreviewContextIdx}
+                                                    onContextClose={() => setNotePreviewContextIdx(-1)}
+                                                    contextPos={notePreviewContextPos}
+                                                    updateContextPos={val => setNotePreviewContextPos(val)}
+                                                    onDelete={() => handleDeleteNote(i)}
                                                 />
                                             </Grid>
                                         </React.Fragment>
@@ -320,7 +370,13 @@ export default function Notes() {
                 <CreateNoteMenu open={menuOpen} onClose={handleCreateClick} jwt={jwt} />
             </div>
 
-            <NotesRightClickMenu onCreateNote={handleCreateClick} />
+            <NotesContextMenu
+                onCreateNote={handleCreateClick}
+                pos={contextPos}
+                setShow={val => setShowContext(val)}
+                show={showContext}
+                setPos={val => setContextPos(val)}
+            />
 
         </div>
 
