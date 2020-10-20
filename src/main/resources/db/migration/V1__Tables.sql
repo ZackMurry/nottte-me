@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS shortcuts (
 CREATE TABLE IF NOT EXISTS shares (
     id BIGSERIAL PRIMARY KEY,
     note_id BIGINT REFERENCES notes (id) ON DELETE CASCADE,
-    shared_username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE
+    shared_username VARCHAR(32) REFERENCES users (username) ON DELETE CASCADE,
+    can_share BOOLEAN DEFAULT TRUE
 );
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

@@ -2,6 +2,7 @@ package com.zackmurry.nottteme.controller.sharing;
 
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.sharing.NoteShare;
 import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
 import com.zackmurry.nottteme.services.NoteService;
 import com.zackmurry.nottteme.services.ShareService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class ShareController {
     }
 
     @GetMapping("/principal/note/{title}/shares")
-    public List<String> getSharesOfNote(@PathVariable("title") String title) {
+    public List<NoteShare> getSharesOfNote(@PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return shareService.getSharesOfNote(username, title);
     }
@@ -85,7 +87,7 @@ public class ShareController {
     }
 
     @GetMapping("/principal/note/{author}/{title}/shares")
-    public List<String> getSharesOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
+    public List<NoteShare> getSharesOfNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) throws UnauthorizedException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!shareService.noteIsSharedWithUser(title, author, username)) throw new UnauthorizedException("User does not have access to this note.");
         return shareService.getSharesOfNote(author, title);
@@ -108,6 +110,12 @@ public class ShareController {
     @GetMapping("/principal/shortcuts")
     public List<StyleShortcut> getSharedStyleShortcutsOfPrincipal() {
         return shortcutService.getSharedStyleShortcutsByUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @PatchMapping("/principal/note/{title}/shares/{sharedUsername}/can-share")
+    public HttpStatus setUserCanShareNote(@RequestBody @NotNull Boolean newValue, @PathVariable String title, @PathVariable String sharedUsername) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return shareService.setUserCanShareNote(title, username, sharedUsername, newValue);
     }
 
 }

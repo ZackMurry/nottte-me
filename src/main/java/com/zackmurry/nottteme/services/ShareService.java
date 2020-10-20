@@ -4,6 +4,7 @@ import com.zackmurry.nottteme.dao.share.ShareDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.CSSAttribute;
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.sharing.NoteShare;
 import com.zackmurry.nottteme.models.shortcuts.StyleShortcut;
 import com.zackmurry.nottteme.utils.ShortcutUtils;
 import javassist.NotFoundException;
@@ -37,7 +38,7 @@ public class ShareService {
         return shareDao.shareNoteWithUser(id, recipient);
     }
 
-    public List<String> getSharesOfNote(String username, String title) {
+    public List<NoteShare> getSharesOfNote(String username, String title) {
         return shareDao.getSharesOfNote(username, title);
     }
 
@@ -120,4 +121,22 @@ public class ShareService {
         return noteService.copyNoteToUser(note, username);
     }
 
+    public Optional<NoteShare> getShareOfNote(String title, String author, String sharedUsername) {
+        return shareDao.getShareOfNote(title, author, sharedUsername);
+    }
+
+    public HttpStatus setUserCanShareNote(String title, String author, String sharedUsername, boolean newValue) {
+        if(!noteIsSharedWithUser(title, author, sharedUsername)) {
+            return HttpStatus.PRECONDITION_FAILED;
+        }
+        Optional<NoteShare> optionalNoteShare = getShareOfNote(title, author, sharedUsername);
+        if(optionalNoteShare.isEmpty()) {
+            return HttpStatus.NOT_FOUND;
+        }
+        NoteShare noteShare = optionalNoteShare.get();
+        if(noteShare.getCanShare() == newValue) {
+            return HttpStatus.NOT_MODIFIED;
+        }
+        return shareDao.setUserCanShareNote(title, author, sharedUsername, newValue);
+    }
 }

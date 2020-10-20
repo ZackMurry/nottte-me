@@ -86,7 +86,7 @@ public class ShareServiceTest {
         assertEquals(HttpStatus.OK, noteService.createNote(noteName, testUsername), "Creating a note should work.");
         assertEquals(0, shareService.getSharesOfNote(testUsername, noteName).size());
         assertEquals(HttpStatus.OK, shareService.shareNoteWithUser(testUsername, noteName, targetUsername), "Sharing a note should work.");
-        assertEquals(targetUsername, shareService.getSharesOfNote(testUsername, noteName).get(0), "Note should be shared with target user.");
+        assertEquals(targetUsername, shareService.getSharesOfNote(testUsername, noteName).get(0).getSharedUsername(), "Note should be shared with target user.");
         assertEquals(HttpStatus.OK, shareService.unshareNoteWithUser(testUsername, noteName, targetUsername), "Unsharing a note should work.");
         assertEquals(0, shareService.getSharesOfNote(testUsername, noteName).size(), "Note should not be shared with anyone.");
         assertEquals(HttpStatus.OK, noteService.deleteNote(noteName, testUsername), "Deleting a note should work.");

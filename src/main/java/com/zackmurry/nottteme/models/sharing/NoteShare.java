@@ -6,15 +6,17 @@ public class NoteShare {
     private long id;
     private long noteId;
     private String sharedUsername;
+    private boolean canShare;
 
     public NoteShare() {
 
     }
 
-    public NoteShare(long id, long noteId, String sharedUsername) {
+    public NoteShare(long id, long noteId, String sharedUsername, boolean canShare) {
         this.id = id;
         this.noteId = noteId;
         this.sharedUsername = sharedUsername;
+        this.canShare = canShare;
     }
 
     public long getId() {
@@ -39,5 +41,13 @@ public class NoteShare {
 
     public void setSharedUsername(String sharedUsername) {
         this.sharedUsername = sharedUsername;
+    }
+
+    public boolean getCanShare() {
+        return canShare;
+    }
+
+    public void setCanShare(boolean canShare) {
+        this.canShare = canShare;
     }
 }

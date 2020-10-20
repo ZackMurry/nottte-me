@@ -4,6 +4,7 @@ import com.zackmurry.nottteme.dao.notes.NoteDao;
 import com.zackmurry.nottteme.dao.users.UserDao;
 import com.zackmurry.nottteme.exceptions.UnauthorizedException;
 import com.zackmurry.nottteme.models.Note;
+import com.zackmurry.nottteme.models.sharing.NoteShare;
 import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,11 +88,11 @@ public class ShareDataAccessService implements ShareDao {
      * @return list of users that it's shared with
      */
     @Override
-    public List<String> getSharesOfNote(String username, String title) {
+    public List<NoteShare> getSharesOfNote(String username, String title) {
         if(!noteDao.userHasNote(title, username)) return new ArrayList<>();
         long noteId = noteDao.getIdByTitleAndAuthor(title, username);
 
-        String sql = "SELECT shared_username FROM shares WHERE note_id=?";
+        String sql = "SELECT * FROM shares WHERE note_id=?";
 
         try {
 
@@ -99,9 +100,14 @@ public class ShareDataAccessService implements ShareDao {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setLong(1, noteId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<String> out = new ArrayList<>();
+            List<NoteShare> out = new ArrayList<>();
             while(resultSet.next()) {
-                out.add(resultSet.getString("shared_username"));
+                out.add(new NoteShare(
+                        resultSet.getLong("id"),
+                        resultSet.getLong("note_id"),
+                        resultSet.getString("shared_username"),
+                        resultSet.getBoolean("can_share")
+                ));
             }
             return out;
         } catch(SQLException e) {
@@ -201,5 +207,45 @@ public class ShareDataAccessService implements ShareDao {
         if(!noteIsSharedWithUser(noteId, username)) throw new UnauthorizedException(username + " does not have access to note " + title + " by author " + author + ".");
 
         return noteDao.getNote(title, author);
+    }
+
+    @Override
+    public Optional<NoteShare> getShareOfNote(String title, String author, String sharedUsername) {
+        long noteId = noteDao.getIdByTitleAndAuthor(title, author);
+        String sql = "SELECT * FROM shares WHERE note_id=? LIMIT 1";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setLong(1, noteId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            if(resultSet.isAfterLast()) return Optional.empty();
+            return Optional.of(
+                    new NoteShare(
+                            resultSet.getLong("id"),
+                            resultSet.getLong("note_id"),
+                            resultSet.getString("shared_username"),
+                            resultSet.getBoolean("can_share")
+                    )
+            );
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public HttpStatus setUserCanShareNote(String title, String author, String sharedUsername, boolean newValue) {
+        long noteId = noteDao.getIdByTitleAndAuthor(title, author);
+        String sql = "UPDATE shares SET can_share = ? WHERE note_id=?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setBoolean(1, newValue);
+            preparedStatement.setLong(2, noteId);
+            preparedStatement.execute();
+            return HttpStatus.OK;
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
     }
 }

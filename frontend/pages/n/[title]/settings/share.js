@@ -23,34 +23,7 @@ export default function share() {
     const [ showMoreAnchorEl, setShowMoreAnchorEl ] = useState(null)
     const [ targetAccountExists, setTargetAccountExists] = useState('Loading...')
 
-    /* eslint-disable */
-    const [ sharedWith, setSharedWith ] = useState([])
     const [ linkShares, setLinkShares ] = useState([])
-    /* eslint-enable */
-
-    const getData = async () => {
-        //getting who this note is shared with
-        if (!jwt) return
-
-        const requestOptions = {
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
-        }
-
-        const response = await fetch(`http://localhost:8080/api/v1/shares/principal/note/${encodeURI(title)}/shares`, requestOptions)
-        if (response.status !== 200) {
-            console.log(response.status)
-            return
-        }
-        const text = await response.text()
-        console.log(text)
-        setSharedWith(JSON.parse(text))
-    }
-
-    useEffect(() => {
-        if (title) {
-            getData()
-        }
-    }, [ title ])
 
     const handleShareWithUser = async () => {
         setShowMoreSharing(false)
@@ -85,17 +58,6 @@ export default function share() {
         }
     }
 
-    const removeShareFromArray = removedUsername => {
-        const updatedSharedWith = sharedWith.slice()
-        const index = updatedSharedWith.indexOf(removedUsername)
-        if (index === -1) {
-            console.log('index should not be -1.')
-            return
-        }
-        updatedSharedWith.splice(index, 1)
-        setSharedWith(updatedSharedWith)
-    }
-
     return (
         <div>
             <Head>
@@ -118,7 +80,7 @@ export default function share() {
                     paddingBottom: '10vh',
                     borderRadius: 40,
                     boxShadow: '5px 5px 10px black',
-                    minWidth: 75
+                    minWidth: 750
                 }}
             >
                 <Typography variant='h1' style={{ textAlign: 'center', padding: '2vh 0' }}>
@@ -229,10 +191,8 @@ export default function share() {
                 </div>
                 <div style={{ width: '60%', margin: '3vh auto' }}>
                     <SharedWithTable
-                        sharedWith={sharedWith}
                         jwt={jwt}
                         title={title}
-                        onUnshare={username => removeShareFromArray(username)}
                     />
                 </div>
 
