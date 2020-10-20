@@ -160,7 +160,7 @@ public class ShareServiceTest {
         assertEquals(HttpStatus.OK, shortcutService.addStyleShortcut(testUsername, "testIndexing", "E", attribute5List, false));
 
         //duplicating note
-        assertEquals(HttpStatus.OK, shareService.duplicateSharedNote(testUsername, noteName, targetUsername));
+        assertEquals(HttpStatus.OK, shareService.duplicateSharedNote(testUsername, noteName, targetUsername).getStatusCode());
 
         //checking values
         List<StyleShortcut> sharedShortcuts = shortcutService.getSharedStyleShortcutsByUser(targetUsername);

@@ -94,7 +94,7 @@ public class NoteServiceTest {
         @DisplayName("Test duplicating notes")
         @Test
         public void testDuplicating() {
-            assertEquals(HttpStatus.OK, noteService.duplicateNote(noteTitle, testUsername));
+            assertEquals(HttpStatus.OK, noteService.duplicateNote(noteTitle, testUsername).getStatusCode());
             assertEquals(2, noteService.getNotesByUser(testUsername).size(), "After duplicating their only note, a user should have two notes.");
             final String duplicatedNoteTitle = NoteDataAccessService.COPY_NOTE_PREFIX + noteTitle + NoteDataAccessService.COPY_NOTE_SUFFIX;
             Optional<Note> optionalDuplicatedNote = noteService.getNote(duplicatedNoteTitle, testUsername);
