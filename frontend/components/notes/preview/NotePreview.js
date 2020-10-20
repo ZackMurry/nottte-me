@@ -7,12 +7,12 @@ import { EditorState, convertFromRaw } from 'draft-js'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
-import DoneIcon from '@material-ui/icons/Done'
 import PeopleIcon from '@material-ui/icons/People'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 import PlainSnackbar from '../../utils/PlainSnackbar'
 import YesNoDialog from '../../utils/YesNoDialog'
 import NotePreviewContextMenu, { NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT } from './NotePreviewContextMenu'
+import RenameNoteDialog from '../RenameNoteDialog'
 
 //todo maybe force renaming from context instead of three dots menu
 export default function NotePreview({
@@ -36,8 +36,7 @@ export default function NotePreview({
     const [ showDeleteDialog, setShowDeleteDialog ] = useState(false)
     const [ showRenameSnackbar, setShowRenameSnackbar ] = useState(false)
 
-    const [ editingName, setEditingName ] = useState(false)
-    const [ editedName, setEditedName ] = useState(name)
+    const [ renaming, setRenaming ] = useState(false)
 
     const router = useRouter()
 
@@ -50,10 +49,6 @@ export default function NotePreview({
             setRawText(plainText)
         }
     }, [ editorState ])
-
-    useEffect(() => {
-        setEditedName(name)
-    }, [ name ])
 
     useEffect(() => {
         const handleRightClick = e => {
@@ -91,35 +86,6 @@ export default function NotePreview({
         onDelete()
     }
 
-    const handleDoneRenaming = async e => {
-        e.stopPropagation()
-        setEditingName(false)
-
-        if (name === editedName) return
-
-        const requestOptions = {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
-        }
-
-        const response = await fetch(
-            `http://localhost:8080/api/v1/notes/principal/note/${name}/rename/${editedName}`,
-            requestOptions
-        )
-            .catch(() => setShowRenameSnackbar(true))
-
-        setEditedName(name)
-        if (!response) {
-            return
-        }
-        if (response.status === 200) {
-            onNoteRename(editedName)
-        } else {
-            setShowRenameSnackbar(true)
-            console.log(response.status)
-        }
-    }
-
     const handleDuplicate = async () => {
         const requestOptions = {
             method: 'POST',
@@ -152,6 +118,8 @@ export default function NotePreview({
         e.persist()
         e.preventDefault()
         e.stopPropagation()
+
+        if (renaming) return
 
         const updateContext = () => {
             onContextOpen()
@@ -202,7 +170,7 @@ export default function NotePreview({
                                     maxWidth: '12.5vw',
                                     justifyContent: 'flex-start'
                                 }}
-                                onClick={() => { setEditingName(true); setShowingMore(false) }}
+                                onClick={() => { setRenaming(true); setShowingMore(false) }}
                             >
                                 <Typography color='secondary'>
                                     Rename note
@@ -287,32 +255,14 @@ export default function NotePreview({
                         </div>
                     </CardContent>
                     <CardActions>
-                        {
-                            editingName
-                                ? (
-<div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }} onClick={e => e.stopPropagation()}>
-                                <TextField
-                                    value={editedName}
-                                    onChange={e => setEditedName(e.target.value)}
-                                    onClick={e => e.stopPropagation()}
-                                    style={{ marginLeft: 10, width: '85%', marginRight: 10 }}
-                                    InputProps={{ style: { fontSize: 28 } }}
-                                />
-                                <IconButton onClick={handleDoneRenaming}>
-                                    <DoneIcon color='secondary' />
-                                </IconButton>
-</div>
-                                )
-                                : (
-<div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                <Typography variant='h4' style={{ marginLeft: 10 }}>{ name }</Typography>
-                                <IconButton onClick={onShowMore}>
-                                    <MoreVertIcon color='secondary' />
-                                </IconButton>
-</div>
-                                )
-                        }
-
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <Typography variant='h4' style={{ marginLeft: 10 }}>
+                                { name }
+                            </Typography>
+                            <IconButton onClick={onShowMore}>
+                                <MoreVertIcon color='secondary' />
+                            </IconButton>
+                        </div>
                     </CardActions>
 
                 </Card>
@@ -329,6 +279,14 @@ export default function NotePreview({
                 onResponse={val => (val ? handleDelete() : setShowDeleteDialog(false))}
             />
 
+            <RenameNoteDialog
+                open={renaming}
+                onClose={() => setRenaming(false)}
+                title={name}
+                onRename={onNoteRename}
+                jwt={jwt}
+            />
+
             <PlainSnackbar
                 message='Error renaming note. Please try again.'
                 duration={3000}
@@ -336,13 +294,17 @@ export default function NotePreview({
                 onClose={() => setShowRenameSnackbar(false)}
             />
 
-            <NotePreviewContextMenu
-                show={contextOpen}
-                onClose={() => handleContextClose()}
-                pos={contextPos}
-                onDelete={() => setShowDeleteDialog(true)}
-            />
-
+            {
+                contextOpen && (
+                    <NotePreviewContextMenu
+                        show={contextOpen}
+                        onClose={() => handleContextClose()}
+                        pos={contextPos}
+                        onDelete={() => setShowDeleteDialog(true)}
+                        onRename={() => setRenaming(true)}
+                    />
+                )
+            }
         </>
 
     )
