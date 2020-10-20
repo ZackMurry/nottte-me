@@ -73,7 +73,6 @@ export default function RenameNoteDialog({
                     margin='dense'
                     id='rename'
                     label='New title'
-                    type='text'
                     fullWidth
                     value={editedTitle}
                     onChange={e => setEditedTitle(e.target.value)}

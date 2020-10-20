@@ -4,6 +4,7 @@ import com.zackmurry.nottteme.models.Note;
 import com.zackmurry.nottteme.models.NoteIdentifier;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -45,11 +46,17 @@ public interface NoteDao {
 
     HttpStatus updateLastViewed(String title, String author);
 
-    HttpStatus duplicateNote(String title, String author);
+    ResponseEntity<String> duplicateNote(String title, String author);
 
     Optional<Note> getNote(String title, String author);
 
-    HttpStatus copyNoteToUser(Note note, String username);
+    /**
+     *
+     * @param note note to copy from
+     * @param username user to copy note to
+     * @return http code and string containing the name of the new note
+     */
+    ResponseEntity<String> copyNoteToUser(Note note, String username);
 
     NoteIdentifier getNoteIdentifierById(long noteId) throws NotFoundException, SQLException;
 

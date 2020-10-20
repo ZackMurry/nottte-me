@@ -9,6 +9,7 @@ import com.zackmurry.nottteme.utils.ShortcutUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -60,8 +61,8 @@ public class ShareService {
         return shareDao.getSharedNote(title, author, username);
     }
 
-    public HttpStatus duplicateSharedNote(String author, String title, String username) {
-        if(!shareDao.noteIsSharedWithUser(title, author, username)) return HttpStatus.UNAUTHORIZED;
+    public ResponseEntity<String> duplicateSharedNote(String author, String title, String username) {
+        if(!shareDao.noteIsSharedWithUser(title, author, username)) return new ResponseEntity<>("Error", HttpStatus.UNAUTHORIZED);
 
         //copying style shortcuts from author to user
         List<StyleShortcut> authorStyleShortcuts = shortcutService.getStyleShortcutsByUsername(author);
@@ -95,7 +96,7 @@ public class ShareService {
 
         //the two things that we don't want this to be are 400 and 404 (only error codes that this method returns),
         //so >= 400 achieves the same goal
-        if(addShortcutStatus.value() >= 400) return addShortcutStatus;
+        if(addShortcutStatus.value() >= 400) return new ResponseEntity<>("Error", addShortcutStatus);
 
         //duplicating note
         Optional<Note> optionalNote;
@@ -103,9 +104,9 @@ public class ShareService {
             optionalNote = getSharedNote(title, author, username);
         } catch (Exception e) {
             e.printStackTrace();
-            return HttpStatus.UNAUTHORIZED;
+            return new ResponseEntity<>("Error", HttpStatus.UNAUTHORIZED);
         }
-        if(optionalNote.isEmpty()) return HttpStatus.UNAUTHORIZED;
+        if(optionalNote.isEmpty()) return new ResponseEntity<>("Error", HttpStatus.UNAUTHORIZED);
         Note note = optionalNote.get();
 
         String body = note.getBody();

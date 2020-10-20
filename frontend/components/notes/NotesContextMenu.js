@@ -4,6 +4,7 @@ import {
 import SubjectIcon from '@material-ui/icons/Subject'
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder'
 
+//todo add: share, star, add to folder, create sharable link, download as pdf, ...
 export default function NotesContextMenu({
     onCreateNote, show, pos, setShow, setPos
 }) {
@@ -36,7 +37,7 @@ export default function NotesContextMenu({
                     <Paper elevation={3} style={{ borderRadius: 7, padding: '5px 0' }}>
                         <MenuItem
                             onClick={handleCreateNote}
-                            style={{ padding: 0 }}
+                            style={{ padding: 0, minHeight: 36 }}
                             className='context-button'
                         >
                             <Button
@@ -59,7 +60,7 @@ export default function NotesContextMenu({
                         </MenuItem>
                         <MenuItem
                             onClick={handleCreateFolder}
-                            style={{ padding: 0 }}
+                            style={{ padding: 0, minHeight: 36 }}
                             className='context-button'
                         >
                             <Button

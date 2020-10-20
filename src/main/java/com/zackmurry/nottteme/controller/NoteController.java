@@ -100,7 +100,7 @@ public class NoteController {
     }
 
     @PostMapping("/principal/note/{title}/duplicate")
-    public HttpStatus duplicateNote(@PathVariable("title") String title) {
+    public ResponseEntity<String> duplicateNote(@PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return noteService.duplicateNote(title, username);
     }

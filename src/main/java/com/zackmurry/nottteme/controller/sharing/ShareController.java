@@ -100,10 +100,9 @@ public class ShareController {
     }
 
     @PostMapping("/principal/note/{author}/{title}/duplicate")
-    public ResponseEntity<HttpStatus> duplicateNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) {
+    public ResponseEntity<String> duplicateNoteSharedWithPrincipal(@PathVariable("author") String author, @PathVariable("title") String title) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        HttpStatus status = shareService.duplicateSharedNote(author, title, username);
-        return new ResponseEntity<>(status);
+        return shareService.duplicateSharedNote(author, title, username);
     }
 
     @GetMapping("/principal/shortcuts")

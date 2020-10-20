@@ -222,6 +222,14 @@ export default function Notes() {
         const newNotes = notes.slice()
         newNotes.splice(index, 1)
         setNotes(newNotes)
+        setBackupNotes(newNotes) //not really sure what backup notes does tbh
+    }
+
+    const handleDuplicateNote = (index, duplicatedTitle) => {
+        const newNotes = notes.slice()
+        const originalNote = newNotes[index]
+        newNotes.unshift({ ...originalNote, title: duplicatedTitle, author: principalUsername || parseJwt(jwt)?.sub })
+        setNotes(newNotes)
         setBackupNotes(newNotes)
     }
 
@@ -332,6 +340,7 @@ export default function Notes() {
                                                     contextPos={notePreviewContextPos}
                                                     updateContextPos={val => setNotePreviewContextPos(val)}
                                                     onDelete={() => handleDeleteNote(i)}
+                                                    onDuplicate={duplicatedTitle => handleDuplicateNote(i, duplicatedTitle)}
                                                 />
                                             </Grid>
                                         </React.Fragment>

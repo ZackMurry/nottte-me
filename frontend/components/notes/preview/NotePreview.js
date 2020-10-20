@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import {
-    Paper, Typography, Card, CardContent, CardActions, IconButton, Popper, Grow, ClickAwayListener, Button, TextField
+    Paper, Typography, Card, CardContent, CardActions
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import { EditorState, convertFromRaw } from 'draft-js'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
 import PeopleIcon from '@material-ui/icons/People'
-import FileCopyIcon from '@material-ui/icons/FileCopy'
 import PlainSnackbar from '../../utils/PlainSnackbar'
 import YesNoDialog from '../../utils/YesNoDialog'
 import NotePreviewContextMenu, { NOTE_PREVIEW_CONTEXT_TOGGLE_TIMEOUT } from './NotePreviewContextMenu'
@@ -27,14 +23,16 @@ export default function NotePreview({
     onContextClose,
     contextPos,
     updateContextPos,
-    onDelete
+    onDelete,
+    onDuplicate
 }) {
     const [ rawText, setRawText] = useState('')
-    const [ showingMore, setShowingMore ] = useState(false)
-    const [ anchorElement, setAnchorElement ] = useState(null)
 
     const [ showDeleteDialog, setShowDeleteDialog ] = useState(false)
     const [ showRenameSnackbar, setShowRenameSnackbar ] = useState(false)
+
+    const [ showSnackbar, setShowSnackbar] = useState(false)
+    const [ snackbarText, setSnackbarText ] = useState('There was an unknown error. Please try again soon.')
 
     const [ renaming, setRenaming ] = useState(false)
 
@@ -66,12 +64,6 @@ export default function NotePreview({
         router.push(shared ? (`/u/${encodeURI(author)}/${encodeURI(name)}`) : ('/n/' + encodeURI(name)))
     }
 
-    const onShowMore = e => {
-        e.stopPropagation()
-        setShowingMore(!showingMore)
-        setAnchorElement(e.currentTarget)
-    }
-
     const handleDelete = async () => {
         console.log('deleting...')
         setShowDeleteDialog(false)
@@ -84,34 +76,6 @@ export default function NotePreview({
         console.log(response.status)
 
         onDelete()
-    }
-
-    const handleDuplicate = async () => {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt }
-        }
-
-        if (shared) {
-            const response = await fetch(
-                `http://localhost:8080/api/v1/shares/principal/note/${author}/${name}/duplicate`,
-                requestOptions
-            )
-                .catch(() => console.error('error duplicating note'))
-            if (response.status === 200) {
-                router.reload()
-            }
-        } else {
-            const response = await fetch(
-                `http://localhost:8080/api/v1/notes/principal/note/${name}/duplicate`,
-                requestOptions
-            )
-                .catch(() => console.error('error duplicating note'))
-
-            if (response.status === 200) {
-                router.reload()
-            }
-        }
     }
 
     const handleContextMenu = e => {
@@ -142,59 +106,6 @@ export default function NotePreview({
 
     return (
         <>
-            <Popper open={showingMore} anchorEl={anchorElement} placement='right'>
-                <ClickAwayListener onClickAway={() => setShowingMore(false)}>
-                    <Grow timeout={350} in={showingMore}>
-                        <Paper elevation={5} style={{ maxWidth: '12.5vw' }}>
-                            <Button
-                                color='primary'
-                                startIcon={<DeleteIcon color='secondary' fontSize='large' />}
-                                style={{
-                                    textTransform: 'none',
-                                    width: '100%',
-                                    maxWidth: '12.5vw',
-                                    justifyContent: 'flex-start'
-                                }}
-                                onClick={() => { setShowDeleteDialog(true); setShowingMore(false) }}
-                            >
-                                <Typography color='secondary'>
-                                    Delete note
-                                </Typography>
-                            </Button>
-                            <Button
-                                color='primary'
-                                startIcon={<EditIcon color='secondary' fontSize='large' />}
-                                style={{
-                                    textTransform: 'none',
-                                    width: '100%',
-                                    maxWidth: '12.5vw',
-                                    justifyContent: 'flex-start'
-                                }}
-                                onClick={() => { setRenaming(true); setShowingMore(false) }}
-                            >
-                                <Typography color='secondary'>
-                                    Rename note
-                                </Typography>
-                            </Button>
-                            <Button
-                                color='primary'
-                                startIcon={<FileCopyIcon color='secondary' fontSize='large' />}
-                                style={{
-                                    textTransform: 'none',
-                                    width: '100%',
-                                    maxWidth: '12.5vw',
-                                    justifyContent: 'flex-start'
-                                }}
-                                onClick={() => handleDuplicate()}
-                            >
-                                <Typography color='secondary'>
-                                    Duplicate note
-                                </Typography>
-                            </Button>
-                        </Paper>
-                    </Grow>
-                </ClickAwayListener>
-            </Popper>
             <div style={{ margin: 0, cursor: 'pointer' }} onClick={goToNotePage} onContextMenu={handleContextMenu}>
                 <Card>
                     <CardContent>
@@ -256,12 +167,9 @@ export default function NotePreview({
                     </CardContent>
                     <CardActions>
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                            <Typography variant='h4' style={{ marginLeft: 10 }}>
+                            <Typography variant='h4' style={{ marginLeft: 10, paddingBottom: 7 }}>
                                 { name }
                             </Typography>
-                            <IconButton onClick={onShowMore}>
-                                <MoreVertIcon color='secondary' />
-                            </IconButton>
                         </div>
                     </CardActions>
 
@@ -294,6 +202,13 @@ export default function NotePreview({
                 onClose={() => setShowRenameSnackbar(false)}
             />
 
+            <PlainSnackbar
+                message={snackbarText}
+                duration={3000}
+                value={showSnackbar}
+                onClose={() => setShowSnackbar(false)}
+            />
+
             {
                 contextOpen && (
                     <NotePreviewContextMenu
@@ -302,6 +217,13 @@ export default function NotePreview({
                         pos={contextPos}
                         onDelete={() => setShowDeleteDialog(true)}
                         onRename={() => setRenaming(true)}
+                        onDuplicate={onDuplicate}
+                        isShared={shared}
+                        title={name}
+                        author={author}
+                        jwt={jwt}
+                        setShowSnackbar={val => setShowSnackbar(val)}
+                        setSnackbarText={val => setSnackbarText(val)}
                     />
                 )
             }

@@ -11,6 +11,7 @@ import com.zackmurry.nottteme.utils.NoteUtils;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -83,11 +84,11 @@ public class NoteService {
         return noteDao.getNotesByIdList(noteIds);
     }
 
-    public HttpStatus duplicateNote(String title, String username) {
+    public ResponseEntity<String> duplicateNote(String title, String username) {
         return noteDao.duplicateNote(title, username);
     }
 
-    public HttpStatus copyNoteToUser(Note note, String username) {
+    public ResponseEntity<String> copyNoteToUser(Note note, String username) {
         return noteDao.copyNoteToUser(note, username);
     }
 

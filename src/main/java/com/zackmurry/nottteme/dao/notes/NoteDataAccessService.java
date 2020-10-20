@@ -7,6 +7,7 @@ import javassist.NotFoundException;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -470,26 +471,27 @@ public final class NoteDataAccessService implements NoteDao {
     }
 
     @Override
-    public HttpStatus duplicateNote(String title, String author) {
+    public ResponseEntity<String> duplicateNote(String title, String author) {
         Optional<Note> optionalNote = getNote(title, author);
-        if(optionalNote.isEmpty()) return HttpStatus.NOT_FOUND;
+        if(optionalNote.isEmpty()) return new ResponseEntity<>("Error", HttpStatus.NOT_FOUND);
         Note note = optionalNote.get();
         String noteTitle = COPY_NOTE_PREFIX + note.getTitle() + COPY_NOTE_SUFFIX;
         while(userHasNote(noteTitle, author)) {
             //could use a string builder for this, but it's pretty unlikely that this will run more than a few times
+            //todo there could be an error with creating a note with a title that's over the character limit
             noteTitle += COPY_NOTE_SUFFIX;
         }
-        return createNote(noteTitle, note.getBody(), note.getAuthor());
+        return new ResponseEntity<>(noteTitle, createNote(noteTitle, note.getBody(), note.getAuthor()));
     }
 
     @Override
-    public HttpStatus copyNoteToUser(Note note, String username) {
+    public ResponseEntity<String> copyNoteToUser(Note note, String username) {
         String newTitle = COPY_NOTE_PREFIX + note.getTitle() + COPY_NOTE_SUFFIX;
         while(userHasNote(newTitle, username)) {
             //could use a string builder for this, but it's pretty unlikely that this will run more than a few times
             newTitle += COPY_NOTE_SUFFIX;
         }
-        return createNote(newTitle, note.getBody(), username);
+        return new ResponseEntity<>(newTitle, createNote(newTitle, note.getBody(), username));
     }
 
     @Override

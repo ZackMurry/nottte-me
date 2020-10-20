@@ -48,24 +48,36 @@ export default function CreateNoteMenu({ jwt, open, onClose }) {
             <Dialog
                 onClose={handleClose}
                 open={open}
+                onContextMenu={e => e.stopPropagation()}
+                maxWidth='sm'
+                fullWidth
             >
                 <DialogTitle>
                     Create new note
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent style={{ paddingBottom: 0 }}>
                     <DialogContentText>
                         Please enter a name for your note
                     </DialogContentText>
-                </DialogContent>
-                <DialogActions style={{ padding: '2.5vw', display: 'flex' }}>
                     <TextField
+                        id='new-note'
+                        fullWidth
+                        label='Title...'
                         value={title}
                         onChange={e => setTitle(e.target.value)}
                         placeholder='title'
                         onKeyDown={handleKeyDown}
+                        style={{ marginBottom: 0, paddingBottom: 0 }}
                     />
+                </DialogContent>
+                <DialogActions style={{ padding: '2.5vw', display: 'flex', justifyContent: 'flex-end', paddingTop: '3vh' }}>
+                    <Button onClick={handleClose}>
+                        Cancel
+                    </Button>
                     <Button
-                        onClick={() => createNote()}
+                        onClick={createNote}
+                        variant='contained'
+                        color='secondary'
                     >
                         Confirm
                     </Button>
