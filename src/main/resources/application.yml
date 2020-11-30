@@ -1,8 +1,8 @@
 app:
   datasource:
     jdbc-url: jdbc:postgresql://localhost:5432/nottte
-    username: ${env.POSTGRES_USERNAME}
-    password: ${env.POSTGRES_PASSWORD}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     pool-size: 30
 spring:
   flyway:
