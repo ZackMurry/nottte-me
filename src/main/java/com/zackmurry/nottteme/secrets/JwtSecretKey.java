@@ -1,7 +1,6 @@
 package com.zackmurry.nottteme.secrets;
 
 /**
- * @hidden from git
  * used for JWT encoding
  */
 public final class JwtSecretKey {
