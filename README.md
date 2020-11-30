@@ -1,5 +1,5 @@
 # nottte-me
-A shortcut-centered writing website with easy exporting to Google Docs, PDF, and more.
+An unfinished, shortcut-centered writing website with easy exporting to Google Docs, PDF, and more.
 
 # why not Google Docs?
 As good as Google Docs is, there is almost no customizability. If you wanted to bind highlighting to a key, you'd be simply out of luck. I found myself clicking in the same
@@ -17,4 +17,5 @@ You now have the Java backend running.
 
 To run the frontend, navigate into the "frontend" directory and type `npm install` 
 to install its dependencies. Finally, enter `npm run dev` to get into a development environment. 
-If you'd like to have a production environment, type `npm run build` and `npm run start` instead.
+If you'd like to have a production environment, type `npm run build` and `npm run start` instead.  
+You can find the website running on localhost:3000
