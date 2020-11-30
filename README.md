@@ -11,6 +11,11 @@ You start by binding a style to a key. The format for styles is the same as CSS,
 simply toggle the style by pressing the shortcut and typing or selecting text and pressing the shortcut.
 
 # how to build
+
+## downloads
+To run this, you'll need [Java 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Node.js](https://nodejs.org/en/download/) installed.
+
+## process
 First, download the source code. Navigate into the project directory in a terminal 
 and type `mvn install`. Then, run `java -jar target/nottte-me-0.01-SNAPSHOT.jar`. 
 You now have the Java backend running.
@@ -18,4 +23,10 @@ You now have the Java backend running.
 To run the frontend, navigate into the "frontend" directory and type `npm install` 
 to install its dependencies. Finally, enter `npm run dev` to get into a development environment. 
 If you'd like to have a production environment, type `npm run build` and `npm run start` instead.  
-You can find the website running on localhost:3000
+
+You'll also want to set some environment variables. You can learn how to set environment variables on Windows [here](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10).
+You need to set NOTTTE_JWT_SECRET_KEY to an arbitrary value,
+preferably one which is cryptographically secure.
+You should also set POSTGRES_USERNAME and POSTGRES_PASSWORD to your PostgreSQL username and password, respectively.
+
+You can find the website running on localhost:3000.
