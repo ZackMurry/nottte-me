@@ -13,7 +13,7 @@ simply toggle the style by pressing the shortcut and typing or selecting text an
 # how to build
 
 ## downloads
-To run this, you'll need [Java 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Node.js](https://nodejs.org/en/download/) installed.
+To run this, you'll need [Java 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), [Node.js](https://nodejs.org/en/download/), and [PostgreSQL](https://www.postgresql.org/download/) installed.
 
 ## process
 First, download the source code. Navigate into the project directory in a terminal 
